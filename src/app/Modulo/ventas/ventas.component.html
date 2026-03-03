@@ -1,0 +1,467 @@
+<div class="container-fluid me-3 ">
+    <div class="card">
+        <div class="card-header">
+            <h5>Gestionar Ventas</h5>
+        </div>
+        <div class="card-body">
+            <div class="row ">
+                <div class="col-md-2">
+                    <input type="text" class="form-control" [ngModel]="nroventa"
+                        (ngModelChange)="nroventa = $event.toUpperCase()" placeholder="Buscar por Nro Venta">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" class="form-control" placeholder="Buscar por cliente"
+                        aria-label="Buscar por cliente">
+                </div>
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-3">
+                  <!--  <select class="form-select">
+                        <option selected>Tipo</option>
+                        <option value="1">Activos</option>
+                        <option value="2">Inactivos</option>
+                        <option value="3">Todos</option>
+                    </select>-->
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addventa">Nueva
+                        Venta</button>
+                </div>
+                <div class="col-md-4">
+                    <label for="f1">Desde::</label>
+                    <input type="date" id="f1" class="form-control">
+                </div>
+                <div class="col-md-4">
+                    <label for="f1">Hasta::</label>
+                    <input type="date" id="f1" class="form-control">
+                </div>
+                <div class="col-md-3 ">
+                    <label>Estado</label>
+                    <select class="form-select" [(ngModel)]="estado">
+                        <option value="1" selected>Vigentes</option>
+                        <option value="2">Anuladas</option>
+                        <option value="">Todas las compras</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-responsive tamaño">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nro</th>
+                            <th scope="col">Nro.Venta</th>
+                            <th scope="col">Fecha registro</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Monto Total</th>
+                            <th scope="col">Tipo de Venta</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            *ngFor="let i=index; let ven of apiVentas | nroVenta:nroventa |estado:estado| paginate: { itemsPerPage: 6, currentPage: page }">
+                            <td>{{i+1}}</td>
+                            <td>{{ven.nro_venta}}</td>
+                            <td>{{ven.fecha_registro}}</td>
+                            <td>{{(ven.cliente!=null)?ven.cliente.nombres:"Publico general"}}</td>
+                            <td>{{ven.monto_total}}</td>
+                            <td>{{ven.tipo_venta==1?"Fisico":"Pedido"}}</td>
+                            <td>
+                                <!--Anular-->
+                                <button *ngIf="ven.estado!=2" (click)="anularVenta(ven)" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#anuventa">
+                                    <i class="bi bi-trash"></i> Anular
+                                </button>
+                                <!--Detalle-->
+                                <button (click)="detalle(ven)" class="btn btn-outline-primary btn-sm ms-2"
+                                    data-bs-toggle="modal" data-bs-target="#detventa">
+                                    <i class="bi bi-card-text"></i> Detalle
+                                </button>
+                                <span *ngIf="ven.estado==2" class="text-muted ms-2">Compra anulada</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+                <pagination-controls (pageChange)="page = $event"></pagination-controls>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL ADICIONAR -->
+<div class="modal fade" id="addventa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen ">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Nueva Venta</h1>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3 needs-validation" [formGroup]="ventaForm" (ngSubmit)="agregarVenta()">
+                    <div class="container">
+                        <!--<div class="row g-3" modal-dialog-scrollable>
+                            <div class="col-md-6">
+                          <fieldset class="border p-1 f1" >
+                              <legend class="float-none w-auto">Información Venta</legend>
+                              <div class="row g-2">
+                                 <div class="col-md-5">
+                                    <label for="fecha">Fecha</label>
+                                    <input type="date" class="form-control" formControlName="fecha" id="fecha">
+                                 </div>
+                                 <div class="col-md-5">
+                                    <label for="nroventa">Nro Venta</label>
+                                    <input type="text" class="form-control" formControlName="nroVenta" id="nroventa" >
+                                </div>
+                                <div class="col-md-2">
+                                   Con Factura
+                                        <div class="form-check">
+                                             <input (click)="observarFactura(1)" class="form-check-input" formControlName="tipov" type="radio"  id="habi" value=1>
+                                            <label class="form-check-label" for="habi">SI</label>
+                                            <br>
+                                             <input (click)="observarFactura(2)" class="form-check-input" formControlName="tipov" type="radio"  id="desa" value=2>
+                                            <label class="form-check-label" for="desa">NO </label>
+                                        </div>
+                                  </div>
+                              </div>
+                          </fieldset> 
+                      </div>-->
+                        <!--     <div class="col-md-6">
+                                <fieldset class="border p-2 ">
+                                    <legend class="float-none  w-auto">Información del Cliente</legend>
+                                    <div class="row">
+                                        <div class="col-md-6 ">
+                                            <label for="cliente" class="form-label">Cliente:</label>
+                                            <select id="cliente" class="form-select" formControlName="cliente">
+                                                <option value="1" selected>Publico General</option>
+                                                <option [ngValue]="cli" *ngFor="let cli of clientes">{{cli.nombres}}
+                                                </option>
+
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 ">
+                                            <label for="nombre">Cliente</label>
+                                            <input type="text" class="form-control" formControlName="nombre_cliente"
+                                                id="nombre">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 ">
+                                            <label for="cinit">CI/NIT</label>
+                                            <input type="text" formControlName="ci_nit" class="form-control" id="cinit">
+                                        </div>
+                                        <div class="col-md-4 ">
+                                            <label for="cliente" class="form-label">Tipo Documento:</label>
+                                            <select id="cliente" class="form-select" formControlName="documento">
+                                                <option selected value="1">NIT</option>
+                                                <option value="2">CI</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 ">
+                                            <button class="btn btn-info mt-4" data-bs-toggle="modal"
+                                                data-bs-target="#addcliente" [disabled]="tipo==2?true:false">Completar
+                                                Info.</button>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>-->
+                        <div class="row">
+                            <div class="col-md-6"><!-- Lista de productos -->
+                                <fieldset class="border px-3 "><!--Segunda fila-->
+                                    <legend class="float-none w-auto ">Productos</legend>
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" (keyup)="ponerCodigo($event)"
+                                                placeholder="Buscar por código"
+                                                oninput="this.value = this.value.toUpperCase();">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <input type="text" class="form-control" (keyup)="ponerNombre($event)"
+                                                style="text-transform: capitalize;" placeholder="Buscar por nombre">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <select class="form-select" (change)="ponerCat($event)">
+                                                <option value="">Todos</option>
+                                                <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">
+                                                    {{cat.nombre}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="table-responsive tamaño2">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Nro</th>
+                                                    <th scope="col">Cod Producto</th>
+                                                    <th scope="col">Nombre</th>
+                                                    <th scope="col">Precio Venta</th>
+                                                    <th scope="col">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr
+                                                    *ngFor="let i=index; let pro of apiProductos|codigo:codigo |nombre:nombre | categoria:categoria ">
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{pro.codigo}}</td>
+                                                    <td>{{pro.nombre}}</td>
+                                                    <td>{{pro.precio_venta}}</td>
+                                                    <td>
+                                                        <!--Agregar-->
+                                                        <button class="btn btn-outline-success btn-sm"
+                                                            (click)="agregarProducto(pro)">
+                                                            <i class="bi bi-plus-circle"></i>Agregar
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-6">
+                                <fieldset class="border px-3 ">
+                                    <legend class="float-none w-auto ">Detalle de la Venta</legend>
+                                    <div class="col-md-6 pb-2">
+                                        <label for="cliente" class="form-label">Cliente:</label>
+                                        <select id="cliente" class="form-select" formControlName="cliente">
+                                            <option value="1" selected>Publico General</option>
+                                            <option [ngValue]="cli" *ngFor="let cli of apiClientes">{{cli.nombre}}
+                                                {{cli.ap_paterno}} {{cli.ap_materno}}
+                                            </option>
+
+                                        </select>
+                                    </div>
+                                    <div class="table-responsive tamaño" style="max-height: 400px; overflow-y: auto;">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Nro</th>
+                                                    <th scope="col">Producto</th>
+                                                    <th scope="col">Precio Venta</th>
+                                                    <th scope="col">Cantidad</th>
+                                                    <th scope="col">Sub Total</th>
+                                                    <th scope="col">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr *ngFor="let i=index; let pro of productosVender">
+                                                    <td>{{i+1}}</td>
+                                                    <td>{{pro.nombre}}</td>
+                                                    <td>{{pro.precio_venta}}</td>
+                                                    <td>
+                                                        <input type="number" class="form-control"
+                                                            style="width: 80px !important;"
+                                                            [value]="productosVentaCantidades[i]" min="1"
+                                                            (keydown)="bloquearTeclasInvalidas($event)"
+                                                            (change)="nuevaCantidad(i,$event)">
+                                                    </td>
+                                                    <td>{{productosVentaCantidades[i]*pro.precio_venta}}</td>
+                                                    <td>
+                                                        <button (click)="quitarProducto(i)"
+                                                            class="btn btn-outline-danger btn-sm">
+                                                            <i class="bi bi-trash"></i>Quitar
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="row ">
+                                        <div class="col-md-4 pb-2 ">
+                                            <label for="nombre">Tipo de Pago</label>
+                                            <select class="form-select" formControlName="tipo_pago">
+                                                <option value="1">Efectivo</option>
+                                                <option value="2">QR</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mt-2">
+                                            <div class="input-group">
+                                                <label class="input-group-text">Descuento:</label>
+                                                <input type="text" class="form-control" id="total"
+                                                    formControlName="descuento" (change)="descontar($event)">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mt-2">
+                                            <div class="input-group">
+                                                <span class="input-group-text">Total:</span>
+                                                <input type="text" class="form-control" formControlName="total"
+                                                    id="total" readonly [value]="total">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" [disabled]="ventaForm.invalid"
+                            data-bs-dismiss="modal">Guardar</button>
+                        <button (click)="Cancelar()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- MODAL DETALLE -->
+<div class="modal fade" id="detventa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center">
+          <i class="bi bi-receipt-cutoff me-2 fs-4"></i> Detalle de Venta
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body bg-light">
+        <div class="container">
+          
+          <!-- Información General -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header  d-flex align-items-center">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              <h6 class="mb-0 fw-semibold">Información General</h6>
+            </div>
+            <div class="card-body">
+                 <div class="row gy-2">
+              <div class="col-md-4">
+                <i class="bi bi-calendar3 me-1"></i>
+                <strong>Fecha de Venta:</strong> {{ DetVenta?.fecha_registro }}
+              </div>
+              <div class="col-md-4">
+                <i class="bi bi-hash  me-1"></i>
+                <strong>N° Venta:</strong> {{ DetVenta?.id_venta }}
+              </div>
+              <div class="col-md-4">
+                <i class="bi bi-person-badge  me-1"></i>
+                <strong>Vendedor:</strong>
+                {{ DetVenta?.usuario.empleado.nombre }}
+                {{ DetVenta?.usuario.empleado.ap_paterno }}
+                {{ DetVenta?.usuario.empleado.ap_materno }}
+              </div>
+              <div class="col-md-4">
+                <i class="bi bi-receipt  me-1"></i>
+                <strong>Factura:</strong>
+                {{ DetVenta?.confactura==1 ? "Con factura" : "Sin factura" }}
+              </div>
+              <div class="col-md-4">
+                <i class="bi bi-cart me-1"></i>
+                <strong>Tipo de Venta:</strong>
+                {{ DetVenta?.tipo_venta==1 ? "Presencial" : "A pedido" }}
+              </div>
+              <div class="col-md-4">
+                <i class="bi bi-credit-card  me-1"></i>
+                <strong>Tipo de Pago:</strong>
+                {{ DetVenta?.tipo_pago==1 ? "Efectivo" : "QR" }}
+              </div>
+              <div class="col-md-4">
+                <i class="bi bi-person-circle  me-1"></i>
+                <strong>Cliente:</strong>
+                {{ DetVenta?.cliente==null ? "Público general" : DetVenta?.cliente.nombres }}
+              </div>
+            </div>
+              
+            </div>
+          </div>
+
+          <!-- Productos Vendidos -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header  d-flex align-items-center">
+              <i class="bi bi-box-seam me-2"></i>
+              <h6 class="mb-0 fw-semibold">Productos Vendidos</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table align-middle table-striped table-hover">
+                  <thead class="table-primary">
+                    <tr>
+                      <th>#</th>
+                      <th>Producto</th>
+                      <th>Cantidad</th>
+                      <th>Precio Unitario</th>
+                      <th>Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let d of detallesVenta; let i = index">
+                      <td>{{i+1}}</td>
+                      <td>{{d.producto.nombre}}</td>
+                      <td>{{d.cantidad}}</td>
+                      <td>{{d.precio_unitario | currency:'BOB':'symbol':'1.2-2'}}</td>
+                      <td><strong>{{d.sub_total | currency:'BOB':'symbol':'1.2-2'}}</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Totales -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header d-flex align-items-center">
+              <i class="bi bi-cash-stack me-2"></i>
+              <h6 class="mb-0 fw-semibold">Totales</h6>
+            </div>
+            <div class="card-body">
+              <div class="row gy-2">
+                <div class="col-md-4">
+                  <strong>Subtotal:</strong> {{DetVenta?.monto_total | currency:'BOB':'symbol':'1.2-2'}}
+                </div>
+                <div class="col-md-4">
+                  <strong>Descuento:</strong> {{(DetVenta?.descuento)?(DetVenta?.descuento | currency:'BOB':'symbol':'1.2-2'):"No hay descuento"}}
+                </div>
+                <div class="col-md-4">
+                  <strong>Total General:</strong>
+                  <span class="text-success fw-bold">
+                    {{(DetVenta?.monto_total-DetVenta?.descuento) | currency:'BOB':'symbol':'1.2-2'}}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones -->
+          <div class="d-flex justify-content-start gap-3 mt-3">
+            <button (click)="generarPdf()" class="btn btn-danger d-flex align-items-center">
+              <i class="bi bi-file-earmark-pdf-fill me-2"></i> Nota de Venta
+            </button>
+            <!-- <button class="btn btn-secondary d-flex align-items-center">
+              <i class="bi bi-receipt me-2"></i> Factura
+            </button> -->
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer bg-light">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+          <i class="bi bi-check-circle me-1"></i> Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL Anular -->
+<div class="modal fade" id="anuventa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Anular Venta</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+                <i class="bi bi-exclamation-circle-fill fs-1"></i>
+                Estas seguro de anular la Venta de compra Seleccionada?
+            </div>
+            <div class="modal-footer">
+                <button (click)="confirmarAnular()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+                <button  type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>

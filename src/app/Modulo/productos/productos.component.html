@@ -1,0 +1,719 @@
+<div class="container-fluid mt-4">
+  <div class="card">
+    <div class="card-header">
+      <h5>Gestionar Productos</h5>
+    </div>
+    <div class="card-body">
+      <div class="row mb-1">
+        <div class="col-md-2">
+          <input type="text" class="form-control" [ngModel]="codigo" (ngModelChange)="codigo = $event.toUpperCase()"
+            placeholder="Buscar por código">
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" [(ngModel)]="nombre" placeholder="Buscar por nombre">
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="categoria">
+            <option value="">Todas las categorias</option>
+            <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">{{cat.nombre}}</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="estado">
+            <option selected value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addproducto">
+            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
+            Nuevo Producto</button>
+        </div>
+      </div>
+
+      <div class="table-responsive tamaño">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Nro</th>
+              <th scope="col">Foto</th>
+              <th scope="col">Codigo</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">P_Compra</th>
+              <th scope="col">P_Venta</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let i=index; let pro of apiProductos |codigo:codigo |nombre:nombre | categoria:categoria | estado:estado |paginate: { itemsPerPage: 6, currentPage: page }">
+              <td>{{i+1}}</td>
+              <td><img [src]="pro.foto?'http://localhost:3001/uploads/' + pro.foto:'../../../assets/image-not-found.png'" alt="" width="100px" height="100px"></td>
+              <td>{{pro.codigo}}</td>
+              <td>{{pro.nombre}}</td>
+              <td>{{pro.categorium.nombre}}</td>
+              <td>{{pro.precio_compra}}</td>
+              <td>{{pro.precio_venta}}</td>
+              <!--Estado -->
+              <td>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" [checked]="pro.estado==1"
+                    (change)="showModal($event, pro)">
+                </div>
+              </td>
+              <!--Modificar-->
+              <td>
+                <button (click)="modificarProducto(pro)" class="btn btn-outline-primary btn-sm me-3"
+                  data-bs-toggle="modal" data-bs-target="#modproducto">
+                  <i class="bi bi-pencil"></i> Editar
+                </button>
+                <button (click)="Detalle(pro)" class="btn btn-outline-secondary btn-sm " data-bs-toggle="modal"
+                  data-bs-target="#detproducto">
+                  <i class="bi bi-card-list"></i> Detalles
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL ADICIONAR -->
+<div class="modal fade" id="addproducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Producto</h1>
+        <button (click)="reset()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3 needs-validation" [formGroup]="productoForm" (ngSubmit)="AgregarProducto()">
+          <!--NOMBRE -->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!--CODIGO-->
+          <div class="col-md-6">
+            <label class="form-label">Código <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="codigo" class="form-control" placeholder="Ingrese código" required
+              maxlength="8" pattern="^[A-Za-z0-9_]+$" oninput="this.value = this.value.toUpperCase()" (keyup)="validarCodigo($event)" [ngClass]="{
+           'is-valid': control['codigo'].valid && (control['codigo'].dirty || control['codigo'].touched),
+           'is-invalid': control['codigo'].invalid && (control['codigo'].dirty || control['codigo'].touched)
+         }">
+
+            <div *ngIf="codigoDuplicado" class="text-danger small">El código ya existe en otro producto.</div>
+
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El código es obligatorio, máximo 8 caracteres y solo puede contener letras,
+              números o guion bajo.</div>
+          </div>
+          <!--Cantidad-->
+          <div class="col-md-6">
+            <label class="form-label">Stock <span class="text-danger"> * </span></label>
+            <input type="number" formControlName="stock" class="form-control" placeholder="Ingrese stock" min="1"
+              max="9999" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }
+           // limitar a 4 dígitos
+           if(this.value.length > 4){
+             document.getElementById('msgMaxDigitosS').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxDigitosS').style.display='none',2000);
+             this.value = this.value.slice(0,4);
+           }
+         " [ngClass]="{
+           'is-valid': control['stock'].valid && control['stock'].value >= 1 && control['stock'].value <= 9999
+                       && (control['stock'].dirty || control['stock'].touched),
+           'is-invalid': control['stock'].invalid && (control['stock'].dirty || control['stock'].touched)
+         }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El stock es obligatorio y debe ser mayor que 0.</div>
+            <div id="msgMaxDigitosS" class="invalid-feedback" style="display:none;">
+              El stock no puede tener más de 4 dígitos.
+            </div>
+          </div>
+          <!--STOCK MINIMO-->
+          <div class="col-md-6">
+            <label class="form-label">Stock Mínimo <span class="text-danger"> * </span></label>
+            <input type="number" formControlName="stock_minimo" class="form-control" placeholder="Ingrese stock" min="1"
+              max="9999" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }
+
+           // limitar a 4 dígitos
+           if(this.value.length > 4){
+             document.getElementById('msgMaxDigitosSM').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxDigitosSM').style.display='none',2000);
+             this.value = this.value.slice(0,4);
+           }
+         " [ngClass]="{
+           'is-valid': control['stock_minimo'].valid && control['stock_minimo'].value >= 1 && control['stock_minimo'].value <= 9999
+                       && (control['stock_minimo'].dirty || control['stock_minimo'].touched),
+           'is-invalid': control['stock_minimo'].invalid && (control['stock_minimo'].dirty || control['stock_minimo'].touched)
+         }">
+
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El stock minimo es obligatorio y debe ser mayor que 0.</div>
+            <div id="msgMaxDigitosSM" class="invalid-feedback" style="display:none;">
+              El stock no puede tener más de 4 dígitos.
+            </div>
+          </div>
+          <!--PRECIO COMPRA-->
+          <div class="col-md-6">
+            <label class="form-label">Precio de compra <span class="text-danger"> * </span></label>
+            <div class="input-group">
+              <input type="number" formControlName="precio_compra" class="form-control"
+                placeholder="Ingrese precio de compra" min="0.01" max="999999.99" step="0.01" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }" [ngClass]="{
+           'is-valid': control['precio_compra'].valid 
+                       && control['precio_compra'].value >= 0.01
+                       && control['precio_compra'].value <= 999999.99
+                       && (control['precio_compra'].dirty || control['precio_compra'].touched),
+           'is-invalid': control['precio_compra'].invalid 
+                         && (control['precio_compra'].dirty || control['precio_compra'].touched)
+         }">
+              <span class="input-group-text">Bs.</span>
+            </div>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El precio es obligatorio y debe ser mayor que 0.</div>
+          </div>
+          <!--PRECIO VENTA-->
+          <div class="col-md-6">
+            <label class="form-label">Precio de venta <span class="text-danger"> * </span></label>
+            <div class="input-group">
+              <input type="number" formControlName="precio_venta" class="form-control"
+                placeholder="Ingrese precio de compra" min="0.01" max="999999.99" step="0.01" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }" [ngClass]="{
+           'is-valid': control['precio_venta'].valid 
+                       && control['precio_venta'].value >= 0.01
+                       && control['precio_venta'].value <= 999999.99
+                       && (control['precio_venta'].dirty || control['precio_venta'].touched),
+           'is-invalid': control['precio_venta'].invalid 
+                         && (control['precio_venta'].dirty || control['precio_venta'].touched)
+         }"><span class="input-group-text">Bs.</span>
+            </div>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El precio es obligatorio y debe ser mayor que 0.</div>
+          </div>
+          <!--PROVEEDOR-->
+          <div class="col-md-6">
+            <label for="proveedor" class="form-label">Proveedor <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_proveedor" id="proveedor" required
+              [ngClass]="{
+         'is-valid': control['id_proveedor'].valid && (control['id_proveedor'].dirty||control['id_proveedor'].touched),
+         'is-invalid': control['id_proveedor'].invalid && (control['id_proveedor'].dirty||control['id_proveedor'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let pro of apiProveedores" [ngValue]="pro.id_proveedor">{{pro.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+          <!--CATEGORIA-->
+          <div class="col-md-6">
+            <label for="categoria" class="form-label">Categoria <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_categoria" id="categoria" required
+              [ngClass]="{
+         'is-valid': control['id_categoria'].valid && (control['id_categoria'].dirty||control['id_categoria'].touched),
+         'is-invalid': control['id_categoria'].invalid && (control['id_categoria'].dirty||control['id_categoria'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let cat of apiCategorias" [ngValue]="cat.id_categoria">{{cat.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+
+          </div>
+          <!--MARCA-->
+          <div class="col-md-6">
+            <label for="marca" class="form-label">Marca <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_marca" id="marca" required [ngClass]="{
+         'is-valid': control['id_marca'].valid && (control['id_marca'].dirty||control['id_marca'].touched),
+         'is-invalid': control['id_marca'].invalid && (control['id_marca'].dirty||control['id_marca'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let mar of apiMarcas" [ngValue]="mar.id_marca">{{mar.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+          <!--UNIDAD DE MEDIDA-->
+          <div class="col-md-6">
+            <label for="unidad_medida" class="form-label">Unidad de Medida <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_unidad_medida" id="unidad_medida" required
+              [ngClass]="{
+         'is-valid': control['id_unidad_medida'].valid && (control['id_unidad_medida'].dirty||control['id_unidad_medida'].touched),
+         'is-invalid': control['id_unidad_medida'].invalid && (control['id_unidad_medida'].dirty||control['id_unidad_medida'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let um of apiUnidadesMedida" [ngValue]="um.id_unidad_medida">{{um.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+
+          </div>
+          <!--FOTO-->
+          <div class="col-md-6">
+            <label for="foto" class="form-label">Foto</label>
+            <input type="file" formControlName="foto" (change)="onFileSelected($event)" class="form-control" id="foto" placeholder="Ingrese foto">
+          </div>
+          <!--DESCRIPCION-->
+          <div class="col-md-12">
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
+                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
+                oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>50){
+             document.getElementById('msgMaxLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
+             this.value=this.value.slice(0,50);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
+                        }"></textarea>
+              <div class="valid-feedback">Correcto.</div>
+              <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
+                números, solo letras. </div>
+              <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
+                puede tener más de 50 letras.</div>
+              <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
+                tener al menos 6 letras.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"
+              [disabled]="productoForm.invalid">Guardar</button>
+            <button (click)="reset()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL MODIFICAR -->
+<div class="modal fade" id="modproducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar Producto</h1>
+        <button (click)="reset()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3 needs-validation" [formGroup]="productoForm" (ngSubmit)="guardarModificacion()">
+          <!--NOMBRE -->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!--CODIGO-->
+          <div class="col-md-6">
+            <label class="form-label">Código <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="codigo" class="form-control" placeholder="Ingrese código" required
+              maxlength="8" pattern="^[A-Za-z0-9_]+$" oninput="this.value = this.value.toUpperCase()" [ngClass]="{
+           'is-valid': control['codigo'].valid && (control['codigo'].dirty || control['codigo'].touched),
+           'is-invalid': control['codigo'].invalid && (control['codigo'].dirty || control['codigo'].touched)
+         }">
+
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El código es obligatorio, máximo 8 caracteres y solo puede contener letras,
+              números o guion bajo.</div>
+          </div>
+          <!--Cantidad-->
+          <div class="col-md-6">
+            <label class="form-label">Stock <span class="text-danger"> * </span></label>
+            <input type="number" formControlName="stock" class="form-control" placeholder="Ingrese stock" min="1"
+              max="9999" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }
+           // limitar a 4 dígitos
+           if(this.value.length > 4){
+             document.getElementById('msgMaxDigitosS').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxDigitosS').style.display='none',2000);
+             this.value = this.value.slice(0,4);
+           }
+         " [ngClass]="{
+           'is-valid': control['stock'].valid && control['stock'].value >= 1 && control['stock'].value <= 9999
+                       && (control['stock'].dirty || control['stock'].touched),
+           'is-invalid': control['stock'].invalid && (control['stock'].dirty || control['stock'].touched)
+         }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El stock es obligatorio y debe ser mayor que 0.</div>
+            <div id="msgMaxDigitosS" class="invalid-feedback" style="display:none;">
+              El stock no puede tener más de 4 dígitos.
+            </div>
+          </div>
+          <!--STOCK MINIMO-->
+          <div class="col-md-6">
+            <label class="form-label">Stock Mínimo <span class="text-danger"> * </span></label>
+            <input type="number" formControlName="stock_minimo" class="form-control" placeholder="Ingrese stock" min="1"
+              max="9999" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }
+
+           // limitar a 4 dígitos
+           if(this.value.length > 4){
+             document.getElementById('msgMaxDigitosSM').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxDigitosSM').style.display='none',2000);
+             this.value = this.value.slice(0,4);
+           }
+         " [ngClass]="{
+           'is-valid': control['stock_minimo'].valid && control['stock_minimo'].value >= 1 && control['stock_minimo'].value <= 9999
+                       && (control['stock_minimo'].dirty || control['stock_minimo'].touched),
+           'is-invalid': control['stock_minimo'].invalid && (control['stock_minimo'].dirty || control['stock_minimo'].touched)
+         }">
+
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El stock minimo es obligatorio y debe ser mayor que 0.</div>
+            <div id="msgMaxDigitosSM" class="invalid-feedback" style="display:none;">
+              El stock no puede tener más de 4 dígitos.
+            </div>
+          </div>
+          <!--PRECIO COMPRA-->
+          <div class="col-md-6">
+            <label class="form-label">Precio de compra <span class="text-danger"> * </span></label>
+            <div class="input-group">
+              <input type="number" formControlName="precio_compra" class="form-control"
+                placeholder="Ingrese precio de compra" min="0.01" max="999999.99" step="0.01" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }" [ngClass]="{
+           'is-valid': control['precio_compra'].valid 
+                       && control['precio_compra'].value >= 0.01
+                       && control['precio_compra'].value <= 999999.99
+                       && (control['precio_compra'].dirty || control['precio_compra'].touched),
+           'is-invalid': control['precio_compra'].invalid 
+                         && (control['precio_compra'].dirty || control['precio_compra'].touched)
+         }">
+              <span class="input-group-text">Bs.</span>
+            </div>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El precio es obligatorio y debe ser mayor que 0.</div>
+          </div>
+
+          <!--PRECIO VENTA-->
+          <div class="col-md-6">
+            <label class="form-label">Precio de venta <span class="text-danger"> * </span></label>
+            <div class="input-group">
+              <input type="number" formControlName="precio_venta" class="form-control"
+                placeholder="Ingrese precio de compra" min="0.01" max="999999.99" step="0.01" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }" [ngClass]="{
+           'is-valid': control['precio_venta'].valid 
+                       && control['precio_venta'].value >= 0.01
+                       && control['precio_venta'].value <= 999999.99
+                       && (control['precio_venta'].dirty || control['precio_venta'].touched),
+           'is-invalid': control['precio_venta'].invalid 
+                         && (control['precio_venta'].dirty || control['precio_venta'].touched)
+         }">
+              <span class="input-group-text">Bs.</span>
+            </div>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El precio es obligatorio y debe ser mayor que 0.</div>
+          </div>
+
+          <!--PROVEEDOR-->
+          <div class="col-md-6">
+            <label for="proveedor" class="form-label">Proveedor <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_proveedor" id="proveedor" required
+              [ngClass]="{
+         'is-valid': control['id_proveedor'].valid && (control['id_proveedor'].dirty||control['id_proveedor'].touched),
+         'is-invalid': control['id_proveedor'].invalid && (control['id_proveedor'].dirty||control['id_proveedor'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let pro of apiProveedores" [ngValue]="pro.id_proveedor">{{pro.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+          <!--CATEGORIA-->
+          <div class="col-md-6">
+            <label for="categoria" class="form-label">Categoria <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_categoria" id="categoria" required
+              [ngClass]="{
+         'is-valid': control['id_categoria'].valid && (control['id_categoria'].dirty||control['id_categoria'].touched),
+         'is-invalid': control['id_categoria'].invalid && (control['id_categoria'].dirty||control['id_categoria'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let cat of apiCategorias" [ngValue]="cat.id_categoria">{{cat.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+
+          </div>
+          <!--MARCA-->
+          <div class="col-md-6">
+            <label for="marca" class="form-label">Marca <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_marca" id="marca" required [ngClass]="{
+         'is-valid': control['id_marca'].valid && (control['id_marca'].dirty||control['id_marca'].touched),
+         'is-invalid': control['id_marca'].invalid && (control['id_marca'].dirty||control['id_marca'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let mar of apiMarcas" [ngValue]="mar.id_marca">{{mar.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+          <!--UNIDAD DE MEDIDA-->
+          <div class="col-md-6">
+            <label for="unidad_medida" class="form-label">Unidad de Medida <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_unidad_medida" id="unidad_medida" required
+              [ngClass]="{
+         'is-valid': control['id_unidad_medida'].valid && (control['id_unidad_medida'].dirty||control['id_unidad_medida'].touched),
+         'is-invalid': control['id_unidad_medida'].invalid && (control['id_unidad_medida'].dirty||control['id_unidad_medida'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let um of apiUnidadesMedida" [ngValue]="um.id_unidad_medida">{{um.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+
+          </div>
+          <!--FOTO-->
+          <div class="col-md-6">
+            <label for="foto" class="form-label">Foto</label>
+            <input type="file" (change)="onFileSelected($event)" class="form-control" id="foto"
+              placeholder="Ingrese foto">
+          </div>
+          <!--DESCRIPCION-->
+          <div class="col-md-12">
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
+                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
+                oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>50){
+             document.getElementById('msgMaxLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
+             this.value=this.value.slice(0,50);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
+                        }"></textarea>
+              <div class="valid-feedback">Correcto.</div>
+              <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
+                números, solo letras. </div>
+              <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
+                puede tener más de 50 letras.</div>
+              <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
+                tener al menos 6 letras.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"
+              [disabled]="productoForm.invalid">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="reset()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal único -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+        <span>
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> al
+          producto?
+        </span>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
+          data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de éxito -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        Los cambios fueron guardados exitosamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+<!-- DETALLE PRODUCTO-->
+<div class="modal fade" id="detproducto" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Detalle Producto</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-4 align-items-center">
+
+          <!-- Imagen del producto -->
+          <div class="col-md-4 text-center">
+            <img src="https://via.placeholder.com/200" alt="Foto del Producto"
+              class="img-fluid rounded shadow-sm border p-2 bg-light">
+          </div>
+
+          <!-- Detalles del producto -->
+          <div class="col-md-8">
+            <h4 class="fw-bold text-primary" id="nombreProducto">{{detProducto?.nombre}}</h4>
+            <p class="text-muted mb-2"><strong>Código:</strong> <span id="codigoProducto">{{detProducto?.codigo}}</span>
+            </p>
+            <p class="text-muted mb-2"><strong>Fecha de Registro:</strong> <span
+                id="fechaRegistro">{{detProducto?.fecha_registro}}</span></p>
+            <p class="text-muted mb-2"><strong>Descripción:</strong> <span
+                id="descripcionProducto">{{detProducto?.descripcion}}.</span></p>
+
+            <hr>
+
+            <div class="row">
+              <div class="col-6 mb-2">
+                <strong>Precio de Compra:</strong>
+                <span class="text-success fw-bold" id="precioCompra">{{detProducto?.precio_compra}}</span>
+              </div>
+              <div class="col-6 mb-2">
+                <strong>Precio de Venta:</strong>
+                <span class="text-primary fw-bold" id="precioVenta">{{detProducto?.precio_venta}}</span>
+              </div>
+
+              <div class="col-6 mb-2">
+                <strong>Stock Actual:</strong>
+                <span class="text-dark fw-bold" id="stockActual">{{detProducto?.stock}}</span>
+              </div>
+              <div class="col-6 mb-2">
+                <strong>Stock Mínimo:</strong>
+                <span class="text-danger fw-bold" id="stockMinimo">{{detProducto?.stock_minimo}}</span>
+              </div>
+
+              <div class="col-6 mb-2">
+                <strong>Categoría:</strong>
+                <span id="categoriaProducto">{{detProducto?.categorium.nombre}}</span>
+              </div>
+              <div class="col-6 mb-2">
+                <strong>Marca:</strong>
+                <span id="marcaProducto">{{detProducto?.marca.nombre}}</span>
+              </div>
+
+              <div class="col-6 mb-2">
+                <strong>Unidad de Medida:</strong>
+                <span id="unidadMedida">{{detProducto?.unidad_medida.nombre}}</span>
+              </div>
+              <div class="col-6 mb-2">
+                <strong>Proveedor:</strong>
+                <span id="proveedorProducto">{{detProducto?.proveedor.nombre}}</span>
+              </div>
+              <div class="col-12 mt-3">
+                <strong>Estado:</strong>
+                <span class="badge" [ngClass]="{
+    'bg-success': detProducto?.estado == 1,
+    'bg-danger border border-danger': detProducto?.estado != 1
+  }">
+                  {{ detProducto?.estado == 1 ? 'Activo' : 'Desactivado' }}
+                </span>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="reset()">
+          <i class="bi bi-x-circle"></i> Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

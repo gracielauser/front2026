@@ -1,0 +1,113 @@
+
+  <div class="container-fluid ">
+    <div class="card">
+      <div class="card-header">
+        <h5>Gestionar Inventario</h5>
+        <p class="mb-0">Administra la información del inventario</p>
+      </div>
+      <div class="card-body">
+          <!-- Filtros y Búsqueda Avanzada -->
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <input type="text" class="form-control" placeholder="Buscar por código...">
+            </div>
+            <div class="col-md-4">
+              <input type="text" class="form-control" placeholder="Buscar por nombre...">
+            </div>
+            <div class="col-md-2">
+              <select class="form-select">
+                <option selected>Categoría</option>
+                <option>Motor</option>
+                <option>Electrónica</option>
+                <option>Suspensión</option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <select class="form-select">
+                <option selected>Proveedor</option>
+                <option>Proveedor A</option>
+                <option>Proveedor B</option>
+                <option>Proveedor C</option>
+              </select>
+            </div>
+          </div>
+          <!-- Tabla de Resultados -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>Nro</th>
+                  <th scope="col">Código</th>
+                  <th scope="col">Nombre del Producto</th>
+                  <th scope="col">Categoría</th>
+                  <th scope="col">Stock Actual</th>
+                  <th scope="col">Stock Mínimo</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col">Fecha Registro</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let i=index; let pro of apiProductos">
+                  <td>{{i+1}}</td>
+                  <td>{{pro.codigo}}</td>
+                  <td>{{pro.nombre}}</td>
+                  <td>{{pro.categorium}}</td>
+                  <td><span class="badge bg-success">{{pro.stock}}</span></td>
+                  <td><span class="badge bg-danger">{{pro.stock_minimo}}</span></td>
+                  <td>{{pro.precio_venta}} Bs.</td>
+                  <td>{{pro.fecha_registro}}</td>
+                  <!-- <td>
+                    <button class="btn btn-info btn-sm">Detalles</button>
+                  </td> -->
+                </tr>
+                <tr>
+
+                </tr>
+                <!-- Más filas de ejemplo -->
+              </tbody>
+            </table>
+          </div>
+      </div>
+    </div>
+  </div>
+
+<!-- <div class="container mt-5">
+  <h2 class="text-center">Consulta de Stock</h2>
+
+  <div class="table-responsive mt-4">
+    <table class="table table-bordered table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Producto</th>
+          <th>Código</th>
+          <th>Stock Actual</th>
+          <th>Stock Mínimo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Producto A</td>
+          <td>12345</td>
+          <td><span class="badge bg-success">20</span></td>
+          <td>10</td>
+          <td><span class="badge bg-success">En Stock</span></td>
+        </tr>
+        <tr>
+          <td>Producto B</td>
+          <td>67890</td>
+          <td><span class="badge bg-danger">5</span></td>
+          <td>10</td>
+          <td><span class="badge bg-danger">Stock Bajo</span></td>
+        </tr>
+        <tr>
+          <td>Producto C</td>
+          <td>11223</td>
+          <td><span class="badge bg-warning">10</span></td>
+          <td>10</td>
+          <td><span class="badge bg-warning">Stock Justo</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div> -->

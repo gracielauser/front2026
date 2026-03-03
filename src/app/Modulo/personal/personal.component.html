@@ -1,0 +1,405 @@
+<div class="contenedor">
+  <div class="container-fluid ">
+    <div class="card">
+      <div class="card-header">
+        <h5>Gestionar Personal</h5>
+        <p class="mb-0">Administra la información del personal</p>
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <input type="text" class="form-control" placeholder="Buscar por nombre o apellido"
+              aria-label="Buscar por nombre o apellido">
+          </div>
+          <div class="col-md-2">
+            <input type="text" class="form-control" placeholder="Buscar por CI" aria-label="Buscar por CI">
+          </div>
+          <div class="col-md-3">
+            <select class="form-select">
+              <option selected>Estado</option>
+              <option value="1">Activos</option>
+              <option value="2">Inactivos</option>
+              <option value="3">Todos</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <select class="form-select">
+              <option selected>Género</option>
+              <option value="1">Masculino</option>
+              <option value="2">Femenino</option>
+              <option value="3">Otro</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addpersona">
+              <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
+              Nuevo Personal</button>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Nro</th>
+                <th scope="col">Foto</th>
+                <th scope="col">CI</th>
+                <th scope="col">Nombres</th>
+                <th scope="col">Apellidos</th>
+                <th scope="col">Género</th>
+                <th scope="col">Celular</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Acciones</th>
+              </tr>
+              <!-- Example single danger button -->
+<div class="btn-group">
+  <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    Danger
+  </button>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="#">Action</a></li>
+    <li><a class="dropdown-item" href="#">Another action</a></li>
+    <li><a class="dropdown-item" href="#">Something else here</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="#">Separated link</a></li>
+  </ul>
+</div>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i=index;let per of apiPersonal">
+                <td>{{i+1}}</td>
+                <td>Image</td>
+                <td>{{per.ci}}</td>
+                <td>{{per.nombre}}</td>
+                <td>{{per.ap_paterno}} {{per.ap_materno}}</td>
+                <td>{{per.genero==1?"Hombre":"Mujer"}}</td>
+                <td>{{per.celular}}</td>
+                <!--Estado (change)="showModal(per.estado)"-->
+                <td>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggleSwitch"  [checked]="per.estado==1">
+                  </div>
+                </td>
+                <!--Modificar-->
+                <td>
+                  <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modpersona">
+                    <i class="bi bi-pencil"></i> Editar
+                  </button>
+                </td>
+              </tr>
+              <!-- Repite las filas según sea necesario -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR -->
+<div class="modal fade" id="addpersona" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Persona</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div class="modal-body">
+          <form class="container mt-4" style="max-width: 600px;">
+  <div class="form-floating mb-3">
+    <input type="email" class="form-control" id="floatingEmail" name="floating_email" placeholder="name@example.com" required>
+    <label for="floatingEmail">Email address</label>
+  </div>
+
+  <div class="form-floating mb-3">
+    <input type="password" class="form-control" id="floatingPassword" name="floating_password" placeholder="Password" required>
+    <label for="floatingPassword">Password</label>
+  </div>
+
+  <div class="form-floating mb-3">
+    <input type="password" class="form-control" id="floatingRepeatPassword" name="repeat_password" placeholder="Confirm Password" required>
+    <label for="floatingRepeatPassword">Confirm password</label>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <div class="form-floating">
+        <input type="text" class="form-control" id="floatingFirstName" name="floating_first_name" placeholder="First name" required>
+        <label for="floatingFirstName">First name</label>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="form-floating">
+        <input type="text" class="form-control" id="floatingLastName" name="floating_last_name" placeholder="Last name" required>
+        <label for="floatingLastName">Last name</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <div class="form-floating">
+        <input type="tel" class="form-control" id="floatingPhone" name="floating_phone" placeholder="123-456-7890" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+        <label for="floatingPhone">Phone number (123-456-7890)</label>
+      </div>
+    </div>
+    <div class="col-md-6 mb-3">
+      <div class="form-floating">
+        <input type="text" class="form-control" id="floatingCompany" name="floating_company" placeholder="Company" required>
+        <label for="floatingCompany">Company (Ex. Google)</label>
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary w-100">Submit</button>
+</form>
+te amo
+          <form class="row g-3" [formGroup]="personaForm" (ngSubmit)="AgregarPersona()">
+          <!--NOMBRES
+          dentro del imput 
+           [ngClass]="{'is-valid':!control['nombres'].invalid, 'invalid':control['nombres'].invalid}"
+          -->
+          <div class="col-md-6">
+            <label for="nombres" class="form-label">Nombres</label>
+            <input type="text" formControlName="nombres" class="form-control " id="nombres" 
+            placeholder="Ingrese nombre"
+            [ngClass]="{'is-valid':!control['nombres'].invalid, 'invalid':control['nombres'].invalid}"
+            >
+            <div class="alert alert-danger mt-2  p-1 mb-0 " *ngIf="control['nombres'].invalid && (control['nombres'].dirty || control['nombres'].touched)">
+              <div  *ngIf="control['nombres'].errors?.['required']">
+                  Error, debe ingresar algun dato.
+              </div>
+          </div>
+            <div class="valid-feedback" >
+            </div>
+          </div>
+          <!--FOTO-->
+          <div class="col-md-6">
+            <label for="foto" class="form-label">Foto</label>
+            <input type="file"  formControlName="foto" class="form-control" id="foto" placeholder="Ingrese ci" >
+          </div>
+          <!--APELLIDOS-->
+          <div class="col-md-6">
+            <label for="apellidos" class="form-label">Apellidos</label>
+            <input type="text" formControlName="apellidos" class="form-control" id="apellidos" placeholder="Ingrese apellido" required>
+           <div class="alert alert-danger mt-2  p-1 mb-0 " *ngIf="control['apellidos'].invalid && (control['apellidos'].dirty || control['apellidos'].touched)">
+              <div *ngIf="control['apellidos'].errors?.['required']">
+                  Error, debe ingresar algun dato.
+              </div>
+          </div>
+          </div>
+          <!--CELULAR-->
+          <div class="col-md-6">
+            <label for="celular" class="form-label">Celular</label>
+            <input type="text" formControlName="celular" class="form-control" id="celular" placeholder="Ingrese celular" required>
+            <div class="alert alert-danger mt-2  p-1 mb-0 " *ngIf="control['celular'].invalid && (control['celular'].dirty || control['celular'].touched)">
+              <div *ngIf="control['celular'].errors?.['required']">
+                Error, debe ingresar algun dato.
+            </div>
+          </div>
+          </div>
+          <!--CI-->
+          <div class="col-md-6">
+            <label for="ci" class="form-label">CI</label>
+            <input type="text"  formControlName="ci" class="form-control" id="ci" placeholder="Ingrese ci" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+          </div>
+          <!--ROLES-->
+          <div class="col-md-6">
+            <label for="roles" class="form-label">Roles</label>
+            <select  formControlName="roles" class="form-select" id="roles" required>
+              <option selected hidden >Selecione un tipo</option>
+              <option value=1>Administrador</option>
+              <option value=2>Vendedor</option>
+            </select>
+            <div class="invalid-feedback">
+              Please select a valid state.
+            </div>
+          </div>
+          <!---GENERO-->
+          <div class="col-md-6 gridg">
+            <div class="text">
+              <p>Genero</p>
+            </div>
+            <div class="form-check">
+              <input  formControlName="genero" class="form-check-input" type="radio" name="genero" id="hombre" value=1>
+              <label class="form-check-label" for="hombre">
+               hombre
+              </label>
+              <br>
+              <input  formControlName="genero" class="form-check-input" type="radio" name="genero" id="mujer" value=2>
+              <label class="form-check-label" for="mujer">
+                Mujer
+              </label>
+            </div>
+          </div>
+          <!--ESTADO-->
+          <div class="col-md-6 gridg">
+            <div class="text">
+              <p>Estado</p>
+            </div>
+            <div class="form-check">
+              <input  formControlName="estado" class="form-check-input" type="radio" name="estado" id="habi"  value=1 >
+              <label class="form-check-label" for="habi">
+                Habilitado
+              </label>
+              <br>
+              <input  formControlName="estado" class="form-check-input" type="radio" name="estado" id="desa" value=2>
+              <label class="form-check-label" for="desa">
+                Deshabilitado
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+        </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL MODIFICAR -->
+<div class="modal fade" id="modpersona" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar Persona</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3 needs-validation" novalidate>
+          <!--NOMBRES-->
+          <div class="col-md-6">
+            <label for="nombres" class="form-label">Nombres</label>
+            <input type="text" class="form-control" id="nombres" placeholder="Ingrese nombre" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+          </div>
+          <!--FOTO-->
+          <div class="col-md-6">
+            <label for="foto" class="form-label">Foto</label>
+            <input type="file" class="form-control" id="foto" placeholder="Ingrese ci" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+          </div>
+          <!--APELLIDOS-->
+          <div class="col-md-6">
+            <label for="apellidos" class="form-label">Apellidos</label>
+            <input type="text" class="form-control" id="apellidos" placeholder="Ingrese apellido" required>
+            <div class="invalid-feedback">
+              Please provide a valid city.
+            </div>
+          </div>
+          <!--CELULAR-->
+          <div class="col-md-6">
+            <label for="celular" class="form-label">Celular</label>
+            <input type="text" class="form-control" id="celular" placeholder="Ingrese celular" required>
+            <div class="invalid-feedback">
+              Please select a valid state.
+            </div>
+          </div>
+          <!--CI-->
+          <div class="col-md-6">
+            <label for="ci" class="form-label">CI</label>
+            <input type="text" class="form-control" id="ci" placeholder="Ingrese ci" required>
+            <div class="valid-feedback">
+              Looks good!
+            </div>
+          </div>
+          <!--ROLES-->
+          <div class="col-md-6">
+            <label for="roles" class="form-label">Roles</label>
+            <select class="form-select" id="roles" required>
+              <option selected disabled value="">Choose...</option>
+              <option>...</option>
+            </select>
+            <div class="invalid-feedback">
+              Please select a valid state.
+            </div>
+          </div>
+          <!---GENERO-->
+          <div class="col-md-6 gridg">
+            <div class="text">
+              <p>Genero</p>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="genero" id="habi">
+              <label class="form-check-label" for="habi">
+                Mujer
+              </label>
+              <br>
+              <input class="form-check-input" type="radio" name="genero" id="desa">
+              <label class="form-check-label" for="desa">
+                hombre
+              </label>
+            </div>
+          </div>
+          <!--ESTADO-->
+          <div class="col-md-6 gridg">
+            <div class="text">
+              <p>Estado</p>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="estado" id="habi">
+              <label class="form-check-label" for="habi">
+                Habilitado
+              </label>
+              <br>
+              <input class="form-check-input" type="radio" name="estado" id="desa">
+              <label class="form-check-label" for="desa">
+                Deshabilitado
+              </label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL Activar -->
+<div class="modal fade" id="Actpersona" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Activar Persona</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+        <i class="bi bi-exclamation-circle fs-1"></i>
+        Estas seguro de activar a la Persona Seleccionada?
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL Desactivar -->
+<div class="modal fade" id="Despersona" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Desactivar Persona</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+        <i class="bi bi-exclamation-circle-fill fs-1"></i>
+        Estas seguro de desactivar a la Persona Seleccionada?
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

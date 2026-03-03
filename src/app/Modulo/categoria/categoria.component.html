@@ -1,0 +1,270 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h5>Gestionar Categoria</h5>
+      <p class="mb-0">Administra la información de las categorias</p>
+    </div>
+    <div class="card-body">
+      <div class="row mb-1">
+        <div class="col-md-4">
+           <input type="text" class="form-control" placeholder="Buscar por nombre"
+                      [(ngModel)]="nombre" >
+        </div>
+        <div class="col-md-3">
+
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" (change)="cambioEstado($event)">
+            <option  value="">Todos</option>
+            <option selected value="1">Activos</option>
+            <option value="2">Inactivos</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addcate">Nueva Categoria</button>
+        </div>
+      </div>
+      <div class="table-responsive tamaño">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Nro</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i=index; let cat of apiCategoria | estado:estado| nombre:nombre|paginate: { itemsPerPage: 6, currentPage: page }">
+              <td>{{i+1}}</td>
+              <td>{{cat.nombre}}</td>
+              <td>{{cat.descripcion}}</td>
+               <!--Estado "-->
+                              <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" [checked]="cat.estado==1"
+                                        (change)="showModal($event, cat)">
+                                </div>
+                            </td>
+              <!--Modificar-->
+              <td>
+                <button (click)="ModificarCategoria(cat)" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modcate">
+                  <i class="bi bi-pencil"></i> Editar
+                </button>
+              </td>
+            </tr>
+            <!-- Repite las filas según sea necesario -->
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL  -->
+<div class="modal fade" id="addcate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Categoria</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3 " [formGroup]="cateForm" (ngSubmit)="AgregarCategoria()">
+          <!--NOMBRES-->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!--DESCRIPCION-->
+          <div class="col-md-12">
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
+                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
+                oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>50){
+             document.getElementById('msgMaxLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
+             this.value=this.value.slice(0,50);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
+                        }"></textarea>
+              <div class="valid-feedback">Correcto.</div>
+              <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
+                números, solo letras. </div>
+              <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
+                puede tener más de 50 letras.</div>
+              <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
+                tener al menos 6 letras.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="cateForm.invalid"
+         >Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modcate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar Categoria</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3 " [formGroup]="cateForm" (ngSubmit)="GuardarModificacion()">
+          <!--NOMBRES-->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!--DESCRIPCION-->
+          <div class="col-md-12">
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
+                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
+                oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>50){
+             document.getElementById('msgMaxLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
+             this.value=this.value.slice(0,50);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
+                        }"></textarea>
+              <div class="valid-feedback">Correcto.</div>
+              <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
+                números, solo letras. </div>
+              <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
+                puede tener más de 50 letras.</div>
+              <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
+                tener al menos 6 letras.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" 
+         >Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+  <!-- Modal único -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+        <span>
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> la
+          categoría?
+        </span>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
+          data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de éxito -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+         Los cambios fueron guardados exitosamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>

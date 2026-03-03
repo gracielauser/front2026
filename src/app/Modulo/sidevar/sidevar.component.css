@@ -1,0 +1,110 @@
+/*.container{
+    position: fixed;
+    width: 290px;
+    height: auto;
+    background-color: #174870;
+   /* background-color:#089fa1; 
+}
+.foto{
+    width: 60px;
+    height: 60px;
+    display: block;/*centrado
+    margin-left: 45px;
+}
+.usuario{
+    margin: 29px;/*pone al medio
+    margin-left: 65px;
+}
+.nombre{
+    display: block;
+    padding: 5px;
+    color: white;
+    text-align: center;
+}
+.container ul li{
+    color: white;
+    border-bottom: 1px solid #B7C3CC;
+    padding: 3px 30px 4px 30px;
+    list-style: none;
+    margin-left: -40px;
+}
+.container ul li:hover{
+    background-color: white;
+    color: #045CA4;
+}
+#btn-menu{
+    display: none/*desaparece el elemento;
+}
+#btn-menu:checked ~ .container{
+    opacity: 0;
+    visibility: hidden;
+}
+.botono{
+   position: absolute;
+   left: 30px; 
+   top: 25px;
+   cursor: pointer;
+   background-color: white;
+}
+.btn{
+   display: block;
+   border: 1px solid black;
+}
+.btn:hover{
+    background-color:#6B99C3;
+    border: none;
+}
+.tamaño{
+    width: 50px;
+    height: 90px;
+   margin-right: 20px;
+}*/
+/*SUB MENU*/
+  .sidebar {
+    width: 280px;
+    height: 100vh;
+    /*background-color: #2c3e50;*/
+    background-color: #174870;
+    padding-left: 20px;
+    margin-top: 92px;
+    position: fixed;
+    overflow-y: auto;
+  }
+  .sidebar a {
+    padding: 8px 13px;
+    text-decoration: none;
+    font-size: 16px;
+    color: white;
+    display: block;
+    cursor: pointer;
+    border-top: 1px solid  #4a75a0;  
+  }
+  .sidebar a:hover {
+    /*background-color: #34495e;*/
+    background-color: white;
+    color: #045CA4;
+    border-right: 4px solid #045CA4;
+  }
+
+  .submenu {
+    display: none;
+    background-color: #34495e;
+  }
+  .submenu a {
+    padding-left: 40px;
+    font-size: 15px;
+  }
+
+  .has-submenu::after {
+    content: '▼';
+    float: right;
+    margin-right: 10px;
+  }
+
+  .active .submenu {
+    display: block;
+  }
+
+  .active .has-submenu::after {
+    content: '▲';
+  }

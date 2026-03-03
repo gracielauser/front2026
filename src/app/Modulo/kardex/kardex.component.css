@@ -1,0 +1,10 @@
+.toast-custom {
+  background-color: #049093; /* verde Bootstrap */
+  color: white;
+}
+.tamaño{
+    height: 350px;
+}
+.pagination-wrapper {
+  margin-left: 400px;                
+}

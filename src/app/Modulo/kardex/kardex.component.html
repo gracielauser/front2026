@@ -1,0 +1,127 @@
+<div class="container-fluid ">
+  <div class="card">
+    <div class="card-header">
+      <h5>Resumen de movimientos</h5>
+      <p class="mb-0">Administra la información de los movimientos de inventario</p>
+    </div>
+    <div class="card-body">
+      <!-- Filtros y Búsqueda Avanzada -->
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="Buscar por producto...">
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entrada">
+            <i class="bi bi-box-arrow-right" style="font-size: 1.2rem;"></i>
+            Registrar Entrada</button>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#salida">
+            <i class="bi bi-box-arrow-left" style="font-size: 1.2rem;"></i>
+            Registrar Salida</button>
+        </div>
+      </div>
+      <!-- Tabla de Resultados -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>Nro</th>
+              <th scope="col">Producto</th>
+              <th scope="col">Marca</th>
+              <th scope="col">Entradas</th>
+              <th scope="col">Salidas </th>
+              <th scope="col">Fecha Registro</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i=index; let pro of apiProductos">
+              <td>{{i+1}}</td>
+              <td>{{pro.nombre}}</td>
+              <td>{{pro.categorium.nombre}}</td>
+              <td><span class="badge bg-warning">{{pro.stock}}</span></td>
+              <td><span class="badge bg-success">{{pro.stock_minimo}}</span></td>
+              <td>{{pro.fecha_registro}}</td>
+              <!-- <td>
+                    <button class="btn btn-info btn-sm">Detalles</button>
+                  </td> -->
+            </tr>
+            <tr>
+
+            </tr>
+            <!-- Más filas de ejemplo -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL ENTRADA -->
+<div class="modal fade" id="entrada" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Entrada</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3" [formGroup]="movimientoForm">
+          <!--PRODUCTO-->
+          <div class="col-md-12">
+            <label for="producto" class="form-label">Producto <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="id_producto" id="producto" required
+              [ngClass]="{
+         'is-valid': control['id_producto'].valid && (control['id_producto'].dirty||control['id_producto'].touched),
+         'is-invalid': control['id_producto'].invalid && (control['id_producto'].dirty||control['id_producto'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option *ngFor="let pro of apiProductos" [ngValue]="pro.id_producto">{{pro.nombre}}</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+
+          </div>
+          <!--motivo-->
+          <div class="col-md-6">
+            <label for="motivos" class="form-label">Motivo <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="motivo" id="motivos" required  [ngClass]="{
+         'is-valid': control['motivo'].valid && (control['motivo'].dirty||control['motivo'].touched),
+         'is-invalid': control['motivo'].invalid && (control['motivo'].dirty||control['motivo'].touched)}">
+              <option selected disabled value="">Seleccione...</option>
+              <option>POR INVENTARIO INICIAL</option>
+               <option>POR AJUSTE DE INVENTARIO</option>
+                <option>POR AVERIA DE PRODUCTO</option>
+              <option>Otro</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+          <!--cantidad-->
+<div class="col-md-6">
+  <div class="form-group">
+    <label for="cantidad">Cantidad Movimiento</label>
+    <div class="input-group">
+      <button type="button" class="btn btn-outline-secondary" (click)="decrementar()">-</button>
+      <input type="number" formControlName="cantidad" class="form-control text-center" step="0.01" min="0">
+      <button type="button" class="btn btn-outline-secondary" (click)="incrementar()">+</button>
+    </div>
+  </div>
+</div>
+
+
+          <!-- BOTONES -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

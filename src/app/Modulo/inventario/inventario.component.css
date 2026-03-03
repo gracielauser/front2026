@@ -1,0 +1,103 @@
+
+.toast-custom {
+  background-color: #049093; /* verde Bootstrap */
+  color: white;
+}
+.tamaño{
+    height: 350px;
+}
+.pagination-wrapper {
+  margin-left: 400px;                
+}
+.btn-custom {
+    height: 125px;
+    font-size: 1.1rem;
+    border-width: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+.btn-reabastecer {
+    border-color: #007bff;
+    color: #007bff;
+}
+.btn-reabastecer:hover {
+    background-color: #007bff;
+    color: #ffffff;
+}
+.btn-consultas {
+    border-color: #28a745;
+    color: #28a745;
+}
+.btn-consultas:hover {
+    background-color: #28a745;
+    color: #ffffff;
+}
+.btn-recepcion {
+    border-color: #fd7e14;
+    color: #fd7e14;
+    margin-left: 300px;
+}
+.btn-recepcion:hover {
+    background-color: #fd7e14;
+    color: #ffffff;
+   
+}
+.btn-ajustes {
+    border-color: #17a2b8;
+    color: #17a2b8;
+}
+.btn-ajustes:hover {
+    background-color: #17a2b8;
+    color: #ffffff;
+}
+.btn-salida {
+    border-color: #e83e8c;
+    color: #e83e8c;
+}
+.btn-salida:hover {
+    background-color: #e83e8c;
+    color: #ffffff;
+}
+.btn-recepcion {
+    border-color: #ffc107;
+    color: #ffc107;
+}
+.btn-recepcion:hover {
+    background-color: #ffc107;
+    color: #ffffff;
+}
+.icon-lg {
+    font-size: 2rem; /* Aumenta el tamaño del ícono */
+}
+.sidebar {
+    height: 100vh;
+    background-color: #343a40;
+    padding: 20px;
+}
+.sidebar a {
+    color: #fff;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    display: block;
+}
+.table th, .table td {
+    vertical-align: middle;
+}
+.badge-success { background-color: #28a745; }
+.badge-warning { background-color: #ffc107; }
+.badge-danger { background-color: #dc3545; }
+/* .color{
+  background-color: #caf0f8; 
+}*/
+
+  table tr.resaltado {
+    border:3px solid #ffc107 !important;
+    border-radius: 5px;
+  }
+  table tr.resaltadoVenta {
+    border:3px solid #ff0707 !important;
+    border-radius: 5px;
+  }
+

@@ -1,0 +1,81 @@
+#home{
+    background-image:
+    linear-gradient(rgb(9, 5, 54, 0.3),rgb(5, 4, 46, 0.7))
+    ,url('../../../assets/fondo.jpg');
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+}
+.cont{
+
+    padding-top: 100px;
+    padding-left: 700px;
+}
+.ftu{/*FOto usuario*/
+    width: 80px;
+    height: 80px;
+    background-image: url('../../../assets/usu.png');
+    background-size: cover;
+    margin-left: 110px;
+    margin-top: 20px;
+}
+.titulo{
+    margin-left: 90px;
+    color: white;
+    font-size: 20px;
+
+}
+.FormularioContenedor{
+    
+    font-family:  sans-serif;
+    margin:0 auto;
+    padding: 10px;
+    width: 320px;
+    height: auto;
+    border: 1px solid rgba(255, 255, 255, 6);
+    border-radius: 8px;
+    -webkit-border-radius: 10px 10px 10px 10px;
+    box-shadow: 0 30px 60px 0 rgba(0,0,0,0.3);
+    color: white;
+    backdrop-filter: blur(15px);
+    
+}
+.body{/*Contenedor del formulario*/
+    margin: auto;
+    width: 250px;
+}
+.form-control{
+   padding: 10px; 
+   border-radius: 5px;
+   margin: 10px;
+   background-color: transparent;
+   border: none;
+   border-bottom: 2px solid white;
+   color: white;
+    width: 85%;
+}
+.columnas{
+    text-align: center;
+    display: grid;
+    grid-template-columns: 33% 33% 33%;
+    padding-bottom: 10px;
+    border: none;
+}
+.boton{
+    width: 60%;
+    height: 30px;
+    background-color: white;
+    border-radius: 30px;
+    margin-top: 15px;
+    margin-left: 42px;
+    border: none;
+    color: black;
+}
+.boton:hover{
+    
+    background-color: white;
+    border-radius: 30px;
+    cursor: pointer;
+    border: none;
+
+}

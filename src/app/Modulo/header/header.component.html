@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-sm .bg-transparent barra">
+  <div class="container-fluid">
+    <a class="navbar-brand logo" href="#">logo</a>
+    <a class="navbar-brand titulo" href="#">Repuestos y Autoaccesorios</a>
+    <div class="dropdown">
+      <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        {{nombreRol}}
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" *ngFor="let rol of roles"><p (click)="cambiarRol(rol)">{{rol.nombre}}</p></a></li>
+      </ul>
+    </div>
+    <!--<div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        {{(rol==1)?"Administrador":"Vendedor"}}
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#">Action</a></li>
+        <li><a class="dropdown-item" href="#">Another action</a></li>
+        <li><a class="dropdown-item" href="#">Something else here</a></li>
+      </ul>
+    </div>-->
+  </div>
+</nav>
+<!--<li *ngFor="let rol of roles">{{rol.nombre}}</li>-->
+   <!-- <select class="btn">
+      <option class="btn" *ngFor="let rol of roles">{{rol.nombre}}</option>
+    </select>-->

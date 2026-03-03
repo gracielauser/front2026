@@ -1,0 +1,36 @@
+
+.barra {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  box-shadow: 0px 7px 7px #f0eceb;
+  background: white; /* importante para que no se vea transparente */
+  z-index: 1000;     /* para que quede encima de todo */
+}
+
+.titulo{
+    color:#0468A0 ;
+    font-size: 25px;
+    margin-left: 500px;
+      font-size: 30px; /* más grande */
+    font-weight: bold; /* más grueso */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* fuente limpia y moderna */
+    
+}
+.logo{
+    margin-left: -370px;
+}
+.dropdown{
+    margin-right: 30px;
+    color: white;
+}
+.btn{
+    background: linear-gradient(to right, #0468A0, #049093);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px 10px 30px;
+    font-weight: bold;
+    color: white;
+}

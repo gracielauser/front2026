@@ -1,0 +1,216 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h5>Gestionar Usuarios</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <input type="text" class="form-control" placeholder="Buscar por usuario"
+           [(ngModel)]="usuario" aria-label="Buscar por nombre o apellido">
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="Buscar por nombre" 
+          [(ngModel)]="persona" aria-label="Buscar por nombre">
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="estado">
+            <option  selected value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addusuario" (click)="limpiar()">
+            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
+            Nuevo Usuario</button>
+        </div>
+      </div>
+
+      <div class="table-responsive tamaño">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Nro</th>
+              <th scope="col">Usuario</th>
+              <th scope="col">Empleado </th>
+              <th scope="col">Roles Asignados</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i=index; let usu of apiUsuario |persona:persona |estado:estado |usuario:usuario | paginate: { itemsPerPage: 6, currentPage: page }">
+              <td>{{i+1}}</td>
+              <td>{{usu.usuario}}</td>
+              <td>{{usu.empleado.nombre}} {{usu.empleado.ap_paterno}}</td>
+              <td>{{rolesUsuario(usu.rols)}}</td>
+              <!--Estado-->
+              <td>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" [checked]="usu.estado==1"
+                    (change)="showModal($event, usu)">
+                </div>
+              </td>
+              <!--Modificar-->
+              <td>
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addusuario"
+                  (click)="editarUsuario(usu)">
+                  <i class="bi bi-pencil"></i> Editar
+                </button>
+                <button class="btn btn-outline-secondary btn-sm " data-bs-toggle="modal" data-bs-target="#detusuario">
+                  <i class="bi bi-card-list"></i> Detalle
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL ADICIONAR -->
+<div class="modal fade" id="addusuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">{{cambiotitulEditar ? 'Modificar Usuario' : 'Adicionar
+          Usuario'}}</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3 needs-validation" [formGroup]="usuarioForm" (ngSubmit)="AgregarUsuario()">
+          <!--USUARIO-->
+          <div class="col-md-6">
+            <label class="form-label">Usuario <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="usuario" class="form-control" placeholder="Ingrese usuario"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosUsuario').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosUsuario').style.display='none',4000);event.preventDefault();}" oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>8){
+             document.getElementById('msgMaxLetrasUsuario').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasUsuario').style.display='none',2000);
+             this.value=this.value.slice(0,8);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetrasUsuario').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasUsuario').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['usuario'].valid && control['usuario'].value?.length>=3 && (control['usuario'].dirty||control['usuario'].touched),
+         'is-invalid': control['usuario'].invalid && (control['usuario'].dirty||control['usuario'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumerosUsuario" class="invalid-feedback" style="display:none;">No se aceptan números, solo
+              letras. </div>
+            <div id="msgMaxLetrasUsuario" class="invalid-feedback" style="display:none;">El usuario no puede tener más
+              de 8 letras.</div>
+            <div id="msgMinLetrasUsuario" class="invalid-feedback" style="display:none;">El usuario debe tener al menos
+              3 letras.</div>
+          </div>
+          <!--CONTRASEÑA-->
+          <div class="col-md-6">
+            <label for="password" class="form-label">Contraseña <span class="text-danger"> * </span></label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="password" placeholder="Ingresa tu contraseña"
+                formControlName="clave" oninput="
+           if(this.value.length>15){
+             document.getElementById('msgMax').style.display='block';
+             setTimeout(()=>document.getElementById('msgMax').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMin').style.display='block';
+             setTimeout(()=>document.getElementById('msgMin').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['clave'].valid && control['clave'].value?.length>=6 && (control['clave'].dirty||control['clave'].touched),
+         'is-invalid': control['clave'].invalid && (control['clave'].dirty||control['clave'].touched)}">
+              <button class="btn btn-outline-secondary" type="button" (click)="togglePassword()">
+                <i class="bi" [ngClass]="passwordVisible ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+              <div class="valid-feedback">Correcto.</div>
+              <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+              <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+              </div>
+              <div id="msgMax" class="invalid-feedback" style="display:none;">La contraseña no puede tener más de 15
+                letras.</div>
+              <div id="msgMin" class="invalid-feedback" style="display:none;">La contraseña debe tener al menos 6
+                letras.</div>
+            </div>
+          </div>
+          <!--PERSONA-->
+          <div class="col-md-6">
+            <label for="personaSelect" class="form-label">Persona <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="persona" id="personaSelect" required [ngClass]="{
+         'is-valid': control['persona'].valid && (control['persona'].dirty||control['persona'].touched),
+         'is-invalid': control['persona'].invalid && (control['persona'].dirty||control['persona'].touched)}">
+              <option value="" disabled selected>Seleccione una persona</option>
+              <option *ngFor="let per of apiPersonal" [ngValue]="per">
+                {{ per.nombre }} {{ per.ap_paterno }} {{ per.ap_materno }}
+              </option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+          </div>
+          <!--ROLES-->
+          <div class="col-md-6 gridg">
+            <label class="form-label">Roles <span class="text-danger"> * </span></label>
+            <div class="row m-1" *ngFor="let rol of apiRoles; let i = index">
+
+              <input class="col-auto form-check-input" type="checkbox" [id]="'rol' + i" [value]="rol.id_rol"
+                (change)="ponerRol($event)" [checked]="tieneRol(rol.id_rol)">
+              <label class="col" [for]="'rol' + i">{{rol.nombre}}</label>
+
+            </div>
+            <div *ngIf="rolesSeleccionados.length === 0" class="text-danger mt-1">
+              Debe seleccionar al menos un rol
+            </div>
+            <div *ngIf="rolesSeleccionados.length > 0" class="text-success mt-1">
+              Correcto.
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"
+          (click)="AgregarUsuario()">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal único -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+        <span>
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> al
+          usuario?
+        </span>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
+          data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

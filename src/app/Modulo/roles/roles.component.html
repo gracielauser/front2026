@@ -1,0 +1,266 @@
+<div class="container-fluid ">
+    <div class="card">
+        <div class="card-header">
+            <h5>Gestionar Roles</h5>
+            <p class="mb-0">Administra la información de los Roles</p>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" class="form-control" placeholder="Buscar por nombre"
+                      [(ngModel)]="nombre"  aria-label="Buscar por nombre">
+                </div>
+                <div class="col-md-3">
+                   <select class="form-select" [(ngModel)]="estado">
+            <option  selected value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+                </div>
+                <div class="col-4">
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addrol" (click)="limpiar()">
+                        <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
+                        Nuevo Rol</button>
+                </div>
+            </div>
+            <div class="table-responsive tamaño">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nro</th>
+                            <th scope="col">Nombre</th>
+                            <th scope="col">Descripcion</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let i=index;let rol of apiRoles |nombre:nombre|estado:estado | paginate: { itemsPerPage: 6, currentPage: page }">
+                            <td>{{i+1}}</td>
+                            <td>{{rol.nombre}}</td>
+                            <td>{{rol.descripcion}}</td>
+                            <!--Estado-->
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" [checked]="rol.estado==1"
+                                        (change)="showModal($event, rol)">
+                                </div>
+                            </td>
+                            <!--Modificar-->
+                            <td>
+                                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#addrol" (click)="cargarDatosRol(rol)">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm " data-bs-toggle="modal"
+                                    data-bs-target="#detrol">
+                                    <i class="bi bi-card-list"></i> Detalle
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+        </div>
+    </div>
+</div>
+<!-- MODAL ADICIONAR Y MODIFICAR -->
+<div class="modal fade" id="addrol" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Rol</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- ALERTA AZUL -->
+                <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+                    <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+                    Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+                </div>
+                <form class="row g-3" [formGroup]="rolForm" (ngSubmit)="AgregarRol()">
+                    <!--NOMBRES -->
+                    <div class="col-md-6">
+                        <label for="nombres" class="form-label">Nombre <span class="text-danger">*</span></label>
+                        <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+                            oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+                        <div class="valid-feedback">Correcto.</div>
+                        <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+                        <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo
+                            letras. </div>
+                        <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener
+                            más de 15 letras.</div>
+                        <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al
+                            menos 3 letras.</div>
+                    </div>
+                    <!--DESCRIPCION-->
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripcion</label>
+                            <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
+                                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
+                                oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>50){
+             document.getElementById('msgMaxLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
+             this.value=this.value.slice(0,50);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
+                        }"></textarea>
+                            <div class="valid-feedback">Correcto.</div>
+                            <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
+                                números, solo letras. </div>
+                            <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
+                                puede tener más de 50 letras.</div>
+                            <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
+                                tener al menos 6 letras.</div>
+                        </div>
+
+                    </div>
+                    <!--PERMISOS A ROL-->
+                    <div class="col-md-12">
+                        <label>Asignar permisos a rol <span class="text-danger">*</span></label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch1"
+                                (change)="asignacion($event,1)" [checked]="verificarPermiso(1)">
+                            <label class="form-check-label" for="checkNativeSwitch1">
+                                Gestionar personal
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch2"
+                                (change)="asignacion($event,2)" [checked]="verificarPermiso(2)">
+                            <label class="form-check-label" for="checkNativeSwitch2">
+                                Gestionar clientes
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch3"
+                                (change)="asignacion($event,3)" [checked]="verificarPermiso(3)">
+                            <label class="form-check-label" for="checkNativeSwitch3">
+                                Gestionar productos
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch4"
+                                (change)="asignacion($event,4)" [checked]="verificarPermiso(4)">
+                            <label class="form-check-label" for="checkNativeSwitch4">
+                                Gestionar compras
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch5"
+                                (change)="asignacion($event,5)" [checked]="verificarPermiso(5)">
+                            <label class="form-check-label" for="checkNativeSwitch5">
+                                Gestionar ventas
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch6"
+                                (change)="asignacion($event,6)" [checked]="verificarPermiso(6)">
+                            <label class="form-check-label" for="checkNativeSwitch6">
+                                Gestionar Pedidos
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch7"
+                                (change)="asignacion($event,7)" [checked]="verificarPermiso(7)">
+                            <label class="form-check-label" for="checkNativeSwitch7">
+                                Gestionar inventario
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch8"
+                                (change)="asignacion($event,8)" [checked]="verificarPermiso(8)">
+                            <label class="form-check-label" for="checkNativeSwitch8">
+                                Reportes
+                            </label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch9"
+                                (change)="asignacion($event,9)" [checked]="verificarPermiso(9)">
+                            <label class="form-check-label" for="checkNativeSwitch9">
+                                Gestionar gastos
+                            </label>
+                            administrador
+
+                        </div>
+                        <div *ngIf="permisos.length === 0" class="text-danger mt-1">
+                            Debe seleccionar al menos un rol
+                        </div>
+                        <div *ngIf="permisos.length > 0" class="text-success mt-1">
+                            Correcto.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal único -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+        <span>
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> al
+          rol?
+        </span>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
+          data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de éxito -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+         Los cambios fueron guardados exitosamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>

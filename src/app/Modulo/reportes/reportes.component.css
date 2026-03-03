@@ -1,0 +1,73 @@
+
+.btn-custom {
+  height: 120px;
+  font-size: 1.1rem;
+  border-width: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+.btn-clientes {
+  border-color: #fd7e14;
+  color: #fd7e14;
+}
+.btn-clientes:hover {
+  background-color: #fd7e14;
+  color: #ffffff;
+}
+.btn-pedidos {
+  border-color: #6f42c1;
+  color: #6f42c1;
+}
+.btn-pedidos:hover {
+  background-color: #6f42c1;
+  color: #ffffff;
+}
+.btn-r {
+  border-color: #007bff;
+  color: #007bff;
+}
+.btn-reabastecer:hover {
+  background-color: #007bff;
+  color: #ffffff;
+}
+.btn-ventas {
+  border-color: #28a745;
+  color: #28a745;
+}
+.btn-ventas:hover {
+  background-color: #28a745;
+  color: #ffffff;
+}
+.btn-ventas {
+  border-color:   #28a745;
+  color:   #28a745;
+}
+.btn-compras {
+  border-color: #ffc107;
+  color: #ffc107;
+}
+.btn-compras:hover {
+  background-color: #ffc107;
+  color: #ffffff;
+}
+.btn-inventario {
+  border-color: #e83e8c;
+  color: #e83e8c;
+}
+.btn-inventario:hover {
+  background-color: #e83e8c;
+  color: #ffffff;
+}
+.btn-gastos {
+  border-color: #17a2b8;
+  color: #17a2b8;
+}
+.btn-gastos:hover {
+  background-color: #17a2b8;
+  color: #ffffff;
+}
+.icon-lg {
+  font-size: 2rem; /* Aumenta el tamaño del ícono */
+}

@@ -1,0 +1,28 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Cliente } from '../Modelos/cliente';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ClienteService {
+
+  private baseUrl = '/api/cliente'
+  constructor(
+    private xhttp: HttpClient
+  ) { }
+  getListaClientes(): Observable<any[]> {
+    console.log("en servicio clientes");
+    return this.xhttp.get<any[]>(this.baseUrl + '/listar');
+  }
+  saveCliente(cli: Cliente): Observable<any> {//adicionar
+    console.log("entro al servicio");
+    let url = this.baseUrl + "/agregar";
+    return this.xhttp.post(url, cli)
+  }
+    modificarCliente(cliente:any):Observable<any>{//modificar
+      let url = this.baseUrl+"/modificar";
+      return this.xhttp.put(url,cliente)  
+     }
+}

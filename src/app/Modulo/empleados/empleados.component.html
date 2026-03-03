@@ -1,0 +1,557 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h5>Gestionar Empleados</h5>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-3">
+          <input type="text" [(ngModel)]="nombre" class="form-control" placeholder="Buscar por nombre y apellido">
+        </div>
+        <div class="col-md-2">
+          <input type="text" [(ngModel)]="ci" class="form-control" placeholder="Buscar por CI">
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="estado">
+            <option selected value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <select class="form-select" [(ngModel)]="genero">
+            <option selected value="">Ambos generos</option>
+            <option value="1">Masculino</option>
+            <option value="2">Femenino</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addpersona">
+            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
+            Nuevo Empleado</button>
+        </div>
+      </div>
+      <div class="table-responsive tamaño">
+        <table class="table table-striped ">
+          <thead>
+            <tr>
+              <th scope="col">Nro</th>
+              <th scope="col">Foto</th>
+              <th scope="col">CI</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Apellidos</th>
+              <th scope="col">Celular</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let i=index;let emp of apiEmpleados | nombresApellido:nombre | cedula:ci |estado:estado |genero:genero | paginate: { itemsPerPage: 6, currentPage: page }">
+              <td>{{i+1}}</td>
+              <td>Image</td>
+              <td>{{emp.ci}}</td>
+              <td>{{emp.nombre}}</td>
+              <td>{{emp.ap_paterno}} {{emp.ap_materno}}</td>
+              <td>{{emp.celular}}</td>
+              <!--Estado-->
+              <td>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" [checked]="emp.estado==1"
+                    (change)="showModal($event, emp)">
+                </div>
+              </td>
+              <!--Modificar-->
+              <td>
+                <button (click)="modificarDatos(emp)" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                  data-bs-target="#modempleado">
+                  <i class="bi bi-pencil"></i> Editar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR -->
+<div class="modal fade" id="addpersona" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Persona</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3" [formGroup]="empleadoForm" (ngSubmit)="AgregarEmpleado()">
+          <!-- CI -->
+          <div class="col-md-6">
+            <label class="form-label">CI <span class="text-danger"> * </span></label>
+            <input (keyup)="validarCi($event)" type="text" formControlName="ci" class="form-control" placeholder="Ingrese su CI" pattern="^[0-9]+$"
+              onkeypress="if(!/^[0-9]$/.test(event.key)){document.getElementById('msgLetras').style.display='block';setTimeout(()=>document.getElementById('msgLetras').style.display='none',2000);event.preventDefault();}"
+              oninput="
+           if(this.value.length>8){
+             document.getElementById('msgMaxDigitos').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxDigitos').style.display='none',2000);
+             this.value=this.value.slice(0,8);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinDigitos').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinDigitos').style.display='none',2000);
+           }
+         " [ngClass]="{
+        'is-valid': control['ci'].valid && control['ci'].value?.length >= 6 && control['ci'].value?.length <= 8
+           &&(control['ci'].dirty||control['ci'].touched),
+         'is-invalid': control['ci'].invalid && (control['ci'].dirty||control['ci'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div id="msgLetras" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.</div>
+            <div id="msgMaxDigitos" class="invalid-feedback" style="display:none;">El CI no puede tener más de 8
+              dígitos.</div>
+            <div id="msgMinDigitos" class="invalid-feedback" style="display:none;">El CI debe tener al menos 6 dígitos.
+            </div>
+          </div>
+          <!-- NOMBRE -->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese su nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!-- APELLIDO PATERNO -->
+          <div class="col-md-6">
+            <label>llenar por lo menos un apellido </label>
+            <label for="apellido_p" class="form-label">Apellido paterno</label>
+            <input type="text" formControlName="ap_paterno" class="form-control" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosAp').style.display='block';setTimeout(()=>document.getElementById('msgNumerosAp').style.display='none',4000);event.preventDefault();}"
+              oninput="this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+               if(this.value.length>15){
+             document.getElementById('ap_paternomax').style.display='block';
+             setTimeout(()=>document.getElementById('ap_paternomax').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('MinAp_materno').style.display='block';
+             setTimeout(()=>document.getElementById('MinAp_materno').style.display='none',2000);
+           }" [ngClass]="{
+           'is-valid': control['ap_paterno'].valid && control['ap_paterno'].value?.length>3 && (control['ap_paterno'].dirty||control['ap_paterno'].touched),
+           'is-invalid': control['ap_paterno'].invalid && (control['ap_paterno'].dirty||control['ap_paterno'].touched)
+         }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumerosAp" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="ap_paternomax" class="invalid-feedback" style="display:none;">El Apellido no puede tener más de 15
+              letras.</div>
+            <div id="MinAp_materno" class="invalid-feedback" style="display:none;">El Apellido debe tener al menos 3
+              letras.</div>
+          </div>
+          <!-- APELLIDO MATERNO -->
+          <div class="col-md-6">
+            <label for="apellido_m" class="form-label">Apellido materno</label>
+            <input type="text" formControlName="ap_materno" class="form-control" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosAp').style.display='block';setTimeout(()=>document.getElementById('msgNumerosAp').style.display='none',4000);event.preventDefault();}"
+              oninput="this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+               if(this.value.length>15){
+             document.getElementById('ap_materno_max').style.display='block';
+             setTimeout(()=>document.getElementById('ap_paternomax').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('ap_materno_min').style.display='block';
+             setTimeout(()=>document.getElementById('ap_materno_min').style.display='none',2000);
+           }" [ngClass]="{
+           'is-valid': control['ap_materno'].valid && control['ap_materno'].value?.length>3 && (control['ap_materno'].dirty||control['ap_materno'].touched),
+           'is-invalid': control['ap_materno'].invalid && (control['ap_materno'].dirty||control['ap_materno'].touched)
+         }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumerosAp" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="ap_materno_max" class="invalid-feedback" style="display:none;">El Apellido no puede tener más de 15
+              letras.</div>
+            <div id="ap_materno_min" class="invalid-feedback" style="display:none;">El Apellido debe tener al menos 3
+              letras.</div>
+          </div>
+          <!-- CELULAR -->
+          <div class="col-md-6">
+            <label for="celular" class="form-label">Celular <span class="text-danger">* </span></label>
+            <input type="text" formControlName="celular" class="form-control" placeholder="Ingrese un numero de celular"
+              pattern="^[0-9]+$"
+              onkeypress="if(!/^[0-9]$/.test(event.key)){document.getElementById('celularML').style.display='block';setTimeout(()=>document.getElementById('msgLetras').style.display='none',2000);event.preventDefault();}"
+              oninput="
+           if(this.value.length>8){
+             document.getElementById('celular_max').style.display='block';
+             setTimeout(()=>document.getElementById('celular_max').style.display='none',2000);
+             this.value=this.value.slice(0,8);
+           }
+           if( this.value.length<8){
+             document.getElementById('celular_min').style.display='block';
+             setTimeout(()=>document.getElementById('celular_min').style.display='none',2000);
+           }
+         " [ngClass]="{
+        'is-valid': control['celular'].valid && control['celular'].value?.length > 7 && control['celular'].value?.length <= 8
+           &&(control['celular'].dirty||control['celular'].touched),
+         'is-invalid': control['celular'].invalid && (control['celular'].dirty||control['celular'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div id="celularML" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.</div>
+            <div id="celular_max" class="invalid-feedback" style="display:none;">El numero de celular no puede tener más
+              de 8
+              dígitos.</div>
+            <div id="celular_min" class="invalid-feedback" style="display:none;">El numero de celular debe tener 8
+              dígitos.
+            </div>
+          </div>
+          <!-- FOTO -->
+          <div class="col-md-6">
+            <label for="foto" class="form-label">Foto</label>
+            <input type="file" formControlName="foto" class="form-control">
+          </div>
+          <!-- SALARIO -->
+          <div class="col-md-6">
+            <label class="form-label">Salario <span class="text-danger">*</span></label>
+
+            <div class="input-group">
+              <input type="text" formControlName="salario" class="form-control" placeholder="Ingrese salario"
+                pattern="^[0-9]+$"
+                onkeypress="if(!/^[0-9]$/.test(event.key)){document.getElementById('msgLSalario').style.display='block';setTimeout(()=>document.getElementById('msgLSalario').style.display='none',2000);event.preventDefault();}"
+                oninput="
+        if(this.value.length>8){
+          document.getElementById('msgMaxDigitosS').style.display='block';
+          setTimeout(()=>document.getElementById('msgMaxDigitosS').style.display='none',2000);
+          this.value=this.value.slice(0,8);
+        }
+        if(this.value.length>0 && this.value.length<3){
+          document.getElementById('msgMinDigitosS').style.display='block';
+          setTimeout(()=>document.getElementById('msgMinDigitosS').style.display='none',2000);
+        }" [ngClass]="{
+        'is-valid': control['salario'].valid && control['salario'].value?.length >= 3 && control['salario'].value?.length <= 8
+          && (control['salario'].dirty || control['salario'].touched),
+        'is-invalid': control['salario'].invalid && (control['salario'].dirty || control['salario'].touched)
+      }" />
+              <span class="input-group-text">Bs.</span>
+            </div>
+
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div id="msgLSalario" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.
+            </div>
+            <div id="msgMaxDigitosS" class="invalid-feedback" style="display:none;">El salario no puede tener más de 8
+              dígitos.</div>
+            <div id="msgMinDigitosS" class="invalid-feedback" style="display:none;">El salario debe tener al menos 3
+              dígitos.</div>
+          </div>
+
+          <!-- GENERO -->
+          <div class="col-md-6">
+            <p class="mb-1">Género <span class="text-danger"> * </span></p>
+            <div class="form-check">
+              <input formControlName="genero" class="form-check-input" type="radio" name="genero" id="hombre" value="1">
+              <label class="form-check-label" for="hombre">Hombre</label>
+            </div>
+            <div class="form-check">
+              <input formControlName="genero" class="form-check-input" type="radio" name="genero" id="mujer" value="2">
+              <label class="form-check-label" for="mujer">Mujer</label>
+            </div>
+          </div>
+          <!-- BOTONES -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" [disabled]="empleadoForm.invalid"
+              data-bs-dismiss="modal">Guardar</button>
+            <button (click)="Cancelar()" type="button" class="btn btn-secondary"
+              data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL MODIFICAR -->
+<div class="modal fade" id="modempleado" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar Empleado</h1>
+        <button (click)="Cancelar()" type="button" class="btn-close" data-bs-dismiss="modal"
+          aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3" [formGroup]="empleadoForm" (ngSubmit)="confirmarModifcacion()">
+          <!-- CI -->
+          <div class="col-md-6">
+            <label class="form-label">CI <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="ci" class="form-control" placeholder="Ingrese su CI" pattern="^[0-9]+$"
+              onkeypress="if(!/^[0-9]$/.test(event.key)){document.getElementById('msgLetras').style.display='block';setTimeout(()=>document.getElementById('msgLetras').style.display='none',2000);event.preventDefault();}"
+              oninput="
+           if(this.value.length>8){
+             document.getElementById('msgMaxDigitos').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxDigitos').style.display='none',2000);
+             this.value=this.value.slice(0,8);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinDigitos').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinDigitos').style.display='none',2000);
+           }
+         " [ngClass]="{
+        'is-valid': control['ci'].valid && control['ci'].value?.length >= 6 && control['ci'].value?.length <= 8
+           &&(control['ci'].dirty||control['ci'].touched),
+         'is-invalid': control['ci'].invalid && (control['ci'].dirty||control['ci'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div id="msgLetras" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.</div>
+            <div id="msgMaxDigitos" class="invalid-feedback" style="display:none;">El CI no puede tener más de 8
+              dígitos.</div>
+            <div id="msgMinDigitos" class="invalid-feedback" style="display:none;">El CI debe tener al menos 6 dígitos.
+            </div>
+          </div>
+          <!-- NOMBRE -->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese su nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!-- APELLIDO PATERNO -->
+          <div class="col-md-6">
+            <label for="apellido_p" class="form-label">Apellido paterno <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="ap_paterno" class="form-control" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosAp').style.display='block';setTimeout(()=>document.getElementById('msgNumerosAp').style.display='none',4000);event.preventDefault();}"
+              oninput="this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+               if(this.value.length>15){
+             document.getElementById('ap_paternomax').style.display='block';
+             setTimeout(()=>document.getElementById('ap_paternomax').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('MinAp_materno').style.display='block';
+             setTimeout(()=>document.getElementById('MinAp_materno').style.display='none',2000);
+           }" [ngClass]="{
+           'is-valid': control['ap_paterno'].valid && control['ap_paterno'].value?.length>3 && (control['ap_paterno'].dirty||control['ap_paterno'].touched),
+           'is-invalid': control['ap_paterno'].invalid && (control['ap_paterno'].dirty||control['ap_paterno'].touched)
+         }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumerosAp" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="ap_paternomax" class="invalid-feedback" style="display:none;">El Apellido no puede tener más de 15
+              letras.</div>
+            <div id="MinAp_materno" class="invalid-feedback" style="display:none;">El Apellido debe tener al menos 3
+              letras.</div>
+          </div>
+          <!-- APELLIDO MATERNO -->
+          <div class="col-md-6">
+            <label for="apellido_m" class="form-label">Apellido materno <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="ap_materno" class="form-control" pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosAp').style.display='block';setTimeout(()=>document.getElementById('msgNumerosAp').style.display='none',4000);event.preventDefault();}"
+              oninput="this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+               if(this.value.length>15){
+             document.getElementById('ap_materno_max').style.display='block';
+             setTimeout(()=>document.getElementById('ap_paternomax').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('ap_materno_min').style.display='block';
+             setTimeout(()=>document.getElementById('ap_materno_min').style.display='none',2000);
+           }" [ngClass]="{
+           'is-valid': control['ap_materno'].valid && control['ap_materno'].value?.length>3 && (control['ap_materno'].dirty||control['ap_materno'].touched),
+           'is-invalid': control['ap_materno'].invalid && (control['ap_materno'].dirty||control['ap_materno'].touched)
+         }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumerosAp" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="ap_materno_max" class="invalid-feedback" style="display:none;">El Apellido no puede tener más de 15
+              letras.</div>
+            <div id="ap_materno_min" class="invalid-feedback" style="display:none;">El Apellido debe tener al menos 3
+              letras.</div>
+          </div>
+          <!-- CELULAR -->
+          <div class="col-md-6">
+            <label for="celular" class="form-label">Celular <span class="text-danger">* </span></label>
+            <input type="text" formControlName="celular" class="form-control" placeholder="Ingrese un numero de celular"
+              pattern="^[0-9]+$"
+              onkeypress="if(!/^[0-9]$/.test(event.key)){document.getElementById('celularML').style.display='block';setTimeout(()=>document.getElementById('msgLetras').style.display='none',2000);event.preventDefault();}"
+              oninput="
+           if(this.value.length>8){
+             document.getElementById('celular_max').style.display='block';
+             setTimeout(()=>document.getElementById('celular_max').style.display='none',2000);
+             this.value=this.value.slice(0,8);
+           }
+           if( this.value.length<8){
+             document.getElementById('celular_min').style.display='block';
+             setTimeout(()=>document.getElementById('celular_min').style.display='none',2000);
+           }
+         " [ngClass]="{
+        'is-valid': control['celular'].valid && control['celular'].value?.length > 7 && control['celular'].value?.length <= 8
+           &&(control['celular'].dirty||control['celular'].touched),
+         'is-invalid': control['celular'].invalid && (control['celular'].dirty||control['celular'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div id="celularML" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.</div>
+            <div id="celular_max" class="invalid-feedback" style="display:none;">El numero de celular no puede tener más
+              de 8
+              dígitos.</div>
+            <div id="celular_min" class="invalid-feedback" style="display:none;">El numero de celular debe tener 8
+              dígitos.
+            </div>
+          </div>
+          <!-- FOTO -->
+          <div class="col-md-6">
+            <label for="foto" class="form-label">Foto</label>
+            <input type="file" formControlName="foto" class="form-control">
+          </div>
+          <!-- SALARIO -->
+          <div class="col-md-6">
+            <label class="form-label">Salario <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input type="text" formControlName="salario" class="form-control" placeholder="Ingrese salario"
+                pattern="^[0-9]+$"
+                onkeypress="if(!/^[0-9]$/.test(event.key)){document.getElementById('msgLSalario').style.display='block';setTimeout(()=>document.getElementById('msgLSalario').style.display='none',2000);event.preventDefault();}"
+                oninput="
+        if(this.value.length>8){
+          document.getElementById('msgMaxDigitosS').style.display='block';
+          setTimeout(()=>document.getElementById('msgMaxDigitosS').style.display='none',2000);
+          this.value=this.value.slice(0,8);
+        }
+        if(this.value.length>0 && this.value.length<3){
+          document.getElementById('msgMinDigitosS').style.display='block';
+          setTimeout(()=>document.getElementById('msgMinDigitosS').style.display='none',2000);
+        }" [ngClass]="{
+        'is-valid': control['salario'].valid && control['salario'].value?.length >= 3 && control['salario'].value?.length <= 8
+          && (control['salario'].dirty || control['salario'].touched),
+        'is-invalid': control['salario'].invalid && (control['salario'].dirty || control['salario'].touched)
+      }" />
+              <span class="input-group-text">Bs.</span>
+            </div>
+
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div id="msgLSalario" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.
+            </div>
+            <div id="msgMaxDigitosS" class="invalid-feedback" style="display:none;">El salario no puede tener más de 8
+              dígitos.</div>
+            <div id="msgMinDigitosS" class="invalid-feedback" style="display:none;">El salario debe tener al menos 3
+              dígitos.</div>
+          </div>
+
+          <!-- GENERO -->
+          <div class="col-md-6">
+            <p class="mb-1">Género </p>
+            <div class="form-check">
+              <input formControlName="genero" class="form-check-input" type="radio" name="genero" id="hombre"
+                [value]="1" checked>
+              <label class="form-check-label" for="hombre">Hombre</label>
+            </div>
+            <div class="form-check">
+              <input formControlName="genero" class="form-check-input" type="radio" name="genero" id="mujer"
+                [value]="2">
+              <label class="form-check-label" for="mujer">Mujer</label>
+            </div>
+          </div>
+          <!-- BOTONES -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" [disabled]="empleadoForm.invalid"
+              data-bs-dismiss="modal">Guardar</button>
+            <button (click)="Cancelar()" type="button" class="btn btn-secondary"
+              data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal único -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+        <span>
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> al
+          empleado?
+        </span>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
+          data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de éxito -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        Los cambios fueron guardados exitosamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>

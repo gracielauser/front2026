@@ -1,0 +1,95 @@
+<!--<input type="checkbox" id="btn-menu">
+<div class="botono">
+  <label class="btn" for="btn-menu">
+    <i class="bi bi-border-width"></i>
+  </label>
+</div>-->
+<div class="sidebar">
+  <a routerLink="/home/principal">
+    <i class="bi bi-boxes fs-5"></i>
+    Inicio
+  </a>
+  <div onclick="this.classList.toggle('active')" *ngIf="tienePermiso(1)">
+    <a class="has-submenu">
+      <i class="bi bi-person-circle fs-5"></i>
+      Gestionar Personal</a>
+    <div class="submenu">
+      <a routerLink="/home/empleados"><i class="bi bi-arrow-right"></i>
+        Empleados</a>
+      <a routerLink="/home/usuarios"><i class="bi bi-arrow-right"></i>
+        Usuarios</a>
+      <a routerLink="/home/roles"><i class="bi bi-arrow-right"></i>
+        Roles</a>
+    </div>
+  </div>
+  <a routerLink="/home/clientes">
+    <i class="bi bi-people-fill fs-5"></i>
+    Clientes
+  </a>
+  <div onclick="this.classList.toggle('active')">
+    <a class="has-submenu">
+      <i class="bi bi-columns-gap fs-5"></i>
+      Productos</a>
+    <div class="submenu">
+      <a routerLink="/home/dashboard">
+        <i class="bi bi-arrow-right"></i>
+        Dashboard
+      </a>
+      <a routerLink="/home/productos">
+        <i class="bi bi-arrow-right"></i>
+        Listar Productos
+      </a>
+      <a routerLink="/home/categoria">
+        <i class="bi bi-arrow-right"></i>
+        Categoria
+      </a>
+      <a routerLink="/home/marcas">
+        <i class="bi bi-arrow-right"></i>
+        Marcas
+      </a>
+      <a routerLink="/home/unidades">
+        <i class="bi bi-arrow-right"></i>
+        Unidades
+      </a>
+    </div>
+  </div>
+   <div onclick="this.classList.toggle('active')">
+    <a class="has-submenu">
+      <i class="bi bi-cart4 fs-5"></i>
+      Compras</a>
+    <div class="submenu">
+      <a routerLink="/home/compras"><i class="bi bi-arrow-right"></i>
+        Listar Compras</a>
+      <a routerLink="/home/proveedores"><i class="bi bi-arrow-right"></i>
+        Proveedores</a>
+    </div>
+  </div>
+    <a routerLink="/home/ventas">
+      <i class="bi bi-cash-coin fs-5"></i>
+      Ventas
+    </a>
+     <a routerLink="/home/pedidos">
+     <i class="bi bi-box2"></i>
+      Pedidos
+    </a>
+
+      <div onclick="this.classList.toggle('active')">
+    <a class="has-submenu">
+      <i class="bi bi-bricks fs-5"></i>
+      Inventario</a>
+    <div class="submenu">
+      <a routerLink="/home/inventario"><i class="bi bi-arrow-right"></i>
+        Consultas de Stock</a>
+      <a routerLink="/home/kardex"><i class="bi bi-arrow-right"></i>
+        Resumen de Movimientos</a>
+    </div>
+  </div>
+    <a routerLink="/home/reportes">
+      <i class="bi bi-clipboard-data fs-5"></i>
+      Reportes
+    </a>
+    <a routerLink="/home/gastos">
+      <i class="bi bi-dash-circle fs-5"></i>
+      Gastos
+    </a>
+</div>

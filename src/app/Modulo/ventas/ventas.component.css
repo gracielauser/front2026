@@ -1,0 +1,16 @@
+.tamaño{
+    height: 352px;
+}
+.tamaño2{
+    height: 462px;
+}
+.pagination-wrapper {
+  margin-left: 400px;                
+}
+.pie{
+  padding-top: 300px;
+}
+.toast-custom {
+  background-color: #049093; /* verde Bootstrap */
+  color: white;
+}

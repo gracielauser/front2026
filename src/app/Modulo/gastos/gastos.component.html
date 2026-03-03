@@ -1,0 +1,211 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h5>Gestionar Gastos</h5>
+      <p class="mb-0">Administra la información de los gastos</p>
+    </div>
+    <div class="card-body">
+      <div class="row ">
+        <div class="col-md-4">
+          <label for="f1">Desde::</label>
+          <input type="date" id="f1" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label for="f1">Hasta::</label>
+          <input type="date" id="f1" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label for="cate">Categoria:</label>
+          <select class="form-select" [(ngModel)]="categoria">
+            <option value="" selected>Todos</option>
+            <option value="1">Servicios básicos</option>
+            <option value="2">Alquiler</option>
+            <option value="3">Alimentos</option>
+            <option value="4">Transporte</option>
+            <option value="5">Sueldos</option>
+            <option value="6">Limpieza</option>
+            <option value="7">Internet</option>
+            <option>Otros</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addcate">
+            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
+            Nuevo Gasto</button>
+        </div>
+      </div>
+      <div class="table-responsive tamaño">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Nro</th>
+              <th scope="col">Fecha</th>
+              <th scope="col">Monto</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Descripcion</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i=index; let gasto of apiGasto|paginate: { itemsPerPage: 6, currentPage: page }|categoriag:categoria">
+              <td>{{i+1}}</td>
+              <td>{{gasto.fecha}}</td>
+              <td>{{gasto.monto}}</td>
+              <td>{{gasto.categoria==1? 'Servicios básicos' :
+                gasto.categoria==2? 'Alquiler' :
+                gasto.categoria==3? 'Alimentos' :
+                gasto.categoria==4? 'Transporte' :
+                gasto.categoria==5? 'Sueldos' :
+                gasto.categoria==6? 'Limpieza' :
+                gasto.categoria==7? 'Internet' :
+                (gasto.categoria==8? 'Articulos para operacion de tienda' :
+                'Otros')}}</td>
+              <td>{{gasto.descripcion}}</td>
+              <!--Eliminar-->
+              <td>
+                <button  class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#anular"  
+                                        (click)="showModal(gasto)">
+                  <i class="bi bi-trash"></i> Anular
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+       <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL  -->
+<div class="modal fade" id="addcate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Gasto</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3 needs-validation" [formGroup]="gastoForm" (ngSubmit)="AgregarGasto()">
+          <!--Monto-->
+          <div class="col-md-6">
+            <label class="form-label">Monto <span class="text-danger"> * </span></label>
+            <div class="input-group">
+            <input type="number" formControlName="monto" class="form-control" placeholder="Ingrese monto" min="0.01"
+              max="999999.99" step="0.01" oninput="
+           // eliminar ceros a la izquierda
+           if(this.value.length > 1 && this.value.startsWith('0')){
+             this.value = this.value.replace(/^0+/, '');
+           }" [ngClass]="{
+           'is-valid': control['monto'].valid 
+                       && +control['monto'].value >= 0.01
+                       && +control['monto'].value <= 999999.99
+                       && (control['monto'].dirty || control['monto'].touched),
+           'is-invalid': control['monto'].invalid 
+                         && (control['monto'].dirty || control['monto'].touched)
+         }">
+<span class="input-group-text">Bs.</span>
+            </div>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">El precio es obligatorio y debe ser mayor que 0.</div>
+          </div>
+          <!--CAtegoria-->
+          <div class="col-md-6">
+            <label for="categoria" class="form-label">Categoria <span class="text-danger"> * </span></label>
+            <select class="form-select" formControlName="categoria" id="categoria" required [ngClass]="{
+         'is-valid': control['categoria'].valid && (control['categoria'].dirty||control['categoria'].touched),
+         'is-invalid': control['categoria'].invalid && (control['categoria'].dirty||control['categoria'].touched)}">
+              <option disabled value="">Seleccione...</option>
+              <option value="1">Servicios básicos</option>
+              <option value="2">Alquiler</option>
+              <option value="3">Alimentos</option>
+              <option value="4">Transporte</option>
+              <option value="5">Sueldos</option>
+              <option value="6">Limpieza</option>
+              <option value="7">Internet</option>
+              <option value="8">Articulos para operacion de tienda</option>
+              <option value="9">Otros</option>
+            </select>
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio.</div>
+
+          </div>
+          <!--DESCRIPCION-->
+          <div class="col-md-12">
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
+                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
+                oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>50){
+             document.getElementById('msgMaxLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
+             this.value=this.value.slice(0,50);
+           }
+           if(this.value.length>0 && this.value.length<6){
+             document.getElementById('msgMinLetrasDes').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
+                        }"></textarea>
+              <div class="valid-feedback">Correcto.</div>
+              <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
+                números, solo letras. </div>
+              <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
+                puede tener más de 50 letras.</div>
+              <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
+                tener al menos 6 letras.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="gastoForm.invalid">Guardar</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+ <!-- Modal Anular -->
+<div class="modal fade" id="anular" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Anular gasto</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+        <span>
+          ¿Estás seguro de  anular el gasto seleccionado?
+        </span>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="guardarCambio()">Guardar</button>
+        <button type="button" class="btn btn-secondary" 
+          data-bs-dismiss="modal" (click)="cancelarCambio()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de éxito -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+         Los cambios fueron guardados exitosamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>

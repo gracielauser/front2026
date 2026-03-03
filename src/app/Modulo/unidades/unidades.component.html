@@ -1,0 +1,264 @@
+<div class="container-fluid">
+      <div class="card">
+          <div class="card-header">
+              <h5>Gestionar Unidad</h5>
+              <p class="mb-0">Administra la información de las unidades</p>
+          </div>
+          <div class="card-body">
+              <div class="row mb-3">
+                  <div class="col-md-4">
+                   <input type="text" class="form-control" placeholder="Buscar por nombre"
+                      [(ngModel)]="nombre" >
+                     </div>
+                  <div class="col-md-3">
+                    
+                </div>
+                  <div class="col-md-3">
+                     <select class="form-select" [(ngModel)]="estado">
+            <option selected value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+                  </div>
+                  <div class="col-md-2">
+                      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUnidad">Nueva Unidad</button>
+                  </div>
+              </div>
+              <div class="table-responsive tamaño">
+                  <table class="table table-striped">
+                      <thead>
+                          <tr>
+                              <th scope="col">Nro</th>
+                              <th scope="col">Nombre</th>
+                              <th scope="col">Abreviatura</th>
+                              <th scope="col">Estado</th>
+                              <th scope="col">Acciones</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let i=index; let uni of apiUnidad |nombre:nombre|estado:estado |paginate: { itemsPerPage: 6, currentPage: page }">
+                              <td>{{i+1}}</td>
+                              <td>{{uni.nombre}}</td>
+                              <td>{{uni.abreviatura}}</td>
+                               <!--Estado-->
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" [checked]="uni.estado==1"
+                                        (change)="showModal($event, uni)">
+                                </div>
+                            </td>
+                              <!--Modificar-->
+                              <td>
+                                  <button (click)="ModificarUnidad(uni)" class="btn btn-outline-primary btn-sm"data-bs-toggle="modal" data-bs-target="#modUnidad">
+                                      <i class="bi bi-pencil"></i> Editar
+                                  </button>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+              <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+          </div>
+      </div>
+    </div>
+  <!-- MODAL  -->
+  <div class="modal fade" id="addUnidad" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Unidad</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+          <form class="row g-3 needs-validation" [formGroup]="uniForm" novalidate (ngSubmit)="AgregarUnidad()">
+          <!--NOMBRES-->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!--Abreviatura-->
+          <div class="col-md-6">
+            <label class="form-label">Abreviatura <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="abreviatura" class="form-control" placeholder="Ingrese abreviatura"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosA').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>5){
+             document.getElementById('msgMaxLetrasA').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasA').style.display='none',2000);
+             this.value=this.value.slice(0,5);
+           }
+           if(this.value.length>0 && this.value.length<1){
+             document.getElementById('msgMinLetrasA').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasA').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['abreviatura'].valid && control['abreviatura'].value?.length>=2 && (control['abreviatura'].dirty||control['abreviatura'].touched),
+         'is-invalid': control['abreviatura'].invalid && (control['abreviatura'].dirty||control['abreviatura'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumerosA" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetrasA" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetrasA" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+            <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"  [disabled]="uniForm.invalid">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div> 
+   <!-- MODAL  -->
+  <div class="modal fade" id="modUnidad" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar Unidad</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+          <form class="row g-3 needs-validation" [formGroup]="uniForm" novalidate (ngSubmit)="guardarModificacion()">
+          <!--NOMBRES-->
+          <div class="col-md-6">
+            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>15){
+             document.getElementById('msgMaxLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
+             this.value=this.value.slice(0,15);
+           }
+           if(this.value.length>0 && this.value.length<3){
+             document.getElementById('msgMinLetras').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
+         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+          <!--Abreviatura-->
+          <div class="col-md-6">
+            <label class="form-label">Abreviatura <span class="text-danger"> * </span></label>
+            <input type="text" formControlName="abreviatura" class="form-control" placeholder="Ingrese abreviatura"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+         setTimeout(()=>document.getElementById('msgNumerosA').style.display='none',4000);event.preventDefault();}"
+              oninput="
+             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
+           if(this.value.length>5){
+             document.getElementById('msgMaxLetrasA').style.display='block';
+             setTimeout(()=>document.getElementById('msgMaxLetrasA').style.display='none',2000);
+             this.value=this.value.slice(0,5);
+           }
+           if(this.value.length>0 && this.value.length<1){
+             document.getElementById('msgMinLetrasA').style.display='block';
+             setTimeout(()=>document.getElementById('msgMinLetrasA').style.display='none',2000);
+           }
+         " [ngClass]="{
+         'is-valid': control['abreviatura'].valid && control['abreviatura'].value?.length>=2 && (control['abreviatura'].dirty||control['abreviatura'].touched),
+         'is-invalid': control['abreviatura'].invalid && (control['abreviatura'].dirty||control['abreviatura'].touched)}">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div id="msgNumerosA" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
+            </div>
+            <div id="msgMaxLetrasA" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
+              letras.</div>
+            <div id="msgMinLetrasA" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
+              letras.</div>
+          </div>
+            <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"  [disabled]="uniForm.invalid">Guardar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div> 
+  <!-- Modal único -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
+        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
+        <span>
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> la 
+          unidad de medida?
+        </span>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
+          data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal de éxito -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+         Los cambios fueron guardados exitosamente.
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>

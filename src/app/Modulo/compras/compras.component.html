@@ -1,0 +1,577 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h5>Gestionar Compras</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-3">
+          <input type="text" class="form-control" [ngModel]="nrocompra"
+            (ngModelChange)="nrocompra = $event.toUpperCase()" placeholder="Buscar por Nro Compra">
+        </div>
+        <div class="col-md-4">
+          <select class="form-select" [(ngModel)]="proveedor">
+            <option value="0">Todos los proveedores</option>
+            <option *ngFor="let pro of apiProveedor" [value]="pro.id_proveedor">{{pro.nombre}}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="estado">
+            <option value="1">Compras Pendientes</option>
+            <option value="2">Compras Recibidas</option>
+            <option value="3">Compras Canceladas</option>
+             <option value="">Listar todas las compras</option>
+          </select>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-success" (click)="nuevaCompra()">
+            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
+            Nueva Compra</button>
+        </div>
+        <div class="col-md-5">
+          <label for="f1">Desde::</label>
+          <input type="date" id="f1" class="form-control" (change)="ponerFecha($event,1)">
+        </div>
+        <div class="col-md-5">
+          <label for="f1">Hasta::</label>
+          <input type="date" id="f1" class="form-control" (change)="ponerFecha($event,2)">
+        </div>
+      </div>
+      <div class="table-responsive tamaño">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Nro</th>
+              <th scope="col">Nro.Compra</th>
+              <th scope="col">Fecha registro</th>
+              <th scope="col">Proveedor</th>
+              <th scope="col">Monto Total</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let i=index;let com of apiCompra| fechas:fechaD:fechaA |proveedor:proveedor | estado:estado | nroCompra:nrocompra | paginate: { itemsPerPage: 6, currentPage: page }">
+              <td>{{i+1}}</td>
+              <td>{{com.nro_compra}}</td>
+              <td>{{com.fecha_registro}}</td>
+              <td>{{com.proveedor.nombre}}</td>
+              <td>{{com.monto_total}} Bs.</td>
+              <td> <span class="badge text-white" [ngClass]="{
+                                        'bg-warning ': com.estado == 1,
+                                        'bg-success': com.estado == 2,
+                                        'bg-danger': com.estado == 3
+                                            }">
+                  {{ com.estado == 1 ? 'PENDIENTE' : (com.estado == 2 ? 'Recibido' : 'Cancelado')
+                  }}
+                </span></td>
+              <td>
+                <!-- Botones visibles solo si la compra está pendiente -->
+                <ng-container *ngIf="com.estado == 1">
+                  <!--Detalle-->
+                  <button class="btn btn-outline-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#detcompra"
+                    (click)="Detalle(com)">
+                    <i class="bi bi-card-text"></i> Detalle
+                  </button>
+
+                  <!--Recepción-->
+                  <button class="btn btn-outline-secondary btn-sm ms-2" data-bs-toggle="modal"
+                    data-bs-target="#recepcion" (click)="Detalle(com)">
+                    <i class="bi bi-box-seam"></i> Recepción
+                  </button>
+
+                  <!--Anular-->
+                  <button (click)="anularCompra(com)" class="btn btn-outline-danger btn-sm ms-2" data-bs-toggle="modal"
+                    data-bs-target="#anucompra">
+                    <i class="bi bi-trash"></i> Anular
+                  </button>
+                </ng-container>
+
+                <!-- Si la compra ya fue recibida -->
+                <ng-container *ngIf="com.estado == 2">
+                  <button class="btn btn-outline-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#detcompra"
+                    (click)="Detalle(com)">
+                    <i class="bi bi-card-text"></i> Detalle
+                  </button>
+                </ng-container>
+
+                <!-- Si la compra fue anulada -->
+                <ng-container *ngIf="com.estado == 3">
+                  <button class="btn btn-outline-primary btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#detcompra"
+                    (click)="Detalle(com)">
+                    <i class="bi bi-card-text"></i> Detalle
+                  </button>
+                  <span class="text-muted ms-2">Compra anulada</span>
+                </ng-container>
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL ADICIONAR -->
+<div class="modal fade" #modalAgregar id="addcompra" tabindex="-1" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      <!-- ENCABEZADO -->
+      <div class="modal-header text-wthie">
+        <h1 class="modal-title fs-5 d-flex align-items-center gap-2" id="exampleModalLabel">
+          <i class="bi bi-bag-plus-fill"></i> Adicionar Nueva Compra
+        </h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- CUERPO -->
+      <div class="modal-body bg-light">
+        <form class="row g-3 needs-validation" [formGroup]="compraForm" (ngSubmit)="guardarCompra()">
+          <div class="container">
+
+            <!-- PRIMERA FILA -->
+            <div class="row g-3">
+              <!-- INFO COMPRA -->
+              <div class="col-md-6">
+                <fieldset class="border rounded-3 p-3 bg-white shadow-sm">
+                  <legend class="float-none w-auto px-2 fw-semibold" style="color:#0468A0;">
+                    <i class="bi bi-receipt-cutoff me-1"></i> Información Compra
+                  </legend>
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <label for="fecha" class="form-label fw-semibold">Fecha</label>
+                      <input type="date" class="form-control form-control-sm" id="fecha"
+                        formControlName="fecha_registro" readonly>
+                    </div>
+                    <div class="col-md-6">
+                      <label for="nroCompra" class="form-label fw-semibold">Nro. Compra</label>
+                      <input type="text" class="form-control form-control-sm" id="nroCompra"
+                        formControlName="nro_compra" readonly>
+                    </div>
+                  </div>
+                </fieldset>
+              </div>
+
+              <!-- INFO PROVEEDOR -->
+              <div class="col-md-6">
+                <fieldset class="border rounded-3 p-3 bg-white shadow-sm">
+                  <legend class="float-none w-auto px-2 fw-semibold" style="color:#0468A0;">
+                    <i class="bi bi-truck-front-fill me-1"></i> Información del Proveedor
+                  </legend>
+                  <label for="proveedor" class="form-label fw-semibold">Proveedor: <span
+                      class="text-danger">*</span></label>
+                  <select id="proveedor" formControlName="id_proveedor" class="form-select form-select-sm" [ngClass]="{
+                      'is-valid': controlC['id_proveedor'].valid && (controlC['id_proveedor'].dirty||controlC['id_proveedor'].touched),
+                      'is-invalid': controlC['id_proveedor'].invalid && (controlC['id_proveedor'].dirty||controlC['id_proveedor'].touched)
+                    }">
+                    <option selected disabled [ngValue]="null">Selecciona un proveedor</option>
+                    <option *ngFor="let pro of apiProveedor" [ngValue]="pro">{{ pro.nombre }}</option>
+                  </select>
+                  <div class="valid-feedback">Correcto.</div>
+                  <div class="invalid-feedback">Este campo es obligatorio.</div>
+                </fieldset>
+              </div>
+            </div>
+
+            <!-- INFO PRODUCTO -->
+            <fieldset class="border rounded-3 p-3 bg-white shadow-sm mt-3">
+              <legend class="float-none w-auto px-2 fw-semibold" style="color:#0468A0;">
+                <i class="bi bi-box-seam-fill me-1"></i> Información del Producto
+              </legend>
+              <div class="row g-3 align-items-end">
+                <div class="col-md-6">
+                  <label for="producto" class="form-label fw-semibold">Producto</label>
+                  <div class="input-group">
+                    <span class="input-group-text text-white" style="background-color:#0468A0;">
+                      <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control" id="producto" placeholder="Buscar por nombre" #inputProducto
+                      (keyup)="filtrarProducto($event)" (focus)="mostrarLista = true" (blur)="ocultarListaConRetraso()">
+                  </div>
+                  <ul *ngIf="mostrarLista && nombre && (apiProductos | nombre:nombre).length > 0"
+                    class="list-group position-absolute w-100 mt-1 shadow-sm"
+                    style="z-index: 1000; max-height: 200px; overflow-y: auto;">
+                    <li *ngFor="let producto of apiProductos | nombre:nombre"
+                      class="list-group-item list-group-item-action"
+                      (mousedown)="agregarProductoATabla(producto,inputProducto)">
+                      <i class="bi bi-box"></i> {{ producto.nombre }}
+                    </li>
+                  </ul>
+                </div>
+                <div class="col-md-3">
+                  <button class="btn w-100 shadow-sm text-white border-0" id="agregar" style="background-color:#0468A0;"
+                    (click)="abrirModalProducto()">
+                    <i class="bi bi-plus-circle me-1"></i> Agregar Producto
+                  </button>
+                </div>
+              </div>
+            </fieldset>
+
+            <!-- TABLA DETALLE -->
+            <form [formGroup]="detalleForm" class="mt-3">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle shadow-sm bg-white rounded-3">
+                  <thead style="background-color:#0468A0; color:white;">
+                    <tr>
+                      <th>#</th>
+                      <th>Producto</th>
+                      <th>Precio Compra</th>
+                      <th>Cantidad</th>
+                      <th>Sub Total</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let com of detallesCompra; let i = index">
+                      <th scope="row">{{ i + 1 }}</th>
+                      <td>{{ com.producto.nombre }}</td>
+                      <td>
+                        <input type="number" class="form-control form-control-sm text-end" min="0.01" step="0.01"
+                          style="width: 160px; " [value]="com.precio_unitario" (input)="actualizarPrecio($event, i)"
+                          (keydown)="bloquearTeclasInvalidasPrecio($event)">
+                      </td>
+                      <td>
+                        <input type="number" class="form-control form-control-sm text-end" min="1"
+                          [value]="com.cantidad" (input)="actualizarCantidad($event, i)" style="width: 160px; "
+                          (keydown)="bloquearTeclasInvalidas($event)">
+                      </td>
+                      <td class="fw-semibold" style="color:#0468A0;">{{ com.sub_total | number:'1.2-2' }}</td>
+                      <td>
+                        <button class="btn btn-outline-danger btn-sm d-flex align-items-center gap-1"
+                          (click)="quitar(i)">
+                          <i class="bi bi-trash-fill"></i> Quitar
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </form>
+
+            <!-- TOTAL -->
+            <div class="row mt-4">
+              <div class="col-md-4 offset-md-8">
+                <div class="input-group">
+                  <span class="input-group-text fw-semibold text-white border-0" style="background-color:#0468A0;">
+                    <i class="bi bi-cash-coin me-1"></i> Total
+                  </span>
+                  <input type="text" formControlName="monto_total" class="form-control form-control-lg text-end fw-bold"
+                    style="color:#0468A0;" id="total" readonly>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PIE DEL MODAL -->
+          <div class="modal-footer bg-white rounded-bottom-3">
+            <button type="submit" class="btn text-white px-4 shadow-sm border-0" style="background-color:#0468A0;">
+              <i class="bi bi-save-fill me-1"></i> Guardar
+            </button>
+            <button type="button" class="btn btn-outline-secondary px-4 shadow-sm" (click)="cerrarModal()">
+              <i class="bi bi-x-circle me-1"></i> Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE  <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" (click)="guardarCompra()"
+                    [disabled]="permitido()">Guardar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>-->
+
+<!-- MODAL Anular -->
+<div class="modal fade" id="anucompra" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Anular Compra</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body d-flex flex-column justify-content-center align-items-center">
+        <i class="bi bi-exclamation-circle-fill fs-1"></i>
+        Estas seguro de anular la Orden de compra Seleccionada?
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"
+          (click)="confirmarAnular()">Guardar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL DETALLE -->
+<div class="modal fade" id="detcompra" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Detalle de Compra</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-light" id="detalleCompraPDF">
+        <!-- Información general -->
+        <div class="card mb-4 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-md-4">
+                <h6 class="fw-bold text-secondary mb-1">N° de Compra:</h6>
+                <p class="fw-semibold text-dark" id="nroCompra">{{detCompra?.nro_compra}}</p>
+              </div>
+              <div class="col-md-4">
+                <h6 class="fw-bold text-secondary mb-1">Proveedor:</h6>
+                <p class="fw-semibold text-dark" id="proveedorCompra">{{detCompra?.proveedor.nombre}}</p>
+              </div>
+              <div class="col-md-4">
+                <h6 class="fw-bold text-secondary mb-1">Usuario Responsable:</h6>
+                <p class="fw-semibold text-dark" id="usuarioCompra">{{detCompra?.usuario.usuario}}</p>
+              </div>
+
+              <div class="col-md-4">
+                <h6 class="fw-bold text-secondary mb-1">Fecha de Registro:</h6>
+                <p class="fw-semibold text-dark" id="fechaCompra">{{detCompra?.fecha_registro}}</p>
+              </div>
+              <div class="col-md-4">
+                <h6 class="fw-bold text-secondary mb-1">Estado:</h6>
+                <span id="estadoCompra" class="badge rounded-pill px-3 py-2" [ngClass]="{
+      'bg-warning text-dark': detCompra?.estado == 1,
+      'bg-success': detCompra?.estado == 2,
+      'bg-danger': detCompra?.estado == 3
+    }">
+                  {{
+                  detCompra?.estado == 1
+                  ? 'Pendiente'
+                  : detCompra?.estado == 2
+                  ? 'Recibido'
+                  : 'Cancelado'
+                  }}
+                </span>
+              </div>
+
+              <div class="col-md-4" *ngIf="detCompra?.estado == 2">
+                <h6 class="fw-bold text-secondary mb-1">Fecha de Recepción:</h6>
+                <p id="montoCompra" class="fw-bold text-success fs-5">{{detCompra?.fecha_recepcion }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detalle de productos -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-header text-white" style="background: linear-gradient(135deg, #0468A0, #049093);">
+            <h6 class="mb-0"><i class="bi bi-box-seam me-2"></i>Detalle de Productos</h6>
+          </div>
+          <div class="card-body bg-white">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-success">
+                  <tr>
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Precio Unitario (Bs)</th>
+                    <th>Cantidad</th>
+                    <th *ngIf="detCompra?.estado == 2">Cant. Recibida</th>
+                    <th *ngIf="detCompra?.estado == 2">Defectuosos</th>
+                    <th>Subtotal (Bs)</th>
+                  </tr>
+                </thead>
+                <tbody id="detalleCompraBody">
+                  <tr *ngFor="let i=index; let d of detalleCompra">
+                    <td>{{i+1}}</td>
+                    <td>{{d.producto.nombre}}</td>
+                    <td>{{d.precio_unitario}}</td>
+                    <td>{{d.cantidad}}</td>
+                    <td *ngIf="detCompra?.estado == 2">{{d.cantidad_recibida}}</td>
+                    <td *ngIf="detCompra?.estado == 2">{{d.defectuosos}}</td>
+                    <th>{{d.sub_total}}</th>
+                  </tr>
+
+                </tbody>
+                <tfoot>
+                  <tr class="table-light">
+                    <td colspan="4" class="text-end fw-bold">
+                      <i class="bi bi-cash-stack text-success me-2"></i> TOTAL:
+                    </td>
+                    <td class="fw-bold text-success fs-5">{{detCompra?.monto_total |number:'1.2-2'}} Bs.</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white d-flex justify-content-between">
+        <button type="button" class="btn btn-success shadow-sm" onclick="imprimirPDF()">
+          <i class="bi bi-printer-fill me-1"></i> Imprimir PDF
+        </button>
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cerrar
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL RECEPCION -->
+<div class="modal fade" id="recepcion" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+
+      <!-- ENCABEZADO -->
+      <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center">
+          <i class="bi bi-box-seam me-2 fs-4"></i> Recepción de Mercadería
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- CUERPO -->
+      <div class="modal-body bg-light">
+        <div class="container">
+          
+          <!-- Información de la Compra -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header  d-flex align-items-center">
+              <i class="bi bi-info-circle-fill me-2"></i>
+              <h6 class="mb-0 fw-semibold">Información de la Compra</h6>
+            </div>
+            <div class="card-body">
+              <div class="row gy-2">
+                <div class="col-md-4">
+                  <i class="bi bi-hash  me-1"></i>
+                  <strong>N° Compra:</strong> {{ detCompra?.nro_compra }}
+                </div>
+                <div class="col-md-4">
+                  <strong>Proveedor:</strong> {{ detCompra?.proveedor.nombre }}
+                </div>
+                <div class="col-md-4">
+                  <i class="bi bi-calendar3 me-1"></i>
+                  <strong>Fecha de Compra:</strong> {{ detCompra?.fecha_registro}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla de Productos Recibidos -->
+          <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header  d-flex align-items-center">
+              <i class="bi bi-cart-check-fill me-2"></i>
+              <h6 class="mb-0 fw-semibold">Productos Recibidos</h6>
+            </div>
+            <div class="card-body">
+               <form class="row g-3 needs-validation" [formGroup]="detalleForm"> 
+                <div class="table-responsive">
+                  <table class="table align-middle table-hover table-striped">
+                    <thead class="table-primary text-white" style="background-color: #0468A0;">
+                      <tr>
+                        <th>#</th>
+                        <th>Producto</th>
+                        <th>Cant. Comprada</th>
+                        <th>Cant. Recibida</th>
+                        <th>Defectuosos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let det of detalleCompra; let i = index">
+                        <td>{{ i + 1 }}</td>
+                        <td>
+                          <i class="bi bi-tag-fill me-1"></i>
+                          {{ det.producto.nombre }}
+                        </td>
+                        <td class="text-center">{{ det.cantidad }}</td>
+                        <td>
+                          <input type="number" class="form-control text-center" min="0" style="width: 180px"
+                            [value]="det.cantidad_recibida" (input)="recibiendo($event,i)"
+                            (keydown)="bloquearTeclasSoloNumeros($event)"
+                            [ngClass]="{ 'is-invalid': det.valid_recibido === false, 'is-valid': det.valid_recibido === true }">
+                          <div *ngIf="det.valid_recibido === false" class="text-danger small">Cantidad inválida</div>
+                        </td>
+                        <td>
+                          <input type="number" class="form-control text-center" min="0" style="width: 180px"
+                            [value]="det.defectuosos" (input)="defectuosos($event,i)"
+                            (keydown)="bloquearTeclasSoloNumeros($event)"
+                            [ngClass]="{ 'is-invalid': det.valid_defectuosos === false, 'is-valid': det.valid_defectuosos === true }">
+                          <div *ngIf="det.valid_defectuosos === false" class="text-danger small">Defectuosos inválido</div>
+                        </td>
+                   
+                      </tr>
+                      <tr *ngIf="errorCantidades">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td><p style="color: red">Cantidad recibida fuera de rango (0 - solicitado)</p></td>
+                        <td><p style="color: red">Defectuosos fuera de rango (0 - solicitado)</p></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </form>
+            </div>
+          </div>
+       
+          <!-- Estado General -->
+           <form class="row g-3 needs-validation" [formGroup]="compraForm" > 
+             <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header  d-flex align-items-center">
+              <i class="bi bi-clipboard-check-fill me-2"></i>
+              <h6 class="mb-0 fw-semibold">Resumen de Recepción</h6>
+            </div>
+            <div class="card-body">
+              <div class="row gy-3">
+                <div class="col-md-4">
+                  <label class="fw-semibold"><i class="bi bi-calendar-date me-1 "></i> Fecha de Recepción:</label>
+                  <input type="date" class="form-control" formControlName="fecha_recepcion"
+                    [ngClass]="{ 'is-invalid': controlC['fecha_recepcion'].invalid && (controlC['fecha_recepcion'].dirty || controlC['fecha_recepcion'].touched), 'is-valid': controlC['fecha_recepcion'].valid && (controlC['fecha_recepcion'].dirty || controlC['fecha_recepcion'].touched) }">
+                  <div *ngIf="controlC['fecha_recepcion'].invalid && (controlC['fecha_recepcion'].dirty || controlC['fecha_recepcion'].touched)" class="text-danger small">
+                    La fecha de recepción es obligatoria.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    </form>
+         
+        </div>
+      </div>
+      <!-- PIE -->
+      <div class="modal-footer ">
+        <button (click)="CompraRecibida()" class="btn btn-success d-flex align-items-center" data-bs-dismiss="modal" [disabled]="recepcionInvalida">
+          <i class="bi bi-check-circle me-2"></i> Confirmar Recepción
+        </button>
+        <button type="button" class="btn btn-secondary d-flex align-items-center" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i> Cancelar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADICIONAR -->
+<div class="modal fade" #modalAgregarProducto tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Nueva Compra</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+
+        aaaaaaaaaaaa
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalProducto()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>

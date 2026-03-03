@@ -1,0 +1,49 @@
+<section id="home">
+  <div  class="cont">
+    <div class="FormularioContenedor">
+      <div class="ftu"></div>
+      <h1 class="titulo" >BIENVENIDO</h1>
+      <form [formGroup]="loginForm" class="body">      
+          <div  >
+            <!-- inicio contenido  -->
+            <div >
+              <div class="forms ">
+                      <!-- ATRIBUTO LOGIN -->
+                      <label for="Login">Usuario</label>
+                      <input  type="text" id="Login" class="colorr"
+                      placeholder="Ingrese su usuario"
+                      formControlName="login"
+                      class="form-control"
+                       > 
+                      <div class="alert alert-danger" *ngIf="d['login'].invalid && (d['login'].dirty || d['login'].touched)">
+                        <div *ngIf="d['login'].errors?.['required']" >
+                        Error, debe ingresar algun dato.
+                       </div>
+                     </div> 
+                      <!-- ATRIBUTO PASSWORD -->
+                      <label for="Password">Contraseña</label>
+                      <input  type="password" id="Password"
+                          placeholder="Ingrese su contraseña"
+                          formControlName="password"
+                          class="form-control"
+                      > 
+                      <div class="alert alert-danger" *ngIf="d['password'].invalid && (d['password'].dirty || d['password'].touched)">
+                        <div *ngIf="d['password'].errors?.['required']"  >
+                            Error, debe ingresar algun dato.
+                        </div>
+                    </div>          
+              </div>    
+          </div>
+            <!-- fin contenido  -->
+          </div>
+          <div class="modal-footer">
+              <!--<button class="btn btn-secondary">Cancelar</button>-->
+              <button class="btn btn-primary  boton" (click)=" guardarDatos();">Iniciar Sesion</button>
+           
+          </div>
+    </form>
+  </div>
+  </div>
+
+
+</section>

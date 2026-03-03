@@ -1,0 +1,1222 @@
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h5>Gestionar Reportes</h5>
+      <p class="mb-0">Administra la información de los reportes</p>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <button class="btn btn-custom btn-clientes w-100 " data-bs-toggle="modal" data-bs-target="#clientes">
+            Reporte de clientes
+            <i class="bi bi-people fs-1"></i>
+          </button>
+        </div>
+        <div class="col-md-6 mb-3">
+          <button class="btn btn-custom btn-pedidos w-100 " data-bs-toggle="modal" data-bs-target="#pedidos">
+            Reporte de pedidos
+            <i class="bi bi-inboxes-fill fs-1"></i>
+          </button>
+        </div>
+        <div class="col-md-6 mb-3">
+          <button class="btn btn-custom btn-ventas w-100 " data-bs-toggle="modal" data-bs-target="#ventas">
+            Reporte de Ventas
+            <i class="bi bi-currency-dollar fs-1"></i>
+          </button>
+        </div>
+        <div class="col-md-6 mb-3">
+          <button class="btn btn-custom btn-compras w-100" data-bs-toggle="modal" data-bs-target="#compras">
+            Reporte de Compras
+            <i class="bi bi-truck fs-1"></i>
+          </button>
+        </div>
+        <div class="col-md-6 mb-3">
+          <button class="btn btn-custom btn-inventario w-100" data-bs-toggle="modal" data-bs-target="#inventario">
+            Reporte de Inventario
+            <i class="bi bi-box-seam fs-1"></i>
+          </button>
+        </div>
+        <div class="col-md-6 mb-3">
+          <button class="btn btn-custom btn-gastos w-100" data-bs-toggle="modal" data-bs-target="#gastos">
+            Reporte de Gastos
+            <i class="bi bi-receipt-cutoff fs-1"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL CLIENTES -->
+<div class="modal fade" id="clientes" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Clientes</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- =====================================
+     REPORTE DE CLIENTES
+     ===================================== -->
+        <div class="container-fluid py-4">
+
+          <!-- 🧩 Encabezado -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold"><i class="bi bi-people-fill me-2"></i>Reporte de Clientes</h2>
+            <div>
+              <button class="btn btn-outline-primary me-2"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+              <button class="btn btn-success me-2"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+              <button class="btn btn-danger"><i class="bi bi-filetype-pdf"></i> Exportar PDF</button>
+            </div>
+          </div>
+
+          <!-- 🎯 Filtros -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <form class="row g-3">
+                <div class="col-md-3">
+                  <label class="form-label">Tipo de cliente</label>
+                  <select class="form-select">
+                    <option value="todos">Todos</option>
+                    <option value="sistema">Registrados por el sistema</option>
+                    <option value="app">Registrados desde la app</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Fecha de registro (desde)</label>
+                  <input type="date" class="form-control">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Fecha de registro (hasta)</label>
+                  <input type="date" class="form-control">
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">Buscar por nombre</label>
+                  <input type="text" class="form-control" placeholder="Ej: Juan Pérez">
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <!-- 📊 Resumen de clientes -->
+          <div class="row text-center mb-4">
+            <div class="col-md-4">
+              <div class="card border-primary shadow-sm">
+                <div class="card-body">
+                  <h6 class="text-muted">Total de clientes</h6>
+                  <h3 class="fw-bold text-primary">324</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border-success shadow-sm">
+                <div class="card-body">
+                  <h6 class="text-muted">Clientes registrados en el sistema</h6>
+                  <h3 class="fw-bold text-success">210</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card border-info shadow-sm">
+                <div class="card-body">
+                  <h6 class="text-muted">Clientes registrados desde la app</h6>
+                  <h3 class="fw-bold text-info">114</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 📋 Tabla de clientes -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                  <thead class="table-primary">
+                    <tr>
+                      <th>#</th>
+                      <th>Nombre</th>
+                      <th>Correo</th>
+                      <th>Teléfono</th>
+                      <th>Tipo</th>
+                      <th>Fecha de registro</th>
+                      <th>Pedidos realizados</th>
+                      <th>Estado</th>
+                      <th class="text-center">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1</td>
+                      <td>Juan Pérez</td>
+                      <td>juanperezgmail.com</td>
+                      <td>+591 67891234</td>
+                      <td><span class="badge bg-success">Sistema</span></td>
+                      <td>05/09/2025</td>
+                      <td>8</td>
+                      <td><span class="badge bg-success">Activo</span></td>
+                      <td class="text-center">
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleCliente"><i
+                            class="bi bi-eye"></i></button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2</td>
+                      <td>María López</td>
+                      <td>maria.lopezexample.com</td>
+                      <td>+591 78965432</td>
+                      <td><span class="badge bg-info text-dark">App</span></td>
+                      <td>22/09/2025</td>
+                      <td>3</td>
+                      <td><span class="badge bg-success">Activo</span></td>
+                      <td class="text-center">
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleCliente"><i
+                            class="bi bi-eye"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- 📈 Gráfico de clientes -->
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-line"></i> Estadísticas de Clientes</h5>
+              <div class="text-center py-4 text-muted">
+                <em>(Aquí puedes integrar un gráfico con Chart.js o Recharts para mostrar la evolución de registros por
+                  mes)</em>
+              </div>
+            </div>
+          </div>
+
+          <!-- 📑 Modal Detalle Cliente -->
+          <div class="modal fade" id="detalleCliente" tabindex="-1" aria-labelledby="detalleClienteLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+              <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                  <h5 class="modal-title" id="detalleClienteLabel"><i class="bi bi-person-badge"></i> Detalle del
+                    Cliente</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="row mb-3">
+                    <div class="col-md-6">
+                      <p><strong>Nombre:</strong> Juan Pérez</p>
+                      <p><strong>Correo:</strong> juanperezgmail.com</p>
+                      <p><strong>Teléfono:</strong> +591 67891234</p>
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>Tipo:</strong> <span class="badge bg-success">Sistema</span></p>
+                      <p><strong>Fecha de registro:</strong> 05/09/2025</p>
+                      <p><strong>Pedidos realizados:</strong> 8</p>
+                    </div>
+                  </div>
+                  <h6 class="fw-bold">Historial de pedidos recientes</h6>
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th># Pedido</th>
+                        <th>Fecha</th>
+                        <th>Total (Bs.)</th>
+                        <th>Estado</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>PED-00120</td>
+                        <td>03/10/2025</td>
+                        <td>180.00</td>
+                        <td><span class="badge bg-success">Entregado</span></td>
+                      </tr>
+                      <tr>
+                        <td>PED-00118</td>
+                        <td>28/09/2025</td>
+                        <td>95.00</td>
+                        <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>
+                    Cerrar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success " data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL VENTAS -->
+<div class="modal fade" id="ventas" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <!-- =====================================
+     REPORTE DE VENTAS
+     ===================================== -->
+          <div class="container-fluid py-4">
+
+            <!-- 🧩 Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2 class="fw-bold"><i class="bi bi-cash-coin me-2"></i>Reporte de Ventas</h2>
+              <div>
+                <button class="btn btn-outline-primary me-2"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+                <button class="btn btn-success me-2"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+                <button class="btn btn-danger"><i class="bi bi-filetype-pdf"></i> Exportar PDF</button>
+              </div>
+            </div>
+
+            <!-- 🎯 Filtros -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <form class="row g-3">
+                  <div class="col-md-3">
+                    <label class="form-label">Origen de venta</label>
+                    <select class="form-select">
+                      <option value="todos">Todos</option>
+                      <option value="sistema">Ventas del sistema</option>
+                      <option value="app">Ventas por la app</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" class="form-control">
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Buscar cliente</label>
+                    <input type="text" class="form-control" placeholder="Ej: Juan Pérez">
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- 📊 Resumen general -->
+            <div class="row text-center mb-4">
+              <div class="col-md-3">
+                <div class="card border-primary shadow-sm">
+                  <div class="card-body">
+                    <h6 class="text-muted">Total de ventas</h6>
+                    <h3 class="fw-bold text-primary">Bs. 18,450</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card border-success shadow-sm">
+                  <div class="card-body">
+                    <h6 class="text-muted">Ventas del sistema</h6>
+                    <h3 class="fw-bold text-success">Bs. 12,900</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card border-info shadow-sm">
+                  <div class="card-body">
+                    <h6 class="text-muted">Ventas por la app</h6>
+                    <h3 class="fw-bold text-info">Bs. 5,550</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card border-warning shadow-sm">
+                  <div class="card-body">
+                    <h6 class="text-muted">Número total de ventas</h6>
+                    <h3 class="fw-bold text-warning">112</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 📋 Tabla de ventas -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                      <tr>
+                        <th># Venta</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Origen</th>
+                        <th>Total (Bs.)</th>
+                        <th>Método de pago</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>VNT-00123</td>
+                        <td>Juan Pérez</td>
+                        <td>15/10/2025</td>
+                        <td><span class="badge bg-success">Sistema</span></td>
+                        <td>350.00</td>
+                        <td>Efectivo</td>
+                        <td><span class="badge bg-success">Completada</span></td>
+                        <td class="text-center">
+                          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleVenta"><i
+                              class="bi bi-eye"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>VNT-00124</td>
+                        <td>María López</td>
+                        <td>15/10/2025</td>
+                        <td><span class="badge bg-info text-dark">App</span></td>
+                        <td>120.00</td>
+                        <td>Transferencia</td>
+                        <td><span class="badge bg-success">Completada</span></td>
+                        <td class="text-center">
+                          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleVenta"><i
+                              class="bi bi-eye"></i></button>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>VNT-00125</td>
+                        <td>Carlos Ramos</td>
+                        <td>14/10/2025</td>
+                        <td><span class="badge bg-success">Sistema</span></td>
+                        <td>480.00</td>
+                        <td>Efectivo</td>
+                        <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+                        <td class="text-center">
+                          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleVenta"><i
+                              class="bi bi-eye"></i></button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- 📈 Estadísticas -->
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow"></i> Estadísticas de Ventas</h5>
+                <div class="text-center py-4 text-muted">
+                  <em>(Aquí puedes mostrar un gráfico comparativo entre ventas del sistema y ventas por la app usando
+                    Chart.js)</em>
+                </div>
+              </div>
+            </div>
+
+            <!-- 📑 Modal Detalle Venta -->
+            <div class="modal fade" id="detalleVenta" tabindex="-1" aria-labelledby="detalleVentaLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                  <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="detalleVentaLabel"><i class="bi bi-receipt-cutoff"></i> Detalle de Venta
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <p><strong>Cliente:</strong> Juan Pérez</p>
+                        <p><strong>Fecha:</strong> 15/10/2025</p>
+                        <p><strong>Método de pago:</strong> Efectivo</p>
+                      </div>
+                      <div class="col-md-6">
+                        <p><strong>Origen:</strong> <span class="badge bg-success">Sistema</span></p>
+                        <p><strong>Estado:</strong> <span class="badge bg-success">Completada</span></p>
+                        <p><strong>Total:</strong> <span class="fw-bold">Bs. 350.00</span></p>
+                      </div>
+                    </div>
+                    <h6 class="fw-bold">Detalle de productos</h6>
+                    <table class="table table-bordered">
+                      <thead>
+                        <tr>
+                          <th>Producto</th>
+                          <th>Cantidad</th>
+                          <th>Precio (Bs.)</th>
+                          <th>Subtotal</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Filtro de aire</td>
+                          <td>1</td>
+                          <td>80.00</td>
+                          <td>80.00</td>
+                        </tr>
+                        <tr>
+                          <td>Aceite 10W40</td>
+                          <td>2</td>
+                          <td>135.00</td>
+                          <td>270.00</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>
+                      Cerrar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success " data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Inventario -->
+<div class="modal fade" id="inventario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Inventario</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <div class="container mt-4">
+            <h3 class="mb-4 text-primary"><i class="bi bi-box-seam"></i> Reporte de Inventario</h3>
+
+            <!-- Filtros -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+                <form class="row g-3">
+                  <div class="col-md-3">
+                    <label for="categoria" class="form-label">Categoría</label>
+                    <select id="categoria" class="form-select">
+                      <option selected>Todos</option>
+                      <option>Filtros</option>
+                      <option>Aceites</option>
+                      <option>Accesorios</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label for="marca" class="form-label">Marca</label>
+                    <select id="marca" class="form-select">
+                      <option selected>Todas</option>
+                      <option>Shell</option>
+                      <option>Castrol</option>
+                      <option>Motul</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label for="origen" class="form-label">Origen del movimiento</label>
+                    <select id="origen" class="form-select">
+                      <option selected>Todos</option>
+                      <option>Sistema Web</option>
+                      <option>App Móvil</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label for="estadoStock" class="form-label">Estado del stock</label>
+                    <select id="estadoStock" class="form-select">
+                      <option selected>Todos</option>
+                      <option>Bajo stock</option>
+                      <option>Sin stock</option>
+                      <option>Normal</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label for="fechaInicio" class="form-label">Desde</label>
+                    <input type="date" id="fechaInicio" class="form-control">
+                  </div>
+
+                  <div class="col-md-3">
+                    <label for="fechaFin" class="form-label">Hasta</label>
+                    <input type="date" id="fechaFin" class="form-control">
+                  </div>
+
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-primary w-100"><i class="bi bi-search"></i> Generar
+                      reporte</button>
+                  </div>
+
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-success w-100"><i class="bi bi-file-earmark-excel"></i>
+                      Exportar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- Resumen -->
+            <div class="row mb-4">
+              <div class="col-md-3">
+                <div class="card text-center border-primary shadow-sm">
+                  <div class="card-body">
+                    <h6>Total productos</h6>
+                    <h3 class="text-primary">250</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center border-warning shadow-sm">
+                  <div class="card-body">
+                    <h6>Productos con bajo stock</h6>
+                    <h3 class="text-warning">18</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center border-danger shadow-sm">
+                  <div class="card-body">
+                    <h6>Productos sin stock</h6>
+                    <h3 class="text-danger">6</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center border-success shadow-sm">
+                  <div class="card-body">
+                    <h6>Movimientos del mes</h6>
+                    <h3 class="text-success">135</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de inventario -->
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-list-ul"></i> Detalle del inventario</h5>
+                <div class="table-responsive">
+                  <table class="table table-striped align-middle">
+                    <thead class="table-primary">
+                      <tr>
+                        <th>#</th>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th>Marca</th>
+                        <th>Stock actual</th>
+                        <th>Último movimiento</th>
+                        <th>Tipo de movimiento</th>
+                        <th>Origen</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>1</td>
+                        <td>Aceite 10W40</td>
+                        <td>Aceites</td>
+                        <td>Castrol</td>
+                        <td><span class="badge bg-success">25</span></td>
+                        <td>14/10/2025</td>
+                        <td>Salida (Venta)</td>
+                        <td><span class="badge bg-info">App Móvil</span></td>
+                      </tr>
+                      <tr>
+                        <td>2</td>
+                        <td>Filtro de aire Toyota</td>
+                        <td>Filtros</td>
+                        <td>FRAM</td>
+                        <td><span class="badge bg-warning text-dark">5</span></td>
+                        <td>12/10/2025</td>
+                        <td>Entrada (Compra)</td>
+                        <td><span class="badge bg-primary">Sistema Web</span></td>
+                      </tr>
+                      <tr>
+                        <td>3</td>
+                        <td>Limpiaparabrisas universal</td>
+                        <td>Accesorios</td>
+                        <td>Bosch</td>
+                        <td><span class="badge bg-danger">0</span></td>
+                        <td>10/10/2025</td>
+                        <td>Salida (Venta)</td>
+                        <td><span class="badge bg-info">App Móvil</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- PEDIDOS -->
+<div class="modal fade" id="pedidos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+        <div class="container mt-4">
+  <h3 class="mb-4 text-primary"><i class="bi bi-receipt"></i> Reporte de Pedidos (App Móvil)</h3>
+
+  <!-- Filtros -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+      <form class="row g-3">
+        <div class="col-md-3">
+          <label for="estadoPedido" class="form-label">Estado del pedido</label>
+          <select id="estadoPedido" class="form-select">
+            <option selected>Todos</option>
+            <option>Pendiente</option>
+            <option>Confirmado</option>
+            <option>En entrega</option>
+            <option>Entregado</option>
+            <option>Cancelado</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label for="cliente" class="form-label">Cliente</label>
+          <input type="text" id="cliente" class="form-control" placeholder="Nombre o CI">
+        </div>
+
+        <div class="col-md-3">
+          <label for="fechaInicio" class="form-label">Desde</label>
+          <input type="date" id="fechaInicio" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label for="fechaFin" class="form-label">Hasta</label>
+          <input type="date" id="fechaFin" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label for="metodoPago" class="form-label">Método de pago</label>
+          <select id="metodoPago" class="form-select">
+            <option selected>Todos</option>
+            <option>Efectivo</option>
+            <option>Transferencia</option>
+            <option>QR</option>
+          </select>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-primary w-100"><i class="bi bi-search"></i> Generar reporte</button>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-success w-100"><i class="bi bi-file-earmark-excel"></i> Exportar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resumen -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card text-center border-primary shadow-sm">
+        <div class="card-body">
+          <h6>Total pedidos</h6>
+          <h3 class="text-primary">320</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center border-warning shadow-sm">
+        <div class="card-body">
+          <h6>Pendientes</h6>
+          <h3 class="text-warning">28</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center border-success shadow-sm">
+        <div class="card-body">
+          <h6>Entregados</h6>
+          <h3 class="text-success">260</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center border-danger shadow-sm">
+        <div class="card-body">
+          <h6>Cancelados</h6>
+          <h3 class="text-danger">32</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de pedidos -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3"><i class="bi bi-list-ul"></i> Detalle de pedidos</h5>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-primary">
+            <tr>
+              <th># Pedido</th>
+              <th>Cliente</th>
+              <th>Fecha</th>
+              <th>Total (Bs.)</th>
+              <th>Método de pago</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>PED-00123</td>
+              <td>Juan Pérez</td>
+              <td>14/10/2025</td>
+              <td>180.00</td>
+              <td>QR</td>
+              <td><span class="badge bg-warning text-dark">Pendiente</span></td>
+              <td>
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> Ver</button>
+              </td>
+            </tr>
+            <tr>
+              <td>PED-00124</td>
+              <td>Ana Rojas</td>
+              <td>13/10/2025</td>
+              <td>320.00</td>
+              <td>Efectivo</td>
+              <td><span class="badge bg-success">Entregado</span></td>
+              <td>
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> Ver</button>
+              </td>
+            </tr>
+            <tr>
+              <td>PED-00125</td>
+              <td>Carlos López</td>
+              <td>12/10/2025</td>
+              <td>150.00</td>
+              <td>Transferencia</td>
+              <td><span class="badge bg-danger">Cancelado</span></td>
+              <td>
+                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> Ver</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Compras -->
+<div class="modal fade" id="compras" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+       <div class="container mt-4">
+  <h3 class="mb-4 text-primary"><i class="bi bi-cart-check"></i> Reporte de Compras</h3>
+
+  <!-- Filtros -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+      <form class="row g-3">
+        <div class="col-md-3">
+          <label for="proveedor" class="form-label">Proveedor</label>
+          <input type="text" id="proveedor" class="form-control" placeholder="Nombre del proveedor">
+        </div>
+
+        <div class="col-md-3">
+          <label for="estadoCompra" class="form-label">Estado</label>
+          <select id="estadoCompra" class="form-select">
+            <option selected>Todos</option>
+            <option>Activa</option>
+            <option>Cancelada</option>
+            <option>Finalizada</option>
+          </select>
+        </div>
+
+        <div class="col-md-3">
+          <label for="fechaInicio" class="form-label">Desde</label>
+          <input type="date" id="fechaInicio" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label for="fechaFin" class="form-label">Hasta</label>
+          <input type="date" id="fechaFin" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label for="usuario" class="form-label">Usuario que registró</label>
+          <input type="text" id="usuario" class="form-control" placeholder="Nombre de usuario">
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-primary w-100"><i class="bi bi-search"></i> Generar reporte</button>
+        </div>
+
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-success w-100"><i class="bi bi-file-earmark-excel"></i> Exportar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resumen -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card text-center border-primary shadow-sm">
+        <div class="card-body">
+          <h6>Total de compras</h6>
+          <h3 class="text-primary">45</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center border-success shadow-sm">
+        <div class="card-body">
+          <h6>Monto total</h6>
+          <h3 class="text-success">Bs. 12,450</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center border-warning shadow-sm">
+        <div class="card-body">
+          <h6>Proveedores activos</h6>
+          <h3 class="text-warning">8</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-center border-danger shadow-sm">
+        <div class="card-body">
+          <h6>Compras canceladas</h6>
+          <h3 class="text-danger">2</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de compras -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3"><i class="bi bi-list-ul"></i> Detalle de Compras</h5>
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-primary">
+            <tr>
+              <th># Compra</th>
+              <th>Proveedor</th>
+              <th>Fecha</th>
+              <th>Total (Bs.)</th>
+              <th>Estado</th>
+              <th>Registrado por</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>COMP-00125</td>
+              <td>Lubricantes El Sol</td>
+              <td>10/10/2025</td>
+              <td>2,350.00</td>
+              <td><span class="badge bg-success">Finalizada</span></td>
+              <td>Admin</td>
+              <td>
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#detalleCompraModal">
+                  <i class="bi bi-eye"></i> Ver
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td>COMP-00126</td>
+              <td>Auto Repuestos SRL</td>
+              <td>12/10/2025</td>
+              <td>4,200.00</td>
+              <td><span class="badge bg-warning text-dark">Activa</span></td>
+              <td>María P.</td>
+              <td>
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#detalleCompraModal">
+                  <i class="bi bi-eye"></i> Ver
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Detalle de Compra -->
+  <div class="modal fade" id="detalleCompraModal" tabindex="-1" aria-labelledby="detalleCompraLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="detalleCompraLabel"><i class="bi bi-info-circle"></i> Detalle de Compra</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <strong>N° Compra:</strong> COMP-00125<br>
+              <strong>Proveedor:</strong> Lubricantes El Sol<br>
+              <strong>Fecha:</strong> 10/10/2025<br>
+            </div>
+            <div class="col-md-6">
+              <strong>Registrado por:</strong> Admin<br>
+              <strong>Estado:</strong> <span class="badge bg-success">Finalizada</span><br>
+              <strong>Monto total:</strong> Bs. 2,350.00
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Producto</th>
+                  <th>Precio unitario (Bs.)</th>
+                  <th>Cantidad</th>
+                  <th>Subtotal (Bs.)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Aceite 10W40 Castrol</td>
+                  <td>80.00</td>
+                  <td>10</td>
+                  <td>800.00</td>
+                </tr>
+                <tr>
+                  <td>Filtro de aire Toyota</td>
+                  <td>50.00</td>
+                  <td>12</td>
+                  <td>600.00</td>
+                </tr>
+                <tr>
+                  <td>Bujías NGK</td>
+                  <td>95.00</td>
+                  <td>10</td>
+                  <td>950.00</td>
+                </tr>
+              </tbody>
+              <tfoot class="table-light">
+                <tr>
+                  <th colspan="3" class="text-end">Total:</th>
+                  <th>Bs. 2,350.00</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Compras -->
+<div class="modal fade" id="gastos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+   <div class="container mt-4">
+  <!-- Título -->
+  <div class="text-center mb-4">
+    <h3 class="fw-bold text-danger">
+      <i class="bi bi-cash-stack me-2"></i>Reporte de Gastos
+    </h3>
+    <p class="text-muted">Visualiza y analiza los gastos registrados en el sistema</p>
+  </div>
+
+  <!-- Filtros -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <form class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Desde</label>
+          <input type="date" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Hasta</label>
+          <input type="date" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Categoría</label>
+          <select class="form-select">
+            <option selected>Todos</option>
+            <option>Servicios</option>
+            <option>Mantenimiento</option>
+            <option>Suministros</option>
+            <option>Otros</option>
+          </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+          <button type="button" class="btn btn-danger w-100">
+            <i class="bi bi-search me-1"></i>Filtrar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Resumen en cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card text-white bg-danger shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-cash-coin fs-2"></i>
+          <h5 class="mt-2">Total Gastos</h5>
+          <h4 class="fw-bold">Bs 1,230.00</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-warning shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-tools fs-2"></i>
+          <h5 class="mt-2">Mantenimiento</h5>
+          <h4 class="fw-bold">Bs 350.00</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-info shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-lightning-charge fs-2"></i>
+          <h5 class="mt-2">Servicios</h5>
+          <h4 class="fw-bold">Bs 580.00</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card text-white bg-success shadow-sm">
+        <div class="card-body text-center">
+          <i class="bi bi-person-lines-fill fs-2"></i>
+          <h5 class="mt-2">Usuario Activo</h5>
+          <h4 class="fw-bold">3 usuarios</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de detalle -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Detalle de Gastos</h5>
+      <div>
+        <button class="btn btn-light btn-sm me-2">
+          <i class="bi bi-file-earmark-excel-fill text-success"></i> Excel
+        </button>
+        <button class="btn btn-light btn-sm">
+          <i class="bi bi-file-earmark-pdf-fill text-danger"></i> PDF
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-danger text-center">
+            <tr>
+              <th>#</th>
+              <th>Fecha</th>
+              <th>Categoría</th>
+              <th>Monto (Bs)</th>
+              <th>Descripción</th>
+              <th>Registrado por</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody class="text-center">
+            <tr>
+              <td>1</td>
+              <td>2025-10-12</td>
+              <td>Servicios</td>
+              <td>150.00</td>
+              <td>Pago de electricidad</td>
+              <td>Administrador</td>
+              <td><span class="badge bg-success">Activo</span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>2025-10-13</td>
+              <td>Suministros</td>
+              <td>80.00</td>
+              <td>Compra de papelería</td>
+              <td>Usuario 1</td>
+              <td><span class="badge bg-danger">Anulado</span></td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>2025-10-14</td>
+              <td>Mantenimiento</td>
+              <td>200.00</td>
+              <td>Reparación de impresora</td>
+              <td>Usuario 2</td>
+              <td><span class="badge bg-success">Activo</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
