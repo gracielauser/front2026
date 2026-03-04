@@ -1,29 +1,34 @@
-<nav class="navbar navbar-expand-sm .bg-transparent barra">
+<nav class="navbar navbar-expand-lg navbar-custom">
   <div class="container-fluid">
-    <a class="navbar-brand logo" href="#">logo</a>
+    <!-- Botón Hamburguesa para móviles -->
+    <button class="btn-menu-toggle" type="button" (click)="toggleSidebar()">
+      <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Logo/Icono -->
+    <div class="logo-container">
+      <i class="bi bi-car-front-fill logo-icon"></i>
+      <span class="logo-text">AutoParts</span>
+    </div>
+
+    <!-- Título -->
     <a class="navbar-brand titulo" href="#">Repuestos y Autoaccesorios</a>
-    <div class="dropdown">
-      <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+
+    <!-- Dropdown de roles -->
+    <div class="dropdown user-menu">
+      <a class="btn btn-role dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
         aria-expanded="false">
+        <i class="bi bi-person-circle me-2"></i>
         {{nombreRol}}
       </a>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" *ngFor="let rol of roles"><p (click)="cambiarRol(rol)">{{rol.nombre}}</p></a></li>
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li *ngFor="let rol of roles">
+          <a class="dropdown-item" (click)="cambiarRol(rol)">
+            <i class="bi bi-shield-check me-2"></i>
+            {{rol.nombre}}
+          </a>
+        </li>
       </ul>
     </div>
-    <!--<div class="dropdown">
-      <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        {{(rol==1)?"Administrador":"Vendedor"}}
-      </button>
-      <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="#">Action</a></li>
-        <li><a class="dropdown-item" href="#">Another action</a></li>
-        <li><a class="dropdown-item" href="#">Something else here</a></li>
-      </ul>
-    </div>-->
   </div>
 </nav>
-<!--<li *ngFor="let rol of roles">{{rol.nombre}}</li>-->
-   <!-- <select class="btn">
-      <option class="btn" *ngFor="let rol of roles">{{rol.nombre}}</option>
-    </select>-->

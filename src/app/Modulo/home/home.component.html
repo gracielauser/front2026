@@ -1,16 +1,17 @@
 <app-header></app-header>
 
-<div >
-  <div class="row">
-    <div class="col-2 ps-0">
+<!-- Overlay para cerrar sidebar en móvil -->
+<div class="sidebar-overlay" (click)="closeSidebar()"></div>
+
+<div class="home-container">
+  <div class="row g-0">
+    <div class="sidebar-column">
       <app-sidevar></app-sidevar>
     </div>
-    <div class="col-10 ps-4"style="margin-top: 105px;">
+    <div class="content-column" style="margin-top: 105px;">
       <router-outlet></router-outlet>
     </div>
   </div>
 </div>
 
 <app-footer class="mt-auto"></app-footer>
-<!-- Footer siempre abajo -->
- 

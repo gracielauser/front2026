@@ -1,95 +1,125 @@
-<!--<input type="checkbox" id="btn-menu">
-<div class="botono">
-  <label class="btn" for="btn-menu">
-    <i class="bi bi-border-width"></i>
-  </label>
-</div>-->
 <div class="sidebar">
-  <a routerLink="/home/principal">
-    <i class="bi bi-boxes fs-5"></i>
-    Inicio
+  <!-- Inicio -->
+  <a routerLink="/home/principal" routerLinkActive="active-link">
+    <i class="bi bi-house-door-fill fs-5"></i>
+    <span>Inicio</span>
   </a>
+
+  <!-- Gestionar Personal -->
   <div onclick="this.classList.toggle('active')" *ngIf="tienePermiso(1)">
     <a class="has-submenu">
       <i class="bi bi-person-circle fs-5"></i>
-      Gestionar Personal</a>
+      <span>Gestionar Personal</span>
+    </a>
     <div class="submenu">
-      <a routerLink="/home/empleados"><i class="bi bi-arrow-right"></i>
-        Empleados</a>
-      <a routerLink="/home/usuarios"><i class="bi bi-arrow-right"></i>
-        Usuarios</a>
-      <a routerLink="/home/roles"><i class="bi bi-arrow-right"></i>
-        Roles</a>
+      <a routerLink="/home/empleados" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Empleados</span>
+      </a>
+      <a routerLink="/home/usuarios" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Usuarios</span>
+      </a>
+      <a routerLink="/home/roles" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Roles</span>
+      </a>
     </div>
   </div>
-  <a routerLink="/home/clientes">
+
+  <!-- Clientes -->
+  <a routerLink="/home/clientes" routerLinkActive="active-link">
     <i class="bi bi-people-fill fs-5"></i>
-    Clientes
+    <span>Clientes</span>
   </a>
+
+  <!-- Productos -->
   <div onclick="this.classList.toggle('active')">
     <a class="has-submenu">
-      <i class="bi bi-columns-gap fs-5"></i>
-      Productos</a>
+      <i class="bi bi-box-seam fs-5"></i>
+      <span>Productos</span>
+    </a>
     <div class="submenu">
-      <a routerLink="/home/dashboard">
-        <i class="bi bi-arrow-right"></i>
-        Dashboard
+      <a routerLink="/home/dashboard" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Dashboard</span>
       </a>
-      <a routerLink="/home/productos">
-        <i class="bi bi-arrow-right"></i>
-        Listar Productos
+      <a routerLink="/home/productos" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Listar Productos</span>
       </a>
-      <a routerLink="/home/categoria">
-        <i class="bi bi-arrow-right"></i>
-        Categoria
+      <a routerLink="/home/categoria" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Categoría</span>
       </a>
-      <a routerLink="/home/marcas">
-        <i class="bi bi-arrow-right"></i>
-        Marcas
+      <a routerLink="/home/marcas" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Marcas</span>
       </a>
-      <a routerLink="/home/unidades">
-        <i class="bi bi-arrow-right"></i>
-        Unidades
+      <a routerLink="/home/unidades" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Unidades</span>
       </a>
     </div>
   </div>
-   <div onclick="this.classList.toggle('active')">
+
+  <!-- Compras -->
+  <div onclick="this.classList.toggle('active')">
     <a class="has-submenu">
       <i class="bi bi-cart4 fs-5"></i>
-      Compras</a>
+      <span>Compras</span>
+    </a>
     <div class="submenu">
-      <a routerLink="/home/compras"><i class="bi bi-arrow-right"></i>
-        Listar Compras</a>
-      <a routerLink="/home/proveedores"><i class="bi bi-arrow-right"></i>
-        Proveedores</a>
+      <a routerLink="/home/compras" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Listar Compras</span>
+      </a>
+      <a routerLink="/home/proveedores" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Proveedores</span>
+      </a>
     </div>
   </div>
-    <a routerLink="/home/ventas">
-      <i class="bi bi-cash-coin fs-5"></i>
-      Ventas
-    </a>
-     <a routerLink="/home/pedidos">
-     <i class="bi bi-box2"></i>
-      Pedidos
-    </a>
 
-      <div onclick="this.classList.toggle('active')">
+  <!-- Ventas -->
+  <a routerLink="/home/ventas" routerLinkActive="active-link">
+    <i class="bi bi-cash-coin fs-5"></i>
+    <span>Ventas</span>
+  </a>
+
+  <!-- Pedidos -->
+  <a routerLink="/home/pedidos" routerLinkActive="active-link">
+    <i class="bi bi-box2-fill fs-5"></i>
+    <span>Pedidos</span>
+  </a>
+
+  <!-- Inventario -->
+  <div onclick="this.classList.toggle('active')">
     <a class="has-submenu">
-      <i class="bi bi-bricks fs-5"></i>
-      Inventario</a>
+      <i class="bi bi-boxes fs-5"></i>
+      <span>Inventario</span>
+    </a>
     <div class="submenu">
-      <a routerLink="/home/inventario"><i class="bi bi-arrow-right"></i>
-        Consultas de Stock</a>
-      <a routerLink="/home/kardex"><i class="bi bi-arrow-right"></i>
-        Resumen de Movimientos</a>
+      <a routerLink="/home/inventario" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Consultas de Stock</span>
+      </a>
+      <a routerLink="/home/kardex" routerLinkActive="active-link">
+        <i class="bi bi-arrow-right-circle"></i>
+        <span>Resumen de Movimientos</span>
+      </a>
     </div>
   </div>
-    <a routerLink="/home/reportes">
-      <i class="bi bi-clipboard-data fs-5"></i>
-      Reportes
-    </a>
-    <a routerLink="/home/gastos">
-      <i class="bi bi-dash-circle fs-5"></i>
-      Gastos
-    </a>
+
+  <!-- Reportes -->
+  <a routerLink="/home/reportes" routerLinkActive="active-link">
+    <i class="bi bi-clipboard-data-fill fs-5"></i>
+    <span>Reportes</span>
+  </a>
+
+  <!-- Gastos -->
+  <a routerLink="/home/gastos" routerLinkActive="active-link">
+    <i class="bi bi-wallet2 fs-5"></i>
+    <span>Gastos</span>
+  </a>
 </div>

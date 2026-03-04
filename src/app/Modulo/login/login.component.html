@@ -1,49 +1,60 @@
 <section id="home">
-  <div  class="cont">
-    <div class="FormularioContenedor">
-      <div class="ftu"></div>
-      <h1 class="titulo" >BIENVENIDO</h1>
-      <form [formGroup]="loginForm" class="body">      
-          <div  >
-            <!-- inicio contenido  -->
-            <div >
-              <div class="forms ">
-                      <!-- ATRIBUTO LOGIN -->
-                      <label for="Login">Usuario</label>
-                      <input  type="text" id="Login" class="colorr"
-                      placeholder="Ingrese su usuario"
-                      formControlName="login"
-                      class="form-control"
-                       > 
-                      <div class="alert alert-danger" *ngIf="d['login'].invalid && (d['login'].dirty || d['login'].touched)">
-                        <div *ngIf="d['login'].errors?.['required']" >
-                        Error, debe ingresar algun dato.
-                       </div>
-                     </div> 
-                      <!-- ATRIBUTO PASSWORD -->
-                      <label for="Password">Contraseña</label>
-                      <input  type="password" id="Password"
-                          placeholder="Ingrese su contraseña"
-                          formControlName="password"
-                          class="form-control"
-                      > 
-                      <div class="alert alert-danger" *ngIf="d['password'].invalid && (d['password'].dirty || d['password'].touched)">
-                        <div *ngIf="d['password'].errors?.['required']"  >
-                            Error, debe ingresar algun dato.
-                        </div>
-                    </div>          
-              </div>    
-          </div>
-            <!-- fin contenido  -->
-          </div>
-          <div class="modal-footer">
-              <!--<button class="btn btn-secondary">Cancelar</button>-->
-              <button class="btn btn-primary  boton" (click)=" guardarDatos();">Iniciar Sesion</button>
-           
-          </div>
-    </form>
-  </div>
-  </div>
+  <div class="login-container">
+    <div class="login-card">
+      <div class="user-avatar">
+        <div class="avatar-circle"></div>
+      </div>
 
+      <h1 class="welcome-title">BIENVENIDO</h1>
+      <p class="welcome-subtitle">Inicia sesión para continuar</p>
 
+      <form [formGroup]="loginForm" class="login-form">
+        <!-- CAMPO USUARIO -->
+        <div class="form-group">
+          <label for="Login" class="form-label">Usuario</label>
+          <div class="input-wrapper">
+            <span class="input-icon user-icon"></span>
+            <input
+              type="text"
+              id="Login"
+              placeholder="Ingrese su usuario"
+              formControlName="login"
+              class="form-input"
+              [class.input-error]="d['login'].invalid && (d['login'].dirty || d['login'].touched)"
+            >
+          </div>
+          <div class="error-message" *ngIf="d['login'].invalid && (d['login'].dirty || d['login'].touched)">
+            <span class="error-icon">⚠</span>
+            <span *ngIf="d['login'].errors?.['required']">El usuario es requerido</span>
+          </div>
+        </div>
+
+        <!-- CAMPO CONTRASEÑA -->
+        <div class="form-group">
+          <label for="Password" class="form-label">Contraseña</label>
+          <div class="input-wrapper">
+            <span class="input-icon lock-icon"></span>
+            <input
+              type="password"
+              id="Password"
+              placeholder="Ingrese su contraseña"
+              formControlName="password"
+              class="form-input"
+              [class.input-error]="d['password'].invalid && (d['password'].dirty || d['password'].touched)"
+            >
+          </div>
+          <div class="error-message" *ngIf="d['password'].invalid && (d['password'].dirty || d['password'].touched)">
+            <span class="error-icon">⚠</span>
+            <span *ngIf="d['password'].errors?.['required']">La contraseña es requerida</span>
+          </div>
+        </div>
+
+        <!-- BOTÓN SUBMIT -->
+        <button type="button" class="btn-submit" (click)="guardarDatos()">
+          <span class="btn-text">Iniciar Sesión</span>
+          <span class="btn-icon">→</span>
+        </button>
+      </form>
+    </div>
+  </div>
 </section>

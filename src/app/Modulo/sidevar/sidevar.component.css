@@ -1,110 +1,232 @@
-/*.container{
-    position: fixed;
-    width: 290px;
-    height: auto;
-    background-color: #174870;
-   /* background-color:#089fa1; 
+:root {
+  --sidebar-primary: #8b9de8;
+  --sidebar-secondary: #a8b7f5;
+  --sidebar-accent: #c4b5e8;
+  --sidebar-bg: #6b7db8;
+  --sidebar-bg-dark: #5a6da3;
+  --sidebar-hover: #7d8fc7;
+  --sidebar-text: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.15);
 }
-.foto{
-    width: 60px;
-    height: 60px;
-    display: block;/*centrado
-    margin-left: 45px;
+
+/* SIDEBAR PRINCIPAL */
+.sidebar {
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--sidebar-bg-dark) 100%);
+  padding: 0;
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 999;
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-right: 2px solid rgba(168, 183, 245, 0.2);
 }
-.usuario{
-    margin: 29px;/*pone al medio
-    margin-left: 65px;
+
+/* Scrollbar personalizado */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
 }
-.nombre{
-    display: block;
-    padding: 5px;
-    color: white;
-    text-align: center;
+
+.sidebar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
 }
-.container ul li{
-    color: white;
-    border-bottom: 1px solid #B7C3CC;
-    padding: 3px 30px 4px 30px;
-    list-style: none;
-    margin-left: -40px;
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--sidebar-secondary);
+  border-radius: 3px;
 }
-.container ul li:hover{
-    background-color: white;
-    color: #045CA4;
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--sidebar-accent);
 }
-#btn-menu{
-    display: none/*desaparece el elemento;
+
+/* ENLACES DEL SIDEBAR */
+.sidebar a {
+  padding: 14px 20px;
+  text-decoration: none;
+  font-size: 15px;
+  color: var(--sidebar-text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--sidebar-border);
+  transition: all 0.3s ease;
+  position: relative;
+  font-weight: 500;
 }
-#btn-menu:checked ~ .container{
+
+.sidebar a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--sidebar-accent);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.sidebar a:hover {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), transparent);
+  padding-left: 28px;
+}
+
+.sidebar a:hover::before {
+  transform: scaleY(1);
+}
+
+.sidebar a i {
+  font-size: 20px;
+  min-width: 24px;
+  transition: all 0.3s ease;
+}
+
+.sidebar a:hover i {
+  transform: scale(1.1);
+  color: var(--sidebar-accent);
+}
+
+.sidebar a span {
+  flex: 1;
+}
+
+/* ACTIVE LINK */
+.active-link {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent) !important;
+  border-left: 4px solid var(--sidebar-accent) !important;
+  padding-left: 24px !important;
+  font-weight: 600;
+}
+
+.active-link i {
+  color: var(--sidebar-accent) !important;
+}
+
+/* SUBMENU CONTAINER */
+.sidebar > div {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.has-submenu {
+  position: relative;
+}
+
+.has-submenu::after {
+  content: '▼';
+  position: absolute;
+  right: 20px;
+  font-size: 12px;
+  transition: transform 0.3s ease;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.active .has-submenu::after {
+  content: '▲';
+  transform: rotate(180deg);
+  color: var(--sidebar-accent);
+}
+
+/* SUBMENU */
+.submenu {
+  display: none;
+  background: rgba(0, 0, 0, 0.15);
+  border-left: 3px solid var(--sidebar-accent);
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
     opacity: 0;
-    visibility: hidden;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
 }
-.botono{
-   position: absolute;
-   left: 30px; 
-   top: 25px;
-   cursor: pointer;
-   background-color: white;
+
+.active .submenu {
+  display: block;
 }
-.btn{
-   display: block;
-   border: 1px solid black;
+
+.submenu a {
+  padding: 12px 20px 12px 50px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
 }
-.btn:hover{
-    background-color:#6B99C3;
-    border: none;
+
+.submenu a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  padding-left: 58px;
 }
-.tamaño{
-    width: 50px;
-    height: 90px;
-   margin-right: 20px;
-}*/
-/*SUB MENU*/
+
+.submenu a i {
+  font-size: 14px;
+  color: var(--sidebar-accent);
+}
+
+/* OVERLAY PARA MÓVIL */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
   .sidebar {
-    width: 280px;
-    height: 100vh;
-    /*background-color: #2c3e50;*/
-    background-color: #174870;
-    padding-left: 20px;
-    margin-top: 92px;
+    transform: translateX(-100%);
     position: fixed;
-    overflow-y: auto;
+    left: 0;
+    top: 70px;
+    height: calc(100vh - 70px);
+    z-index: 1001;
   }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+    box-shadow: 8px 0 25px rgba(0, 0, 0, 0.3);
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    width: 260px;
+  }
+
   .sidebar a {
-    padding: 8px 13px;
-    text-decoration: none;
-    font-size: 16px;
-    color: white;
-    display: block;
-    cursor: pointer;
-    border-top: 1px solid  #4a75a0;  
+    padding: 12px 16px;
+    font-size: 14px;
   }
+
   .sidebar a:hover {
-    /*background-color: #34495e;*/
-    background-color: white;
-    color: #045CA4;
-    border-right: 4px solid #045CA4;
+    padding-left: 24px;
   }
 
-  .submenu {
-    display: none;
-    background-color: #34495e;
-  }
   .submenu a {
-    padding-left: 40px;
-    font-size: 15px;
+    padding: 10px 16px 10px 40px;
+    font-size: 13px;
   }
 
-  .has-submenu::after {
-    content: '▼';
-    float: right;
-    margin-right: 10px;
+  .submenu a:hover {
+    padding-left: 48px;
   }
-
-  .active .submenu {
-    display: block;
-  }
-
-  .active .has-submenu::after {
-    content: '▲';
-  }
+}
