@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Categoria } from '../Modelos/categoria';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoriaService {
-private baseUrl='/api/categoria'
+private baseUrl= environment.apiUrl+'/api/categoria'
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -22,6 +23,6 @@ private baseUrl='/api/categoria'
    }
    modificarCategoria(categoria:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,categoria)  
+      return this.xhttp.put(url,categoria)
      }
 }

@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Venta } from '../Modelos/venta';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VentaService {
- private baseUrl="/api/venta"
+ private baseUrl=environment.apiUrl+"/api/venta"
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -20,10 +21,10 @@ export class VentaService {
    }
      modificarVenta(venta:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,venta)  
+      return this.xhttp.put(url,venta)
      }
      anular(id_venta:number):Observable<any>{
       let url = this.baseUrl+"/anular/"+id_venta;
-      return this.xhttp.put(url, null)  
+      return this.xhttp.put(url, null)
      }
 }

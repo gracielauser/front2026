@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MarcaService {
 
-private baseUrl='/api/marca'
+private baseUrl=environment.apiUrl+'/api/marca'
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -21,6 +22,6 @@ private baseUrl='/api/marca'
    }
      modificarMarca(marca:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,marca)  
+      return this.xhttp.put(url,marca)
      }
 }

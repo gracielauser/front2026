@@ -2,12 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Producto } from '../Modelos/producto';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
-private baseUrl='/api/producto'
+private baseUrl=environment.apiUrl+'/api/producto'
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -28,6 +29,6 @@ private baseUrl='/api/producto'
    }
      modificarProducto(producto:FormData):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,producto)  
+      return this.xhttp.put(url,producto)
      }
 }

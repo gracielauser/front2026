@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Pedido } from '../Modelos/pedido';
 import { Xtb } from '@angular/compiler';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PedidoService {
 
-  private baseUrl='/api/pedido'
+  private baseUrl=environment.apiUrl+'/api/pedido'
   constructor(
     private xhttp:HttpClient
   ) { }

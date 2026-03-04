@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Cliente } from '../Modelos/cliente';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteService {
 
-  private baseUrl = '/api/cliente'
+  private baseUrl = environment.apiUrl + '/api/cliente';
   constructor(
     private xhttp: HttpClient
   ) { }
@@ -23,6 +24,6 @@ export class ClienteService {
   }
     modificarCliente(cliente:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,cliente)  
+      return this.xhttp.put(url,cliente)
      }
 }

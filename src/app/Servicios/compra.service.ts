@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Compra } from '../Modelos/compra';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CompraService {
 
-private baseUrl='/api/compra'
+private baseUrl= environment.apiUrl+'/api/compra'
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -22,11 +23,11 @@ private baseUrl='/api/compra'
    }
      modificarCompra(compra:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,compra)  
+      return this.xhttp.put(url,compra)
      }
      anular(id:number):Observable<any>{
       let url = this.baseUrl+"/anular/"+id;
-      return this.xhttp.put(url, null)  
+      return this.xhttp.put(url, null)
      }
      recibirCompra(modif: any):Observable<any>{
 return this.xhttp.put(this.baseUrl + '/recibir', modif);

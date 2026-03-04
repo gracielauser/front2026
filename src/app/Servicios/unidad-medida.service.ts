@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UnidadMedidaService {
-private baseUrl='/api/unidad'
+private baseUrl=environment.apiUrl+'/api/unidad'
 constructor(
     private xhttp:HttpClient
   ) { }
@@ -19,6 +20,6 @@ constructor(
    }
    modificarUnidad(unidad:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,unidad)  
+      return this.xhttp.put(url,unidad)
      }
 }

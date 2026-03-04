@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Proveedor } from '../Modelos/proveedor';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProveedorService {
 
-  private baseUrl='/api/proveedor'
+  private baseUrl=environment.apiUrl+'/api/proveedor'
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -22,6 +23,6 @@ export class ProveedorService {
    }
      modificarProveedor(proveedor:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,proveedor)  
+      return this.xhttp.put(url,proveedor)
      }
 }

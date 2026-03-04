@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RolServiceService {
-  private baseUrl = '/api/empleados'
+  private baseUrl = environment.apiUrl+'/api/empleados'
 
   constructor(private http: HttpClient) { }
   agregar(rol: any): Observable<any> {

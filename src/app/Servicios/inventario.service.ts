@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Inventario } from '../Modelos/inventario';
 import { RecepcionCompra } from '../Modelos/recepcion-compra';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InventarioService {
 
-  private baseUrl='/api'
+  private baseUrl=environment.apiUrl+'/api'
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -28,6 +29,6 @@ export class InventarioService {
 
      modificarInventario(cantidad:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,cantidad)  
+      return this.xhttp.put(url,cantidad)
      }
 }

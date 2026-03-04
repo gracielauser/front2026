@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmpleadoService {
 
-private baseUrl='/api/empleados'
+private baseUrl=environment.apiUrl+'/api/empleados'
 
   constructor(
     private http:HttpClient
@@ -25,7 +26,7 @@ private baseUrl='/api/empleados'
      }
      modificarEmpleado(empleado:any):Observable<any>{//modificar
       let url = this.baseUrl+"/modificar";
-      return this.http.put(url,empleado)  
+      return this.http.put(url,empleado)
      }
      validarCi(ci: string):Observable<any>{
       return this.http.get<any>(`${this.baseUrl}/validar-ci/${ci}`);

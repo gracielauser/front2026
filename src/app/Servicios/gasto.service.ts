@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GastoService {
 
-  private baseUrl='/api/gasto'
+  private baseUrl=environment.apiUrl+'/api/gasto'
     constructor(
       private xhttp:HttpClient
     ) { }
@@ -21,6 +22,6 @@ export class GastoService {
      }
        anularGasto(gasto:any):Observable<any>{//anular
       let url = this.baseUrl+"/anular";
-      return this.xhttp.put(url,gasto)  
+      return this.xhttp.put(url,gasto)
      }
 }

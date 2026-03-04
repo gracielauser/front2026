@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Usuario } from '../Modelos/usuario';
+import { environment } from '../../environments/environment';
 
 
 @Injectable({
@@ -10,7 +11,7 @@ import { Usuario } from '../Modelos/usuario';
 })
 export class LoginService {
 
-  private baseUrl = '/api'
+  private baseUrl = environment.apiUrl+'/api'
 
   constructor(private xhttp: HttpClient) {
 

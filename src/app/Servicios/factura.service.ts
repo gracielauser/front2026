@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Factura } from '../Modelos/factura';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FacturaService {
 
-  private baseUrl='/api'
+  private baseUrl=environment.apiUrl+'/api'
   constructor(
     private xhttp:HttpClient
   ) { }

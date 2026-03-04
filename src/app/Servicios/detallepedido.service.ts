@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DetallePedido } from '../Modelos/detalle-pedido';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DetallepedidoService {
 
-  private baseUrl='/api/det_compra'
+  private baseUrl=environment.apiUrl+'/api/det_compra'
   constructor(
     private xhttp:HttpClient
   ) { }

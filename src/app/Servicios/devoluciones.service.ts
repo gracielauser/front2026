@@ -2,13 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Devoluciones } from '../Modelos/devoluciones';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DevolucionesService {
 
-  private baseUrl='/api'
+  private baseUrl=environment.apiUrl+'/api'
   constructor(
     private xhttp:HttpClient
   ) { }
