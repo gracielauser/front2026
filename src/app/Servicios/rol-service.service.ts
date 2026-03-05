@@ -7,17 +7,17 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class RolServiceService {
-  private baseUrl = environment.apiUrl+'/api/empleados'
+  private baseUrl = environment.apiUrl+'/api/rol'
 
   constructor(private http: HttpClient) { }
   agregar(rol: any): Observable<any> {
-    return this.http.post('api/rol/agregar', rol)
+    return this.http.post(this.baseUrl+'/agregar', rol)
   }
   listar(): Observable<any> {
-    return this.http.get('api/rol/listar');
+    return this.http.get(this.baseUrl+'/listar');
   }
   asignarRol(usu_Rol: any): Observable<any> {
-    return this.http.post('api/rol/asignar', usu_Rol);
+    return this.http.post(this.baseUrl+'/asignar', usu_Rol);
   }
   modificarRol(rol: any): Observable<any> {//modificar
     let url = this.baseUrl + "/modificar";

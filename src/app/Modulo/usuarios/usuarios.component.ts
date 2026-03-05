@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import * as bootstrap from 'bootstrap';
 import { Usuario } from '../../Modelos/usuario';
@@ -27,6 +27,12 @@ export class UsuariosComponent implements OnInit {
   rolesSeleccionados:number[]=[]
   cambiotitulEditar:boolean = false;
 
+  //Búsqueda de personas
+  buscarPersona: string = '';
+  personasFiltradas: any[] = [];
+  showPersonaDropdown: boolean = false;
+  personaSeleccionada: any = null;
+
   //Filtros y Paginacion q  a
   persona:string=''
   usuario:string=''
@@ -41,15 +47,128 @@ export class UsuariosComponent implements OnInit {
   ngOnInit(): void {
       this.Listar()
   }
+
+  // Validador personalizado para coincidencia de contraseñas
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const clave = control.get('clave')?.value;
+    const repetirClave = control.get('repetirClave')?.value;
+
+    // Si ambos están vacíos, no hay error (se maneja con required en modo crear)
+    if (!clave && !repetirClave) {
+      return null;
+    }
+
+    // Si solo uno está lleno, o si no coinciden
+    if (clave !== repetirClave) {
+      return { passwordMismatch: true };
+    }
+
+    return null;
+  }
+
   usuarioForm=new UntypedFormGroup({
     usuario:new UntypedFormControl('',[Validators.required]),
     clave:new UntypedFormControl('',Validators.required),
+    repetirClave:new UntypedFormControl('',Validators.required),
     estado:new UntypedFormControl('1',Validators.required),
     persona:new UntypedFormControl('',Validators.required)
-  })
+  }, { validators: this.passwordMatchValidator.bind(this) });
   get control() {
     return this.usuarioForm.controls
   }
+
+  // Métodos para búsqueda de personas
+  filtrarPersonas(): void {
+    const busqueda = this.buscarPersona.toLowerCase().trim();
+    if (busqueda.length === 0) {
+      this.personasFiltradas = [];
+      this.showPersonaDropdown = false;
+      return;
+    }
+
+    this.personasFiltradas = this.apiPersonal
+      .filter(persona => {
+        const nombreCompleto = `${persona.nombre} ${persona.ap_paterno} ${persona.ap_materno}`.toLowerCase();
+        const cedula = persona.ci?.toString().toLowerCase() || '';
+        return nombreCompleto.includes(busqueda) || cedula.includes(busqueda);
+      })
+      .slice(0, 5); // Limitar a máximo 5 resultados
+
+    this.showPersonaDropdown = this.personasFiltradas.length > 0;
+  }
+
+  seleccionarPersona(persona: any): void {
+    this.personaSeleccionada = persona;
+    this.buscarPersona = `${persona.nombre} ${persona.ap_paterno} ${persona.ap_materno}`;
+    this.usuarioForm.patchValue({ persona: persona });
+    this.showPersonaDropdown = false;
+  }
+
+  ocultarDropdown(): void {
+    // Pequeño delay para que el click en el item funcione antes de ocultar
+    setTimeout(() => {
+      this.showPersonaDropdown = false;
+    }, 200);
+  }
+
+  // Actualizar validaciones según modo
+  actualizarValidacionesPassword(): void {
+    const claveControl = this.usuarioForm.get('clave');
+    const repetirClaveControl = this.usuarioForm.get('repetirClave');
+
+    if (this.cambiotitulEditar) {
+      // Modo edición: contraseñas no obligatorias, pero si se llena una, ambas son obligatorias
+      claveControl?.clearValidators();
+      repetirClaveControl?.clearValidators();
+    } else {
+      // Modo creación: contraseñas obligatorias
+      claveControl?.setValidators([Validators.required]);
+      repetirClaveControl?.setValidators([Validators.required]);
+    }
+
+    claveControl?.updateValueAndValidity();
+    repetirClaveControl?.updateValueAndValidity();
+  }
+
+  // Verificar si hay cambio de contraseña en modo edición
+  verificarCambioPassword(): boolean {
+    const clave = this.usuarioForm.get('clave')?.value;
+    const repetirClave = this.usuarioForm.get('repetirClave')?.value;
+
+    // Si está en modo edición y alguna contraseña tiene valor, ambas son requeridas
+    if (this.cambiotitulEditar && (clave || repetirClave)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  validarFormulario(): boolean {
+    // Validaciones básicas del formulario
+    if (this.usuarioForm.get('usuario')?.invalid) return false;
+    if (this.usuarioForm.get('persona')?.invalid) return false;
+    if (this.rolesSeleccionados.length === 0) return false;
+
+    const clave = this.usuarioForm.get('clave')?.value;
+    const repetirClave = this.usuarioForm.get('repetirClave')?.value;
+
+    if (this.cambiotitulEditar) {
+      // Modo edición: si hay contraseña, validar
+      if (clave || repetirClave) {
+        if (!clave || !repetirClave) return false; // Ambas requeridas
+        if (clave !== repetirClave) return false; // Deben coincidir
+        if (clave.length < 6 || clave.length > 15) return false; // Longitud
+      }
+    } else {
+      // Modo creación: contraseñas obligatorias
+      if (!clave || !repetirClave) return false;
+      if (clave !== repetirClave) return false;
+      if (clave.length < 6 || clave.length > 15) return false;
+    }
+
+    return true;
+  }
+
   Listar(){
     this.ususer.getListaUsuario().subscribe((lista)=>{
       this.apiUsuario=lista
@@ -58,53 +177,145 @@ export class UsuariosComponent implements OnInit {
   }
 
   AgregarUsuario(){
-    const nuevoUsuario:Usuario={
-      usuario:(this.usuarioForm.get('usuario')?.value),
-      clave:(this.usuarioForm.get('clave')?.value),
-      estado:(1),
-      persona:(this.usuarioForm.get('persona')?.value),
+    if (!this.validarFormulario()) {
+      console.log('❌ Formulario inválido');
+      return;
     }
-    console.log(nuevoUsuario);
-    this.ususer.saveUsuario(nuevoUsuario).subscribe((data)=>{
-      console.log('Usuario agregado con éxito: ',data);
-      this.rolesSeleccionados.forEach((rolId)=>{
-        const usuRol={
-          id_usuario: data.id_usuario,
-          id_rol: rolId
+
+    if (this.cambiotitulEditar) {
+      // Modo edición
+      this.modificarUsuario();
+    } else {
+      // Modo agregar
+      const nuevoUsuario:Usuario={
+        usuario:(this.usuarioForm.get('usuario')?.value),
+        clave:(this.usuarioForm.get('clave')?.value),
+        estado:(1),
+        persona:(this.usuarioForm.get('persona')?.value),
+      }
+      console.log('📝 Nuevo usuario:', nuevoUsuario);
+      this.ususer.saveUsuario(nuevoUsuario).subscribe({
+        next: (data) => {
+          console.log('✅ Usuario agregado con éxito:', data);
+          this.rolesSeleccionados.forEach((rolId)=>{
+            const usuRol={
+              id_usuario: data.id_usuario,
+              id_rol: rolId
+            }
+            this.rolService.asignarRol(usuRol).subscribe((response) => {
+              console.log('✅ Rol asignado:', response);
+            }, (error) => {
+              console.error('❌ Error al asignar rol:', error);
+            });
+          })
+          this.Listar();
+          this.usuarioForm.reset();
+          this.rolesSeleccionados = [];
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error('❌ Error al agregar usuario:', error);
         }
-        this.rolService.asignarRol(usuRol).subscribe((response) => {
-           this.Listar()
-          console.log('Rol asignado con éxito: ', response);
-        }, (error) => {
-          console.error('Error al asignar rol: ', error);
-        });
-      })
-     
-      this.usuarioForm.reset()
+      });
     }
-    )
+  }
+
+  modificarUsuario(){
+    const claveActual = this.usuarioForm.get('clave')?.value;
+    const usuarioModificado: any = {
+      id_usuario: this.usuarioModel.id_usuario,
+      usuario: this.usuarioForm.get('usuario')?.value,
+      estado: this.usuarioForm.get('estado')?.value,
+      persona: this.usuarioForm.get('persona')?.value
+    };
+
+    // Solo incluir clave si se está cambiando (tiene valor)
+    if (claveActual && claveActual.trim() !== '') {
+      usuarioModificado.clave = claveActual;
+      console.log('📝 Modificando usuario con nueva contraseña');
+    } else {
+      console.log('📝 Modificando usuario sin cambiar contraseña');
+    }
+
+    console.log('📝 Usuario a modificar:', usuarioModificado);
+    this.ususer.modificarUsuario(usuarioModificado).subscribe({
+      next: (data) => {
+        console.log('✅ Usuario modificado con éxito:', data);
+        // Actualizar roles
+        this.rolesSeleccionados.forEach((rolId)=>{
+          const usuRol={
+            id_usuario: data.id_usuario,
+            id_rol: rolId
+          }
+          this.rolService.asignarRol(usuRol).subscribe((response) => {
+            console.log('✅ Rol actualizado:', response);
+          }, (error) => {
+            console.error('❌ Error al actualizar rol:', error);
+          });
+        });
+        this.usuarioForm.reset();
+        this.rolesSeleccionados = [];
+        this.cambiotitulEditar = false;
+        this.cerrarModal();
+        this.Listar();
+      },
+      error: (error) => {
+        console.error('❌ Error al modificar usuario:', error);
+      }
+    });
+  }
+
+  cerrarModal() {
+    const modalEl = document.getElementById('addusuario');
+    if (modalEl) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
+    }
+    // Limpiar backdrop
+    setTimeout(() => {
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }, 300);
   }
   rolesUsuario(roles: any[]):string{
     let nombreRoles=''
     roles.forEach(r => nombreRoles+=r.nombre+' | ')
     return nombreRoles
   }
-  
+
    passwordVisible = false;
   togglePassword(): void {
-    const input = document.getElementById("password") as HTMLInputElement;
-    if (input) {
-      this.passwordVisible = !this.passwordVisible;
-      input.type = this.passwordVisible ? "text" : "password";
+    const inputPassword = document.getElementById("password") as HTMLInputElement;
+    const inputRepeatPassword = document.getElementById("repeatPassword") as HTMLInputElement;
+
+    this.passwordVisible = !this.passwordVisible;
+    const newType = this.passwordVisible ? "text" : "password";
+
+    if (inputPassword) {
+      inputPassword.type = newType;
+    }
+    if (inputRepeatPassword) {
+      inputRepeatPassword.type = newType;
     }
   }
   eliminarUsuario(id: number){
   }
   limpiar() {//asi como para limpiar este metodo nos servira para llamar a la lista de roles y todo lo que necesitemos reiniciar para agregar un nuevo usuario
     this.usuarioForm.reset();
+    this.usuarioForm.patchValue({ estado: '1' });
     this.listarRoles();
-    this.listarPersonas()
+    this.listarPersonas();
+    this.rolesSeleccionados = [];
     this.cambiotitulEditar = false;
+    this.buscarPersona = '';
+    this.personaSeleccionada = null;
+    this.personasFiltradas = [];
+    this.showPersonaDropdown = false;
+    this.actualizarValidacionesPassword();
   }
 listarPersonas(){
   this.perser.getListaPersonal().subscribe((personas)=>{
@@ -116,9 +327,9 @@ listarPersonas(){
       this.apiRoles=roles
     })
   }
-  
+
   ponerRol(e:any){
-    const rolId = e.target.value;
+    const rolId = Number(e.target.value);
     const isChecked = e.target.checked;
 
     if (isChecked) {
@@ -131,20 +342,24 @@ listarPersonas(){
       this.rolesSeleccionados = this.rolesSeleccionados.filter(id => id !== rolId);
     }
     console.log(this.rolesSeleccionados);
-
   }
+
   editarUsuario(usu:any){
     this.listarRoles();
     this.listarPersonas();
     this.usuarioModel=usu
+    this.personaSeleccionada = usu.empleado;
+    this.buscarPersona = `${usu.empleado.nombre} ${usu.empleado.ap_paterno} ${usu.empleado.ap_materno}`;
     this.usuarioForm.patchValue({
       usuario:usu.usuario,
-      clave:usu.clave,
+      clave:'', // No mostrar la contraseña en modo edición
+      repetirClave:'', // No mostrar la contraseña en modo edición
       estado:usu.estado,
       persona:usu.empleado
     })
     this.cambiotitulEditar = true;
     this.rolesSeleccionados = usu.rols.map((rol:any) => rol.id_rol);
+    this.actualizarValidacionesPassword();
   }
   tieneRol(rolId: number): boolean {
     return this.rolesSeleccionados.includes(rolId);
@@ -169,6 +384,15 @@ listarPersonas(){
   guardarCambio() {
     if (this.usuSeleccionado) {
       this.usuSeleccionado.estado = this.estadoTemporal;
+      this.ususer.modificarUsuario(this.usuSeleccionado).subscribe({
+        next: (data) => {
+          console.log('✅ Estado modificado:', data);
+          this.Listar();
+        },
+        error: (error) => {
+          console.error('❌ Error al modificar el estado:', error);
+        }
+      });
     }
     this.usuSeleccionado = null;
   }
