@@ -29,6 +29,9 @@ export class EmpleadosComponent {
   page: number = 1;
   mensajeExito: string | null = null;
   apiUrl = environment.apiUrl;
+  isEditMode: boolean = false;
+  modalTitle: string = 'Nuevo Empleado';
+  selectedFile: File | null = null;
 /*  @ViewChild('addpersona') modalAgregarRef!: ElementRef; // Referencia al modal
   private modalAgregar?: Modal;
 ngAfterViewInit() {
@@ -75,8 +78,7 @@ ngAfterViewInit() {
     ci: new FormControl('', [Validators.required]),
     salario: new FormControl('', [Validators.required]),
     genero: new FormControl('', [Validators.required]),
-    estado: new FormControl('1'),
-    foto: new FormControl(''),
+    estado: new FormControl('1')
   },
  { validators: this.alMenosUnApellido() }
 )
@@ -85,6 +87,27 @@ ngAfterViewInit() {
   get control() {
     return this.empleadoForm.controls
   }
+  openModalAdd() {
+    this.isEditMode = false;
+    this.modalTitle = 'Nuevo Empleado';
+    this.empleadoForm.reset();
+    this.empleadoForm.patchValue({ estado: '1' });
+    this.selectedFile = null;
+  }
+
+  onFileChange(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      console.log('📁 Archivo seleccionado:');
+      console.log('   Nombre:', file.name);
+      console.log('   Tipo:', file.type);
+      console.log('   Tamaño:', (file.size / 1024).toFixed(2), 'KB');
+      console.log('   Ruta completa:', event.target.value);
+      console.log('   Archivo:', file);
+    }
+  }
+
   AgregarEmpleado() {
       /*if (this.empleadoForm.invalid) {
       this.empleadoForm.markAllAsTouched(); // 👈 marca los errores
@@ -94,27 +117,46 @@ ngAfterViewInit() {
   empleado.estado='1';
   const formData = new FormData();
   formData.append('empleado', JSON.stringify(empleado));
-  if (this.empleadoForm.get('foto')?.value) {
-    formData.append('foto', this.empleadoForm.get('foto')?.value);
+  if (this.selectedFile) {
+    formData.append('foto', this.selectedFile);
+    console.log('📤 Enviando foto al servidor:', this.selectedFile.name);
   }
     console.log("empleado-", empleado);
     this.empleadoSer.saveEmpleado(formData).subscribe({
       next: (data) => {
-        console.log('devuelve: ', data.mensaje, data.nombre);
+        console.log('✅ devuelve: ', data.mensaje, data.nombre);
         this.listar()
         this.empleadoForm.reset()
+        this.selectedFile = null;
         this.mensajeExito = data.mensaje;
-      }, error: (error) => {
-        console.log(error);
-      }
-    }
-    )
-    //mensaje de exito
+
+        // Cerrar modal después de agregar exitosamente
+        const modalEl = document.getElementById('empleadoModal');
+        if (modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) {
+            modal.hide();
+          }
+        }
+
+        // Eliminar backdrop y restaurar body
+        setTimeout(() => {
+          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+          document.body.classList.remove('modal-open');
+          document.body.style.overflow = '';
+          document.body.style.paddingRight = '';
+        }, 300);
+
+        // Mensaje de éxito
         const toastEl = document.getElementById('toastExito');
         if (toastEl) {
           const toast = new bootstrap.Toast(toastEl);
           toast.show();
         }
+      }, error: (error) => {
+        console.log('❌ Error:', error);
+      }
+    })
   }
   validarCi(e: any){
     const input = e.target.value
@@ -127,7 +169,18 @@ ngAfterViewInit() {
     })
   }
   Cancelar(){
-    this.empleadoForm.reset()
+    this.empleadoForm.reset();
+    this.isEditMode = false;
+    this.idModificar = 0;
+    this.selectedFile = null;
+  }
+
+  submitForm() {
+    if (this.isEditMode) {
+      this.confirmarModifcacion();
+    } else {
+      this.AgregarEmpleado();
+    }
   }
   //cambio de estado
   perSeleccionado: any = null;
@@ -170,6 +223,8 @@ ngAfterViewInit() {
   }
   idModificar: number = 0;//este id va ser temporal solo para modificar
   modificarDatos(emp:any){//este metodo solo pone loas datos que recibe en el formulario
+    this.isEditMode = true;
+    this.modalTitle = 'Editar Empleado';
     this.idModificar = emp.id_empleado;//aqui guardo el id del empleado que voy a modificar
     this.empleadoForm.patchValue({
       nombre: emp.nombre,
@@ -179,36 +234,66 @@ ngAfterViewInit() {
       ci: emp.ci,
       salario: emp.salario,
       genero: emp.genero,
-      estado: emp.estado,
-      foto: emp.foto,
+      estado: emp.estado
     });
+    // Resetear archivo seleccionado al editar
+    this.selectedFile = null;
   }
   confirmarModifcacion(){//este metodo va ser el que llame al servicio para modificar
     if (this.empleadoForm.invalid) {
       this.empleadoForm.markAllAsTouched(); // 👈 marca los errores
       return;
     }
-    const empleado = {
-      id_empleado: this.idModificar,//este id ponemos al nuevo objeto
-      ...this.empleadoForm.value//el resto dejamos igual
+
+    // Crear FormData para enviar empleado con foto
+    const formData = new FormData();
+    const empleadoData = {
+      id_empleado: this.idModificar,
+      ...this.empleadoForm.value
     };
-    this.empleadoSer.modificarEmpleado(empleado).subscribe({
+    formData.append('empleado', JSON.stringify(empleadoData));
+
+    if (this.selectedFile) {
+      formData.append('foto', this.selectedFile);
+      console.log('📤 Actualizando foto del empleado:', this.selectedFile.name);
+    }
+
+    this.empleadoSer.modificarEmpleado(empleadoData).subscribe({
       next: (data) =>{
-        console.log('Empleado modificado:', data.mensaje);
+        console.log('✅ Empleado modificado:', data.mensaje);
         this.listar();
         this.empleadoForm.reset();
-        this.idModificar = 0;//reiniciamos el id
+        this.idModificar = 0;
+        this.selectedFile = null;
         this.mensajeExito = data.mensaje;
+
+        // Cerrar modal después de modificar exitosamente
+        const modalEl = document.getElementById('empleadoModal');
+        if (modalEl) {
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) {
+            modal.hide();
+          }
+        }
+
+        // Eliminar backdrop y restaurar body
+        setTimeout(() => {
+          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+          document.body.classList.remove('modal-open');
+          document.body.style.overflow = '';
+          document.body.style.paddingRight = '';
+        }, 300);
+
+        // Mensaje de éxito
+        const toastEl = document.getElementById('toastExito');
+        if (toastEl) {
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+        }
       }, error: (error) =>{
-        console.log('Error al modificar el empleado:', error);
+        console.log('❌ Error al modificar el empleado:', error);
       }
     })
- //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
   }
 alMenosUnApellido(): ValidatorFn {
   return (formGroup: FormGroup): ValidationErrors | null => {
