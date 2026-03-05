@@ -465,12 +465,22 @@
 }
 
 /* Toast personalizado */
-.toast-custom {
+.toast-custom-green {
   position: fixed;
   right: 40px;
   top: 70px;
-  z-index: 1050;
+  z-index: 9999;
   background: linear-gradient(135deg, var(--employee-success), #059669);
+  animation: fadeIn 0.3s ease-in;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+}
+.toast-custom-red {
+  position: fixed;
+  right: 40px;
+  top: 70px;
+  z-index: 9999;
+  background: linear-gradient(135deg, var(--employee-danger), #dc2626);
   animation: fadeIn 0.3s ease-in;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
@@ -575,9 +585,10 @@
     padding: 0.4rem 0.8rem;
   }
 
-  .toast-custom {
+  .toast-custom-red, .toast-custom-green {
     right: 20px;
     top: 60px;
+    z-index: 1050;
   }
 }
 

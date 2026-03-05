@@ -32,11 +32,11 @@ export class EmpleadosComponent {
   isEditMode: boolean = false;
   modalTitle: string = 'Nuevo Empleado';
   selectedFile: File | null = null;
-/*  @ViewChild('addpersona') modalAgregarRef!: ElementRef; // Referencia al modal
-  private modalAgregar?: Modal;
+@ViewChild('addPersona') modalAgregarRef!: ElementRef; // Referencia al modal
+  private modalAgregar?: bootstrap.Modal;
 ngAfterViewInit() {
     // Inicializa el modal de Bootstrap
-    this.modalAgregar = new Modal(this.modalAgregarRef.nativeElement);
+    this.modalAgregar = new bootstrap.Modal(this.modalAgregarRef.nativeElement);
   }
   cerrarModal() {
     console.log("cerrar modal");
@@ -47,6 +47,21 @@ ngAfterViewInit() {
       document.body.style.overflow = 'auto';
       document.body.style.paddingRight = '0'; // Elimina el padding que añade Bootstrap
     }
+        // const modalEl = document.getElementById('empleadoModal');
+        // if (modalEl) {
+        //   const modal = bootstrap.Modal.getInstance(modalEl);
+        //   if (modal) {
+        //     modal.hide();
+        //   }
+        // }
+
+        // // Eliminar backdrop y restaurar body
+        // setTimeout(() => {
+        //   document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        //   document.body.classList.remove('modal-open');
+        //   document.body.style.overflow = '';
+        //   document.body.style.paddingRight = '';
+        // }, 300);
   }
   //ia
   abrirModal() {
@@ -54,7 +69,16 @@ ngAfterViewInit() {
       this.modalAgregar.show(); // Abre el modal
     }
   }
-*/
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    // Mensaje de éxito
+    this.exito = exito;
+    this.mensajeExito = mensaje;
+        const toastEl = document.getElementById('toastExito');
+        if (toastEl) {
+          const toast = new bootstrap.Toast(toastEl);
+          toast.show();
+        }
+  }
 
   apiEmpleados: any[] = []
   constructor(
@@ -63,6 +87,7 @@ ngAfterViewInit() {
 
   ngOnInit() {
     this.listar()
+
   }
 
   listar() {
@@ -130,23 +155,6 @@ ngAfterViewInit() {
         this.selectedFile = null;
         this.mensajeExito = data.mensaje;
 
-        // Cerrar modal después de agregar exitosamente
-        const modalEl = document.getElementById('empleadoModal');
-        if (modalEl) {
-          const modal = bootstrap.Modal.getInstance(modalEl);
-          if (modal) {
-            modal.hide();
-          }
-        }
-
-        // Eliminar backdrop y restaurar body
-        setTimeout(() => {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          document.body.style.overflow = '';
-          document.body.style.paddingRight = '';
-        }, 300);
-
         // Mensaje de éxito
         const toastEl = document.getElementById('toastExito');
         if (toastEl) {
@@ -202,14 +210,15 @@ ngAfterViewInit() {
   guardarCambio() {
     if (this.perSeleccionado) {
       this.perSeleccionado.estado = this.estadoTemporal;
-      this.empleadoSer.modificarEmpleado(this.perSeleccionado).subscribe({
+      const formData = new FormData();
+      formData.append('empleado', JSON.stringify(this.perSeleccionado));
+      this.empleadoSer.modificarEmpleado(formData).subscribe({
         next: (data) => {
-          console.log('Estado modificado:', data.mensaje);
+          this.mostrarAlerta(true, data.mensaje);
           this.listar();
-          this.mensajeExito = data.mensaje;
         },
         error: (error) => {
-          console.log('Error al modificar el estado:', error);
+          this.mostrarAlerta(false, 'Error al modificar el estado');
         }
       });
     }
@@ -239,9 +248,11 @@ ngAfterViewInit() {
     // Resetear archivo seleccionado al editar
     this.selectedFile = null;
   }
+  exito:boolean=false;
   confirmarModifcacion(){//este metodo va ser el que llame al servicio para modificar
     if (this.empleadoForm.invalid) {
       this.empleadoForm.markAllAsTouched(); // 👈 marca los errores
+      this.mostrarAlerta(false,'Formulario inválido');
       return;
     }
 
@@ -255,43 +266,19 @@ ngAfterViewInit() {
 
     if (this.selectedFile) {
       formData.append('foto', this.selectedFile);
-      console.log('📤 Actualizando foto del empleado:', this.selectedFile.name);
     }
 
-    this.empleadoSer.modificarEmpleado(empleadoData).subscribe({
+    this.empleadoSer.modificarEmpleado(formData).subscribe({
       next: (data) =>{
-        console.log('✅ Empleado modificado:', data.mensaje);
         this.listar();
         this.empleadoForm.reset();
         this.idModificar = 0;
         this.selectedFile = null;
-        this.mensajeExito = data.mensaje;
+        this.mostrarAlerta(true,data.mensaje);
+        this.cerrarModal()
 
-        // Cerrar modal después de modificar exitosamente
-        const modalEl = document.getElementById('empleadoModal');
-        if (modalEl) {
-          const modal = bootstrap.Modal.getInstance(modalEl);
-          if (modal) {
-            modal.hide();
-          }
-        }
-
-        // Eliminar backdrop y restaurar body
-        setTimeout(() => {
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-          document.body.classList.remove('modal-open');
-          document.body.style.overflow = '';
-          document.body.style.paddingRight = '';
-        }, 300);
-
-        // Mensaje de éxito
-        const toastEl = document.getElementById('toastExito');
-        if (toastEl) {
-          const toast = new bootstrap.Toast(toastEl);
-          toast.show();
-        }
       }, error: (error) =>{
-        console.log('❌ Error al modificar el empleado:', error);
+        this.mostrarAlerta(false,error.error.mensaje);
       }
     })
   }
