@@ -72,6 +72,10 @@
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(168, 183, 245, 0.3);
   transition: all 0.3s ease;
+  cursor: pointer;
+}
+.text-tittle{
+  color: rgb(168, 183, 245) !important;
 }
 
 .logo-container:hover {
@@ -79,9 +83,11 @@
   box-shadow: 0 6px 20px rgba(168, 183, 245, 0.4);
 }
 
-.logo-icon {
-  font-size: 32px;
-  color: white;
+.logo-image {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+  transition: all 0.3s ease;
   animation: float 3s ease-in-out infinite;
 }
 
@@ -95,7 +101,7 @@
 }
 
 .logo-text {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: white;
   letter-spacing: 0.5px;
@@ -209,11 +215,11 @@
   }
 
   .logo-text {
-    font-size: 16px;
+    font-size: 15px;
   }
 
-  .logo-icon {
-    font-size: 26px;
+  .logo-image {
+    height: 38px;
   }
 
   .navbar-custom {
@@ -233,11 +239,16 @@
 
 @media (max-width: 480px) {
   .logo-container {
-    padding: 6px 12px;
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .logo-image {
+    height: 32px;
   }
 
   .logo-text {
-    display: none;
+    font-size: 13px;
   }
 
   .btn-role {
@@ -253,5 +264,15 @@
     width: 40px;
     height: 40px;
     font-size: 20px;
+  }
+}
+
+@media (max-width: 380px) {
+  .logo-text {
+    display: none;
+  }
+
+  .logo-container {
+    padding: 6px;
   }
 }
