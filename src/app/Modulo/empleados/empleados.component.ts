@@ -10,22 +10,25 @@ import { NombresApellidoPipe } from '../../Filtros/nombres-apellido.pipe';
 import { EstadoPipe } from '../../Filtros/estado.pipe';
 import { GeneroPipe } from '../../Filtros/genero.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-empleados',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,NombresApellidoPipe, 
+  imports: [CommonModule, ReactiveFormsModule,NombresApellidoPipe,
     FormsModule,CedulaPipe,EstadoPipe,GeneroPipe, NgxPaginationModule],
   templateUrl: './empleados.component.html',
   styleUrl: './empleados.component.css'
 })
 export class EmpleadosComponent {
   modal: any;
-nombre:string=''
-ci:string=''
- estado='1'
- genero=''
- page: number = 1;
- mensajeExito: string | null = null;
+  nombre:string=''
+  ci:string=''
+  estado='1'
+  genero=''
+  page: number = 1;
+  mensajeExito: string | null = null;
+  apiUrl = environment.apiUrl;
 /*  @ViewChild('addpersona') modalAgregarRef!: ElementRef; // Referencia al modal
   private modalAgregar?: Modal;
 ngAfterViewInit() {
@@ -64,7 +67,7 @@ ngAfterViewInit() {
       this.apiEmpleados = lista
     })
   }
-  empleadoForm = new FormGroup({ 
+  empleadoForm = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
     ap_paterno: new FormControl(''),
     ap_materno: new FormControl(''),
@@ -89,8 +92,13 @@ ngAfterViewInit() {
     }*/
     const empleado = this.empleadoForm.value
   empleado.estado='1';
+  const formData = new FormData();
+  formData.append('empleado', JSON.stringify(empleado));
+  if (this.empleadoForm.get('foto')?.value) {
+    formData.append('foto', this.empleadoForm.get('foto')?.value);
+  }
     console.log("empleado-", empleado);
-    this.empleadoSer.saveEmpleado(empleado).subscribe({
+    this.empleadoSer.saveEmpleado(formData).subscribe({
       next: (data) => {
         console.log('devuelve: ', data.mensaje, data.nombre);
         this.listar()
@@ -112,7 +120,7 @@ ngAfterViewInit() {
     const input = e.target.value
     this.empleadoSer.validarCi(input).subscribe((data)=>{
       console.log('EXISTE ESTE CI: ',data.existe);
-      
+
       if(data.existe){
         // this.empleadoForm.get('ci')?.setErrors({ ciExists: true });
       }
@@ -215,6 +223,32 @@ alMenosUnApellido(): ValidatorFn {
   };
 }
 
+// Método para obtener la URL de la foto del empleado
+getFotoUrl(foto: string | null): string {
+  if (foto) {
+    return `${this.apiUrl}/uploads/${foto}`;
+  }
+  return 'assets/image-not-found.png';
+}
 
+// Método para obtener el icono de género
+getGeneroIcon(genero: number): string {
+  switch(genero) {
+    case 1: return 'bi-gender-male';
+    case 2: return 'bi-gender-female';
+    case 3: return 'bi-gender-ambiguous';
+    default: return 'bi-question-circle';
+  }
+}
+
+// Método para obtener el texto de género
+getGeneroText(genero: number): string {
+  switch(genero) {
+    case 1: return 'Masculino';
+    case 2: return 'Femenino';
+    case 3: return 'Otro';
+    default: return 'No especificado';
+  }
+}
 
 }

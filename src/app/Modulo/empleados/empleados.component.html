@@ -1,79 +1,150 @@
-<div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h5>Gestionar Empleados</h5>
-    </div>
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-md-3">
-          <input type="text" [(ngModel)]="nombre" class="form-control" placeholder="Buscar por nombre y apellido">
-        </div>
-        <div class="col-md-2">
-          <input type="text" [(ngModel)]="ci" class="form-control" placeholder="Buscar por CI">
-        </div>
-        <div class="col-md-3">
-          <select class="form-select" [(ngModel)]="estado">
-            <option selected value="1">Activos</option>
-            <option value="2">Inactivos</option>
-            <option value="">Todos</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <select class="form-select" [(ngModel)]="genero">
-            <option selected value="">Ambos generos</option>
-            <option value="1">Masculino</option>
-            <option value="2">Femenino</option>
-          </select>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addpersona">
-            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
-            Nuevo Empleado</button>
+<div class="container-fluid empleados-container">
+  <div class="card empleados-card">
+    <div class="card-header empleados-header">
+      <div class="header-content">
+        <div class="title-section">
+          <i class="bi bi-people-fill header-icon"></i>
+          <h5 class="header-title">Gestionar Empleados</h5>
         </div>
       </div>
-      <div class="table-responsive tamaño">
-        <table class="table table-striped ">
+    </div>
+    <div class="card-body">
+      <!-- Filtros y búsqueda -->
+      <div class="row mb-4 filters-row">
+        <div class="col-md-3">
+          <div class="filter-group">
+            <label class="filter-label">
+              <i class="bi bi-search"></i>
+              Buscar empleado
+            </label>
+            <input type="text" [(ngModel)]="nombre" class="form-control filter-input"
+                   placeholder="Nombre o CI">
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="filter-group">
+            <label class="filter-label">
+              <i class="bi bi-toggle-on"></i>
+              Estado
+            </label>
+            <select class="form-select filter-select" [(ngModel)]="estado">
+              <option selected value="1">Activos</option>
+              <option value="2">Inactivos</option>
+              <option value="">Todos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <div class="filter-group">
+            <label class="filter-label">
+              <i class="bi bi-gender-ambiguous"></i>
+              Género
+            </label>
+            <select class="form-select filter-select" [(ngModel)]="genero">
+              <option selected value="">Todos</option>
+              <option value="1">Masculino</option>
+              <option value="2">Femenino</option>
+              <option value="3">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-3 ms-auto">
+          <button class="btn btn-add-employee" data-bs-toggle="modal" data-bs-target="#addpersona">
+            <i class="bi bi-person-plus-fill"></i>
+            Nuevo Empleado
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de empleados -->
+      <div class="table-responsive table-container">
+        <table class="table empleados-table">
           <thead>
             <tr>
-              <th scope="col">Nro</th>
-              <th scope="col">Foto</th>
-              <th scope="col">CI</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Apellidos</th>
-              <th scope="col">Celular</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Acciones</th>
+              <th scope="col"><i class="bi bi-hash"></i> Nro</th>
+              <th scope="col"><i class="bi bi-image"></i> Foto</th>
+              <th scope="col"><i class="bi bi-card-text"></i> CI</th>
+              <th scope="col"><i class="bi bi-person"></i> Nombres</th>
+              <th scope="col"><i class="bi bi-people"></i> Apellidos</th>
+              <th scope="col"><i class="bi bi-phone"></i> Celular</th>
+              <th scope="col"><i class="bi bi-gender-ambiguous"></i> Género</th>
+              <th scope="col"><i class="bi bi-wallet2"></i> Salario</th>
+              <th scope="col"><i class="bi bi-toggle-on"></i> Estado</th>
+              <th scope="col"><i class="bi bi-tools"></i> Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              *ngFor="let i=index;let emp of apiEmpleados | nombresApellido:nombre | cedula:ci |estado:estado |genero:genero | paginate: { itemsPerPage: 6, currentPage: page }">
-              <td>{{i+1}}</td>
-              <td>Image</td>
-              <td>{{emp.ci}}</td>
-              <td>{{emp.nombre}}</td>
-              <td>{{emp.ap_paterno}} {{emp.ap_materno}}</td>
-              <td>{{emp.celular}}</td>
-              <!--Estado-->
+            <tr *ngFor="let emp of apiEmpleados | nombresApellido:nombre | cedula:ci | estado:estado | genero:genero | paginate: { itemsPerPage: 6, currentPage: page }; let i=index"
+                class="employee-row">
+              <td class="text-center">
+                <span class="badge badge-number">{{i+1}}</span>
+              </td>
               <td>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" [checked]="emp.estado==1"
-                    (change)="showModal($event, emp)">
+                <div class="employee-photo">
+                  <img [src]="getFotoUrl(emp.foto)"
+                       alt="Foto de {{emp.nombre}}"
+                       class="employee-img"
+                       (error)="($any($event.target)).src='assets/image-not-found.png'">
                 </div>
               </td>
-              <!--Modificar-->
               <td>
-                <button (click)="modificarDatos(emp)" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                <span class="employee-ci">{{emp.ci}}</span>
+              </td>
+              <td>
+                <span class="employee-name">{{emp.nombre}}</span>
+              </td>
+              <td>
+                <span class="employee-lastname">{{emp.ap_paterno}} {{emp.ap_materno}}</span>
+              </td>
+              <td>
+                <span class="employee-phone">
+                  <i class="bi bi-telephone-fill"></i>
+                  {{emp.celular}}
+                </span>
+              </td>
+              <td>
+                <span class="badge badge-gender" [ngClass]="'badge-gender-' + emp.genero">
+                  <i [class]="'bi ' + getGeneroIcon(emp.genero)"></i>
+                  {{getGeneroText(emp.genero)}}
+                </span>
+              </td>
+              <td>
+                <span class="employee-salary">
+                  {{emp.salario}} <small>Bs.</small>
+                </span>
+              </td>
+              <td>
+                <div class="form-check form-switch switch-custom">
+                  <input class="form-check-input" type="checkbox" [checked]="emp.estado==1"
+                    (change)="showModal($event, emp)">
+                  <label class="form-check-label">
+                    <span class="badge" [ngClass]="emp.estado==1 ? 'badge-active' : 'badge-inactive'">
+                      {{emp.estado==1 ? 'Activo' : 'Inactivo'}}
+                    </span>
+                  </label>
+                </div>
+              </td>
+              <td>
+                <button (click)="modificarDatos(emp)" class="btn btn-edit" data-bs-toggle="modal"
                   data-bs-target="#modempleado">
-                  <i class="bi bi-pencil"></i> Editar
+                  <i class="bi bi-pencil-fill"></i>
+                  Editar
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+
+      <!-- Paginación mejorada -->
+      <div class="pagination-container">
+        <pagination-controls (pageChange)="page = $event"
+                            previousLabel="Anterior"
+                            nextLabel="Siguiente">
+        </pagination-controls>
       </div>
     </div>
   </div>
