@@ -34,15 +34,23 @@ export class ProductosComponent implements OnInit {
   apiProveedores: any[] = []
   apiMarcas: any[] = []
   apiUnidadesMedida: any[] = []
-  //flitros 
+  // Filtros 
   codigo: string = ''
   nombre: string = ''
   categoria = ''
   estado = '1'
   page: number = 1
-  mensajeExito: string | null = null;
+  
+  // Modal unificado
+  isEditMode: boolean = false
+  modalTitle: string = 'Nuevo Producto'
+  exito: boolean = true
+  mensajeToast: string = ''
+  
+  // Archivo seleccionado
   selectedFile: File | null = null;
-  // flag para indicar si el código ingresado ya está en uso
+  
+  // Validación de código duplicado
   codigoDuplicado: boolean = false;
   constructor(
     private CatSer: CategoriaService,
@@ -79,16 +87,16 @@ export class ProductosComponent implements OnInit {
     })
   }
   productoForm = new UntypedFormGroup({
-    nombre: new FormControl('', [Validators.required]),
-    codigo: new FormControl('', [Validators.required]),
-    descripcion: new FormControl(''),
+    nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
+    codigo: new FormControl('', [Validators.required, Validators.maxLength(8)]),
+    descripcion: new FormControl('', [Validators.minLength(6), Validators.maxLength(50)]),
     estado: new FormControl('1'),
-    precio_compra: new FormControl('', [Validators.required]),
-    precio_venta: new FormControl('', [Validators.required]),
+    precio_compra: new FormControl('', [Validators.required, Validators.min(0.01)]),
+    precio_venta: new FormControl('', [Validators.required, Validators.min(0.01)]),
     foto: new FormControl(''),
-    stock: new FormControl('', [Validators.required]),
+    stock: new FormControl('', [Validators.required, Validators.min(1), Validators.max(9999)]),
     fecha_registro: new FormControl(this.obtenerFechaActual()),
-    stock_minimo: new FormControl('', [Validators.required]),
+    stock_minimo: new FormControl('', [Validators.required, Validators.min(1), Validators.max(9999)]),
     id_categoria: new FormControl('', [Validators.required]),
     id_proveedor: new FormControl('', [Validators.required]),
     id_unidad_medida: new FormControl('', [Validators.required]),
@@ -102,47 +110,30 @@ export class ProductosComponent implements OnInit {
       this.apiProductos = lista
     })
   }
-onFileSelected(event: any) {
-  const file = event.target.files[0];
-  if (file) {
-    this.selectedFile = file;
-    console.log('foto seleccionada: ',file);
-    
-    // Si quieres guardar el nombre del archivo en el form control:
-    this.productoForm.patchValue({ foto: file.name });
-  }
-}
-  AgregarProducto() {
-    const formData = new FormData();
-    const producto = this.productoForm.getRawValue();
-    producto.fecha_registro = this.obtenerFechaActual();
-    producto.estado = '1';
-    console.log("Producto", producto);
-
-    formData.append('producto', JSON.stringify(producto));
-    // Agregar el archivo:
-  if (this.selectedFile) {
-    formData.append('foto', this.selectedFile);
-  }
-    this.ProSer.saveProductos(formData).subscribe({
-      next: (data) => {
-        console.log('devuelve: ', data.mensaje, data.nombre);
-        this.Listar()
-        this.productoForm.reset();
-        this.mensajeExito = data.mensaje;
-      }, error: (error) => {
-        console.log(error);
-      }
-    })
-    //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      console.log('Foto seleccionada:', file);
+      this.productoForm.patchValue({ foto: file.name });
     }
   }
-  idProducto: number = 0
-  modificarProducto(producto: any) {
+  
+  abrirModalNuevo() {
+    this.isEditMode = false
+    this.modalTitle = 'Nuevo Producto'
+    this.idProducto = 0
+    this.productoForm.reset({
+      estado: '1',
+      fecha_registro: this.obtenerFechaActual()
+    })
+    this.selectedFile = null
+    this.codigoDuplicado = false
+  }
+  
+  cargarDatosProducto(producto: any) {
+    this.isEditMode = true
+    this.modalTitle = 'Editar Producto'
     this.idProducto = producto.id_producto
     this.productoForm.patchValue({
       nombre: producto.nombre,
@@ -160,7 +151,52 @@ onFileSelected(event: any) {
       id_unidad_medida: producto.id_unidad_medida,
       id_marca: producto.id_marca
     })
+    this.codigoDuplicado = false
   }
+  guardarProducto() {
+    if (this.productoForm.invalid) {
+      this.productoForm.markAllAsTouched()
+      return
+    }
+    
+    if (this.isEditMode) {
+      this.actualizarProducto()
+    } else {
+      this.crearProducto()
+    }
+  }
+  
+  crearProducto() {
+    const formData = new FormData();
+    const producto = this.productoForm.getRawValue();
+    producto.fecha_registro = this.obtenerFechaActual();
+    producto.estado = '1';
+
+    formData.append('producto', JSON.stringify(producto));
+    if (this.selectedFile) {
+      formData.append('foto', this.selectedFile);
+    }
+    
+    this.ProSer.saveProductos(formData).subscribe({
+      next: (data) => {
+        console.log('Producto creado:', data);
+        this.Listar()
+        this.productoForm.reset()
+        this.selectedFile = null
+        this.exito = true
+        this.mensajeToast = 'Producto creado exitosamente'
+        this.mostrarToast()
+        this.cerrarModal()
+      }, 
+      error: (error) => {
+        console.error('Error al crear producto:', error);
+        this.exito = false
+        this.mensajeToast = 'Error al crear el producto'
+        this.mostrarToast()
+      }
+    })
+  }
+  idProducto: number = 0
 
   /**
    * Valida en keyup que el código ingresado no esté duplicado en la lista de productos.
@@ -206,32 +242,53 @@ onFileSelected(event: any) {
       }
     }
   }
-  guardarModificacion() {
+  actualizarProducto() {
     const producto = {
       id_producto: this.idProducto,
-      ...this.productoForm.value
+      ...this.productoForm.getRawValue()
     }
     const formData = new FormData();
-     formData.append('producto', JSON.stringify(producto));
-    // Agregar el archivo:
-  if (this.selectedFile) {
-    formData.append('foto', this.selectedFile);
-  }
+    formData.append('producto', JSON.stringify(producto));
+    
+    if (this.selectedFile) {
+      formData.append('foto', this.selectedFile);
+    }
+    
     this.ProSer.modificarProducto(formData).subscribe({
       next: (data) => {
-        console.log('devuelve: ', data.mensaje, data.nombre);
+        console.log('Producto actualizado:', data);
         this.Listar()
         this.productoForm.reset()
-        this.mensajeExito = data.mensaje;
-      }, error: (error) => {
-        console.log(error);
+        this.selectedFile = null
+        this.exito = true
+        this.mensajeToast = 'Producto actualizado exitosamente'
+        this.mostrarToast()
+        this.cerrarModal()
+      }, 
+      error: (error) => {
+        console.error('Error al actualizar producto:', error);
+        this.exito = false
+        this.mensajeToast = 'Error al actualizar el producto'
+        this.mostrarToast()
       }
     })
-    //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
+  }
+  
+  mostrarToast() {
+    const toastEl = document.getElementById('toastProducto');
     if (toastEl) {
       const toast = new bootstrap.Toast(toastEl);
       toast.show();
+    }
+  }
+  
+  cerrarModal() {
+    const modalEl = document.getElementById('modalProducto');
+    if (modalEl) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
     }
   }
   detProducto: any
@@ -272,24 +329,31 @@ onFileSelected(event: any) {
       this.proSeleccionado.estado = this.estadoTemporal;
       this.ProSer.modificarProducto(this.proSeleccionado).subscribe({
         next: (data) => {
-          console.log('devuelve: ', data.mensaje, data.nombre);
+          console.log('Estado actualizado:', data);
           this.Listar()
-          this.productoForm.reset()
-          this.mensajeExito = data.mensaje;
-        }, error: (error) => {
-          console.log(error);
+          this.exito = true
+          this.mensajeToast = `Producto ${this.estadoTemporal == 1 ? 'activado' : 'desactivado'} exitosamente`
+          this.mostrarToast()
+        }, 
+        error: (error) => {
+          console.error('Error al cambiar estado:', error);
+          this.exito = false
+          this.mensajeToast = 'Error al cambiar el estado'
+          this.mostrarToast()
         }
       })
     }
     this.proSeleccionado = null;
-    //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
   }
-  reset() {
-    this.productoForm.reset()
+  limpiar() {
+    this.productoForm.reset({
+      estado: '1',
+      fecha_registro: this.obtenerFechaActual()
+    })
+    this.selectedFile = null
+    this.codigoDuplicado = false
+    this.isEditMode = false
+    this.modalTitle = 'Nuevo Producto'
+    this.idProducto = 0
   }
 }

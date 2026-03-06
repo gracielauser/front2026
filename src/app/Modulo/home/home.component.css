@@ -29,8 +29,6 @@
 }
 
 .content-column {
-  padding-left: 1.5rem !important;
-  padding-right: 1.5rem;
   transition: all 0.3s ease;
   background: linear-gradient(135deg, rgba(248, 250, 255, 0.5), rgba(255, 255, 255, 0.8));
   min-height: calc(100vh - 90px);
