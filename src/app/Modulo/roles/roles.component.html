@@ -1,102 +1,121 @@
-<div class="container-fluid ">
-    <div class="card">
-        <div class="card-header">
-            <h5>Gestionar Roles</h5>
-            <p class="mb-0">Administra la información de los Roles</p>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-3">
-                    <input type="text" class="form-control" placeholder="Buscar por nombre"
-                      [(ngModel)]="nombre"  aria-label="Buscar por nombre">
-                </div>
-                <div class="col-md-3">
-                   <select class="form-select" [(ngModel)]="estado">
-            <option  selected value="1">Activos</option>
-            <option value="2">Inactivos</option>
-            <option value="">Todos</option>
-          </select>
-                </div>
-                <div class="col-4">
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addrol" (click)="limpiar()">
-                        <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
-                        Nuevo Rol</button>
-                </div>
-            </div>
-            <div class="table-responsive tamaño">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Nro</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Descripcion</th>
-                            <th scope="col">Estado</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let i=index;let rol of apiRoles |nombre:nombre|estado:estado | paginate: { itemsPerPage: 6, currentPage: page }">
-                            <td>{{i+1}}</td>
-                            <td>{{rol.nombre}}</td>
-                            <td>{{rol.descripcion}}</td>
-                            <!--Estado-->
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" [checked]="rol.estado==1"
-                                        (change)="showModal($event, rol)">
-                                </div>
-                            </td>
-                            <!--Modificar-->
-                            <td>
-                                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#addrol" (click)="cargarDatosRol(rol)">
-                                    <i class="bi bi-pencil"></i> Editar
-                                </button>
-                                <button class="btn btn-outline-secondary btn-sm " data-bs-toggle="modal"
-                                    data-bs-target="#detrol">
-                                    <i class="bi bi-card-list"></i> Detalle
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
-      </div>
-        </div>
+<div class="container-fluid">
+  <div class="card">
+    <div class="card-header">
+      <h5>
+        <i class="bi bi-shield-check"></i>
+        Gestionar Roles
+      </h5>
     </div>
-</div>
-<!-- MODAL ADICIONAR Y MODIFICAR -->
-<div class="modal fade" id="addrol" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-md">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Rol</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- ALERTA AZUL -->
-                <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
-                    <i class="bi bi-info-circle-fill me-3 fs-3"></i>
-                    Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+    <div class="card-body">
+      <!-- Filtros y búsqueda -->
+      <div class="row">
+        <div class="col-md-3">
+          <input type="text" class="form-control" placeholder="🔍 Buscar por nombre"
+            [(ngModel)]="nombre" aria-label="Buscar por nombre">
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="estado">
+            <option selected value="1">✅ Activos</option>
+            <option value="2">❌ Inactivos</option>
+            <option value="">📋 Todos</option>
+          </select>
+        </div>
+        <div class="col-md-4"></div>
+        <div class="col-md-2">
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addrol" (click)="limpiar()">
+            <i class="bi bi-plus-circle"></i>
+            Nuevo Rol
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabla de roles -->
+      <div class="table-responsive tamaño mt-3">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Nro</th>
+              <th scope="col"><i class="bi bi-tag me-1"></i>Nombre</th>
+              <th scope="col"><i class="bi bi-file-text me-1"></i>Descripción</th>
+              <th scope="col"><i class="bi bi-toggle-on me-1"></i>Estado</th>
+              <th scope="col"><i class="bi bi-gear me-1"></i>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let rol of apiRoles | nombre:nombre | estado:estado | paginate: { itemsPerPage: 6, currentPage: page }; let i=index">
+              <td>{{i+1}}</td>
+              <td><strong>{{rol.nombre}}</strong></td>
+              <td>{{rol.descripcion}}</td>
+              <!--Estado-->
+              <td>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" [checked]="rol.estado==1"
+                    (change)="showModal($event, rol)">
                 </div>
-                <form class="row g-3" [formGroup]="rolForm" (ngSubmit)="AgregarRol()">
-                    <!--NOMBRES -->
-                    <div class="col-md-6">
-                        <label for="nombres" class="form-label">Nombre <span class="text-danger">*</span></label>
-                        <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
-                            pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
+              </td>
+              <!--Acciones-->
+              <td>
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                  data-bs-target="#addrol" (click)="cargarDatosRol(rol)">
+                  <i class="bi bi-pencil"></i>
+                  <span>Editar</span>
+                </button>
+                <button *ngIf="false" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
+                  data-bs-target="#detrol">
+                  <i class="bi bi-card-list"></i>
+                  <span>Detalle</span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"
+                            previousLabel="Anterior"
+                            nextLabel="Siguiente">
+        </pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- MODAL AGREGAR/EDITAR ROL -->
+<div class="modal fade" id="addrol" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">
+          <i [class]="isEditMode ? 'bi bi-pencil-square' : 'bi bi-plus-circle-fill'"></i>
+          {{modalTitle}}
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA INFORMATIVA -->
+        <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+          <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+          <small>Los campos marcados con <span class="text-danger fw-bold">*</span> son obligatorios.</small>
+        </div>
+
+        <form class="row g-3 needs-validation" [formGroup]="rolForm" (ngSubmit)="AgregarRol()">
+          <!--NOMBRE-->
+          <div class="col-md-6">
+            <label class="form-label">
+              <i class="bi bi-tag"></i>
+              Nombre <span class="text-danger">*</span>
+            </label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ej: Administrador"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
          setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
-                            oninput="
+              oninput="
              this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
-           if(this.value.length>15){
+           if(this.value.length>40){
              document.getElementById('msgMaxLetras').style.display='block';
              setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
-             this.value=this.value.slice(0,15);
+             this.value=this.value.slice(0,40);
            }
            if(this.value.length>0 && this.value.length<3){
              document.getElementById('msgMinLetras').style.display='block';
@@ -105,23 +124,25 @@
          " [ngClass]="{
          'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
          'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
-                        <div class="valid-feedback">Correcto.</div>
-                        <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
-                        <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo
-                            letras. </div>
-                        <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener
-                            más de 15 letras.</div>
-                        <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al
-                            menos 3 letras.</div>
-                    </div>
-                    <!--DESCRIPCION-->
-                    <div class="col-md-12">
-                        <div class="mb-3">
-                            <label for="descripcion" class="form-label">Descripcion</label>
-                            <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
-                                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
+            <div class="valid-feedback"><i class="bi bi-check-circle-fill"></i> Correcto</div>
+            <div class="invalid-feedback">Campo obligatorio. Solo letras.</div>
+            <div id="msgNumeros" class="invalid-feedback" style="display:none;">Solo letras.</div>
+            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">Máximo 40 letras.</div>
+            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">Mínimo 3 letras.</div>
+          </div>
+
+          <!--DESCRIPCIÓN-->
+          <div class="col-md-12">
+            <label class="form-label">
+              <i class="bi bi-file-text"></i>
+              Descripción <span class="text-danger">*</span>
+            </label>
+            <textarea class="form-control" formControlName="descripcion" rows="3"
+              placeholder="Descripción del rol..."
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
          setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
-                                oninput="
+              oninput="
              this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
            if(this.value.length>50){
              document.getElementById('msgMaxLetrasDes').style.display='block';
@@ -133,134 +154,154 @@
              setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
            }
          " [ngClass]="{
-         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
-                        }"></textarea>
-                            <div class="valid-feedback">Correcto.</div>
-                            <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
-                                números, solo letras. </div>
-                            <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
-                                puede tener más de 50 letras.</div>
-                            <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
-                                tener al menos 6 letras.</div>
-                        </div>
+         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched),
+         'is-invalid': control['descripcion'].invalid && (control['descripcion'].dirty||control['descripcion'].touched)}">
+            </textarea>
+            <div class="valid-feedback"><i class="bi bi-check-circle-fill"></i> Correcto</div>
+            <div class="invalid-feedback">Campo obligatorio. Solo letras.</div>
+            <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">Solo letras.</div>
+            <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">Máximo 50 letras.</div>
+            <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">Mínimo 6 letras.</div>
+          </div>
 
-                    </div>
-                    <!--PERMISOS A ROL-->
-                    <div class="col-md-12">
-                        <label>Asignar permisos a rol <span class="text-danger">*</span></label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch1"
-                                (change)="asignacion($event,1)" [checked]="verificarPermiso(1)">
-                            <label class="form-check-label" for="checkNativeSwitch1">
-                                Gestionar personal
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch2"
-                                (change)="asignacion($event,2)" [checked]="verificarPermiso(2)">
-                            <label class="form-check-label" for="checkNativeSwitch2">
-                                Gestionar clientes
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch3"
-                                (change)="asignacion($event,3)" [checked]="verificarPermiso(3)">
-                            <label class="form-check-label" for="checkNativeSwitch3">
-                                Gestionar productos
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch4"
-                                (change)="asignacion($event,4)" [checked]="verificarPermiso(4)">
-                            <label class="form-check-label" for="checkNativeSwitch4">
-                                Gestionar compras
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch5"
-                                (change)="asignacion($event,5)" [checked]="verificarPermiso(5)">
-                            <label class="form-check-label" for="checkNativeSwitch5">
-                                Gestionar ventas
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch6"
-                                (change)="asignacion($event,6)" [checked]="verificarPermiso(6)">
-                            <label class="form-check-label" for="checkNativeSwitch6">
-                                Gestionar Pedidos
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch7"
-                                (change)="asignacion($event,7)" [checked]="verificarPermiso(7)">
-                            <label class="form-check-label" for="checkNativeSwitch7">
-                                Gestionar inventario
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch8"
-                                (change)="asignacion($event,8)" [checked]="verificarPermiso(8)">
-                            <label class="form-check-label" for="checkNativeSwitch8">
-                                Reportes
-                            </label>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" value="" id="checkNativeSwitch9"
-                                (change)="asignacion($event,9)" [checked]="verificarPermiso(9)">
-                            <label class="form-check-label" for="checkNativeSwitch9">
-                                Gestionar gastos
-                            </label>
-                            administrador
-
-                        </div>
-                        <div *ngIf="permisos.length === 0" class="text-danger mt-1">
-                            Debe seleccionar al menos un rol
-                        </div>
-                        <div *ngIf="permisos.length > 0" class="text-success mt-1">
-                            Correcto.
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    </div>
-                </form>
+          <!--PERMISOS-->
+          <div class="col-md-12">
+            <label class="form-label">
+              <i class="bi bi-key-fill"></i>
+              Asignar permisos a rol <span class="text-danger">*</span>
+            </label>
+            <div class="permisos-grid">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso1"
+                  (change)="asignacion($event,1)" [checked]="verificarPermiso(1)">
+                <label class="form-check-label" for="permiso1">
+                  <i class="bi bi-people-fill me-1"></i>Gestionar personal
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso2"
+                  (change)="asignacion($event,2)" [checked]="verificarPermiso(2)">
+                <label class="form-check-label" for="permiso2">
+                  <i class="bi bi-person-check-fill me-1"></i>Gestionar clientes
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso3"
+                  (change)="asignacion($event,3)" [checked]="verificarPermiso(3)">
+                <label class="form-check-label" for="permiso3">
+                  <i class="bi bi-box-seam me-1"></i>Gestionar productos
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso4"
+                  (change)="asignacion($event,4)" [checked]="verificarPermiso(4)">
+                <label class="form-check-label" for="permiso4">
+                  <i class="bi bi-cart-fill me-1"></i>Gestionar compras
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso5"
+                  (change)="asignacion($event,5)" [checked]="verificarPermiso(5)">
+                <label class="form-check-label" for="permiso5">
+                  <i class="bi bi-cash-coin me-1"></i>Gestionar ventas
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso6"
+                  (change)="asignacion($event,6)" [checked]="verificarPermiso(6)">
+                <label class="form-check-label" for="permiso6">
+                  <i class="bi bi-clipboard-check me-1"></i>Gestionar pedidos
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso7"
+                  (change)="asignacion($event,7)" [checked]="verificarPermiso(7)">
+                <label class="form-check-label" for="permiso7">
+                  <i class="bi bi-archive-fill me-1"></i>Gestionar inventario
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso8"
+                  (change)="asignacion($event,8)" [checked]="verificarPermiso(8)">
+                <label class="form-check-label" for="permiso8">
+                  <i class="bi bi-graph-up me-1"></i>Reportes
+                </label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="permiso9"
+                  (change)="asignacion($event,9)" [checked]="verificarPermiso(9)">
+                <label class="form-check-label" for="permiso9">
+                  <i class="bi bi-wallet2 me-1"></i>Gestionar gastos
+                </label>
+              </div>
             </div>
-        </div>
-    </div>
-</div>
-<!-- Modal único -->
-<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog ">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
-        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
-        <span>
-          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> al
-          rol?
-        </span>
+            <div *ngIf="permisos.length === 0" class="text-danger mt-2">
+              <i class="bi bi-exclamation-circle"></i> Debe seleccionar al menos un permiso
+            </div>
+            <div *ngIf="permisos.length > 0" class="text-success mt-2">
+              <i class="bi bi-check-circle-fill"></i> {{permisos.length}} permiso(s) seleccionado(s)
+            </div>
+          </div>
+        </form>
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
-        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
-          data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" (click)="AgregarRol()"
+                [disabled]="rolForm.invalid || permisos.length === 0">
+          <i [class]="isEditMode ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
+          {{isEditMode ? 'Actualizar' : 'Guardar'}}
+        </button>
       </div>
     </div>
   </div>
 </div>
-<!-- Modal de éxito -->
-<div class="toast-container position-fixed top-0 end-0 p-3">
-  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+
+<!-- MODAL CONFIRMACIÓN CAMBIO DE ESTADO -->
+<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-warning bg-gradient text-dark">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          Confirmar cambio de estado
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <i class="bi bi-question-circle text-warning" style="font-size: 4rem;"></i>
+        <p class="mt-3 mb-0">
+          ¿Está seguro de <strong>{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</strong> el rol
+          <strong class="text-primary">{{rolSeleccionado?.nombre}}</strong>?
+        </p>
+        <small class="text-muted">Esta acción afectará los permisos asociados a este rol.</small>
+      </div>
+      <div class="modal-footer justify-content-center">
+        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+        <button type="button" class="btn btn-warning" (click)="guardarCambio()" data-bs-dismiss="modal">
+          <i class="bi bi-check-circle"></i> Confirmar cambio
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST DE NOTIFICACIÓN -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="toastExito" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true"
+    [ngClass]="exito ? 'toast-custom-green' : 'toast-custom-red'">
     <div class="d-flex">
-      <div class="toast-body">
-         Los cambios fueron guardados exitosamente.
+      <div class="toast-body text-white d-flex align-items-center">
+        <i [class]="exito ? 'bi bi-check-circle-fill me-2' : 'bi bi-exclamation-circle-fill me-2'"></i>
+        <strong>{{mensajeExito}}</strong>
       </div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+        aria-label="Close"></button>
     </div>
   </div>
 </div>
+

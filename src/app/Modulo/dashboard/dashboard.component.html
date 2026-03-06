@@ -146,7 +146,7 @@
                     alt="{{producto.nombre}}"
                     class="rounded"
                     style="width: 60px; height: 60px; object-fit: cover;"
-                    onerror="this.src='assets/no-image.png'">
+                    onerror="this.src='assets/image-not-found.png'">
                   <div
                     *ngIf="!producto.foto"
                     class="rounded bg-secondary d-flex align-items-center justify-content-center"
@@ -251,7 +251,7 @@
                   [src]="'http://localhost:3001/uploads/' + productoSeleccionado.foto"
                   alt="{{productoSeleccionado.nombre}}"
                   class="img-fluid rounded shadow-sm"
-                  onerror="this.src='assets/no-image.png'">
+                  onerror="this.src='assets/image-not-found.png'">
                 <div
                   *ngIf="!productoSeleccionado.foto"
                   class="bg-light rounded d-flex align-items-center justify-content-center shadow-sm"

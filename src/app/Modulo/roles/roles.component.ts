@@ -16,11 +16,16 @@ import { NgxPaginationModule } from 'ngx-pagination';
 })
 export class RolesComponent {
   apiRoles: any[] = [];
-  permisos = ''
+  permisos: number[] = [];
   estado='1'
   nombre:string=''
   page:number=1
-   mensajeExito: string | null = null;
+  mensajeExito: string = '';
+  exito: boolean = false;
+  isEditMode: boolean = false;
+  modalTitle: string = 'Adicionar Rol';
+  rolModel: any = null;
+
   constructor(
     private rolService: RolServiceService
   ) { }
@@ -47,92 +52,175 @@ export class RolesComponent {
   get control() {
     return this.rolForm.controls
   }
+
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    this.exito = exito;
+    this.mensajeExito = mensaje;
+    const toastEl = document.getElementById('toastExito');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  }
+
   AgregarRol() {
-    if (this.rolForm.invalid) {
+    if (this.rolForm.invalid || this.permisos.length === 0) {
       this.rolForm.markAllAsTouched();
+      this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
       return;
     }
-    const rol = {//este es el body que necesita y va ser recibidor por req.body en el servidor
+
+    const rol = {
       nombre: this.rolForm.value.nombre,
       descripcion: this.rolForm.value.descripcion,
-      permisos: this.permisos,
+      permisos: this.permisos.join(','),
       estado: 1
     }
-    this.rolService.agregar(rol).subscribe({
+
+    if (this.isEditMode) {
+      // Modo edición
+      this.modificarRol();
+    } else {
+      // Modo agregar
+      this.rolService.agregar(rol).subscribe({
+        next: (data) => {
+          console.log('✅ Rol agregado:', data);
+          this.mostrarAlerta(true, data.mensaje || '✅ Rol agregado exitosamente');
+          this.listar();
+          this.cerrarModal();
+          this.limpiar();
+        },
+        error: (err) => {
+          console.error('❌ Error al agregar rol:', err);
+          this.mostrarAlerta(false, err.error?.mensaje || '❌ Error al agregar rol');
+        }
+      });
+    }
+  }
+
+  modificarRol() {
+    const rolModificado = {
+      id_rol: this.rolModel.id_rol,
+      nombre: this.rolForm.value.nombre,
+      descripcion: this.rolForm.value.descripcion,
+      permisos: this.permisos.join(','),
+      estado: this.rolForm.value.estado || 1
+    };
+
+    this.rolService.modificarRol(rolModificado).subscribe({
       next: (data) => {
-        console.log(data);
-        this.listar()
-            this.mensajeExito = data.mensaje;
+        console.log('✅ Rol modificado:', data);
+        this.mostrarAlerta(true, data.mensaje || '✅ Rol actualizado exitosamente');
+        this.listar();
+        this.cerrarModal();
+        this.limpiar();
       },
       error: (err) => {
-        console.log(err.error);
+        console.error('❌ Error al modificar rol:', err);
+        this.mostrarAlerta(false, err.error?.mensaje || '❌ Error al modificar rol');
       }
-    })
-    this.listar()
-    //mensaje de exito
-  const toastEl = document.getElementById('toastExito');
-  if (toastEl) {
-    const toast = new bootstrap.Toast(toastEl);
-    toast.show();
+    });
   }
-  }
-  asignacion(e: Event, nroMoodulo: number) {//nos llega el evento del click y el numero de modulo que se supone que estamos encendiendo
-    //const activo = e.target.checked;
-    const activo = (e.target as HTMLInputElement).checked; // Usar .checked para obtener el valor booleano del switch/checkbox
-    if (activo === true) { // si es true osea switch encendido al this.permisos le asignamos ese nro de modulo
-      this.permisos += nroMoodulo + ',';
-    } else {
-      this.permisos = this.permisos.replace(nroMoodulo + ',', '');
+
+  cerrarModal() {
+    const modalEl = document.getElementById('addrol');
+    if (modalEl) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
     }
+    // Limpiar backdrop
+    setTimeout(() => {
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }, 300);
+  }
+
+  asignacion(e: Event, nroModulo: number) {
+    const activo = (e.target as HTMLInputElement).checked;
+    if (activo) {
+      if (!this.permisos.includes(nroModulo)) {
+        this.permisos.push(nroModulo);
+      }
+    } else {
+      this.permisos = this.permisos.filter(p => p !== nroModulo);
+    }
+    // Actualizar el campo permisos del formulario para validación
+    this.rolForm.patchValue({ permisos: this.permisos.length > 0 ? this.permisos.join(',') : '' });
+    console.log('Permisos seleccionados:', this.permisos);
   }
   cargarDatosRol(rol: any) {
+    this.isEditMode = true;
+    this.modalTitle = 'Modificar Rol';
+    this.rolModel = rol;
+
+    // Convertir permisos string a array
+    if (rol.permisos) {
+      this.permisos = rol.permisos.split(',').map((p: string) => Number(p.trim())).filter((p: number) => !isNaN(p));
+    } else {
+      this.permisos = [];
+    }
+
     this.rolForm.patchValue({
       nombre: rol.nombre,
-      descripcion: rol.descripcion
+      descripcion: rol.descripcion,
+      estado: rol.estado,
+      permisos: rol.permisos || ''
     });
-    this.permisos = rol.permisos;
+
+    console.log('Editar rol - Permisos cargados:', this.permisos);
   }
-  verificarPermiso(nroPermiso: number) {
-    if (this.permisos) {
-      const permisosArray = this.permisos.split(',').map(Number);
-      // Aquí puedes realizar la verificación de permisos según tu lógica
-      if (permisosArray.includes(nroPermiso)) {
-        return true; // El permiso está activo
-      } else return false
-    } else return false
+
+  verificarPermiso(nroPermiso: number): boolean {
+    return this.permisos.includes(nroPermiso);
   }
+
   limpiar() {
-    this.rolForm.reset()
-    this.permisos = ''
+    this.rolForm.reset();
+    this.rolForm.patchValue({ estado: '1' });
+    this.permisos = [];
+    this.isEditMode = false;
+    this.modalTitle = 'Adicionar Rol';
+    this.rolModel = null;
   }
-   rolSeleccionado: any = null;
-    estadoTemporal: number = 0;
-    showModal(event: Event, usu: any) {
-      const input = event.target as HTMLInputElement;
-      const isChecked = input.checked;
-      // Revertir el cambio visual hasta que confirme
-      input.checked = usu.estado == 1;
-      // Guardamos referencia al empleado y estado temporal
-      this.rolSeleccionado = usu;
-      this.estadoTemporal = isChecked ? 1 : 2;
-      // Mostramos modal dinámico
-      const modal = new bootstrap.Modal(document.getElementById('estadoModal')!);
-      modal.show();
-    }
-    cancelarCambio() {
-      this.rolSeleccionado = null;
-    }
-guardarCambio() {
-  if (this.rolSeleccionado) {
+  rolSeleccionado: any = null;
+  estadoTemporal: number = 0;
+
+  showModal(event: Event, rol: any) {
+    const input = event.target as HTMLInputElement;
+    const isChecked = input.checked;
+    // Revertir el cambio visual hasta que confirme
+    input.checked = rol.estado == 1;
+    // Guardamos referencia al rol y estado temporal
+    this.rolSeleccionado = rol;
+    this.estadoTemporal = isChecked ? 1 : 2;
+    // Mostramos modal dinámico
+    const modal = new bootstrap.Modal(document.getElementById('estadoModal')!);
+    modal.show();
+  }
+
+  cancelarCambio() {
+    this.rolSeleccionado = null;
+  }
+
+  guardarCambio() {
+    if (this.rolSeleccionado) {
       this.rolSeleccionado.estado = this.estadoTemporal;
+      this.rolService.modificarRol(this.rolSeleccionado).subscribe({
+        next: (data) => {
+          this.mostrarAlerta(true, data.mensaje || '✅ Estado modificado exitosamente');
+          console.log('✅ Estado modificado:', data);
+          this.listar();
+        },
+        error: (error) => {
+          this.mostrarAlerta(false, '❌ Error al modificar el estado');
+          console.error('❌ Error al modificar el estado:', error);
+        }
+      });
     }
     this.rolSeleccionado = null;
-//mensaje de exito
-  const toastEl = document.getElementById('toastExito');
-  if (toastEl) {
-    const toast = new bootstrap.Toast(toastEl);
-    toast.show();
   }
-}
-
 }

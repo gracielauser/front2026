@@ -197,6 +197,7 @@ export class UsuariosComponent implements OnInit {
       this.ususer.saveUsuario(nuevoUsuario).subscribe({
         next: (data) => {
           console.log('✅ Usuario agregado con éxito:', data);
+          this.mostrarAlerta(true, data.mensaje || '✅ Usuario agregado exitosamente');
           this.rolesSeleccionados.forEach((rolId)=>{
             const usuRol={
               id_usuario: data.id_usuario,
@@ -215,6 +216,7 @@ export class UsuariosComponent implements OnInit {
         },
         error: (error) => {
           console.error('❌ Error al agregar usuario:', error);
+          this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al agregar usuario');
         }
       });
     }
@@ -241,6 +243,7 @@ export class UsuariosComponent implements OnInit {
     this.ususer.modificarUsuario(usuarioModificado).subscribe({
       next: (data) => {
         console.log('✅ Usuario modificado con éxito:', data);
+        this.mostrarAlerta(true, data.mensaje || '✅ Usuario actualizado exitosamente');
         // Actualizar roles
         this.rolesSeleccionados.forEach((rolId)=>{
           const usuRol={
@@ -261,6 +264,7 @@ export class UsuariosComponent implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error al modificar usuario:', error);
+        this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al modificar usuario');
       }
     });
   }
@@ -378,6 +382,18 @@ listarPersonas(){
     const modal = new bootstrap.Modal(document.getElementById('estadoModal')!);
     modal.show();
   }
+  exito: boolean=false
+mensajeExito: string=''
+   mostrarAlerta(exito: boolean, mensaje: string) {
+      // Mensaje de éxito
+      this.exito = exito;
+      this.mensajeExito = mensaje;
+          const toastEl = document.getElementById('toastExito');
+          if (toastEl) {
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+          }
+    }
   cancelarCambio() {
     this.usuSeleccionado = null;
   }
@@ -386,10 +402,12 @@ listarPersonas(){
       this.usuSeleccionado.estado = this.estadoTemporal;
       this.ususer.modificarUsuario(this.usuSeleccionado).subscribe({
         next: (data) => {
+            this.mostrarAlerta(true, 'Cambio de estado exitoso');
           console.log('✅ Estado modificado:', data);
           this.Listar();
         },
         error: (error) => {
+            this.mostrarAlerta(false, 'Error al modificar el estado');
           console.error('❌ Error al modificar el estado:', error);
         }
       });
