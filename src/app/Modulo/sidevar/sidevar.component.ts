@@ -10,10 +10,11 @@ import { LoginService } from '../../Servicios/login.service';
   imports:[CommonModule, RouterModule],
   templateUrl: './sidevar.component.html',
   styleUrls: ['./sidevar.component.css'],
-   encapsulation: ViewEncapsulation.None  
+   encapsulation: ViewEncapsulation.None
 })
 export class SidevarComponent implements OnInit {
-  
+
+  activeMenu: string | null = null;
 
   constructor(private logSer: LoginService) { }
   rol:any;
@@ -31,6 +32,21 @@ export class SidevarComponent implements OnInit {
   tienePermiso(permisoId: number): boolean {
     const permisos = this.rol.permisos.split(',');
     return permisos.some(p => Number(p) === permisoId);
+  }
+
+  toggleSubmenu(event: Event, menuName: string): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.activeMenu === menuName) {
+      this.activeMenu = null;
+    } else {
+      this.activeMenu = menuName;
+    }
+  }
+
+  isMenuActive(menuName: string): boolean {
+    return this.activeMenu === menuName;
   }
   obtenerUsuario(): string {//esta mal depende cada rato de la llamada al local storage
   const usuarioJSON = localStorage.getItem('usuario');

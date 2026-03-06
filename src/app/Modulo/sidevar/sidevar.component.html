@@ -6,8 +6,8 @@
   </a>
 
   <!-- Gestionar Personal -->
-  <div onclick="this.classList.toggle('active')" *ngIf="tienePermiso(1)">
-    <a class="has-submenu">
+  <div [ngClass]="{'active': isMenuActive('personal')}" *ngIf="tienePermiso(1)">
+    <a class="has-submenu" (click)="toggleSubmenu($event, 'personal')">
       <i class="bi bi-person-circle fs-5"></i>
       <span>Gestionar Personal</span>
     </a>
@@ -34,8 +34,8 @@
   </a>
 
   <!-- Productos -->
-  <div onclick="this.classList.toggle('active')">
-    <a class="has-submenu">
+  <div [ngClass]="{'active': isMenuActive('productos')}">
+    <a class="has-submenu" (click)="toggleSubmenu($event, 'productos')">
       <i class="bi bi-box-seam fs-5"></i>
       <span>Productos</span>
     </a>
@@ -64,8 +64,8 @@
   </div>
 
   <!-- Compras -->
-  <div onclick="this.classList.toggle('active')">
-    <a class="has-submenu">
+  <div [ngClass]="{'active': isMenuActive('compras')}">
+    <a class="has-submenu" (click)="toggleSubmenu($event, 'compras')">
       <i class="bi bi-cart4 fs-5"></i>
       <span>Compras</span>
     </a>
@@ -94,8 +94,8 @@
   </a>
 
   <!-- Inventario -->
-  <div onclick="this.classList.toggle('active')">
-    <a class="has-submenu">
+  <div [ngClass]="{'active': isMenuActive('inventario')}">
+    <a class="has-submenu" (click)="toggleSubmenu($event, 'inventario')">
       <i class="bi bi-boxes fs-5"></i>
       <span>Inventario</span>
     </a>
