@@ -34,22 +34,22 @@ export class ProductosComponent implements OnInit {
   apiProveedores: any[] = []
   apiMarcas: any[] = []
   apiUnidadesMedida: any[] = []
-  // Filtros 
+  // Filtros
   codigo: string = ''
   nombre: string = ''
   categoria = ''
   estado = '1'
   page: number = 1
-  
+
   // Modal unificado
   isEditMode: boolean = false
   modalTitle: string = 'Nuevo Producto'
   exito: boolean = true
   mensajeToast: string = ''
-  
+
   // Archivo seleccionado
   selectedFile: File | null = null;
-  
+
   // Validación de código duplicado
   codigoDuplicado: boolean = false;
   constructor(
@@ -118,7 +118,7 @@ export class ProductosComponent implements OnInit {
       this.productoForm.patchValue({ foto: file.name });
     }
   }
-  
+
   abrirModalNuevo() {
     this.isEditMode = false
     this.modalTitle = 'Nuevo Producto'
@@ -130,7 +130,7 @@ export class ProductosComponent implements OnInit {
     this.selectedFile = null
     this.codigoDuplicado = false
   }
-  
+
   cargarDatosProducto(producto: any) {
     this.isEditMode = true
     this.modalTitle = 'Editar Producto'
@@ -158,14 +158,14 @@ export class ProductosComponent implements OnInit {
       this.productoForm.markAllAsTouched()
       return
     }
-    
+
     if (this.isEditMode) {
       this.actualizarProducto()
     } else {
       this.crearProducto()
     }
   }
-  
+
   crearProducto() {
     const formData = new FormData();
     const producto = this.productoForm.getRawValue();
@@ -176,7 +176,7 @@ export class ProductosComponent implements OnInit {
     if (this.selectedFile) {
       formData.append('foto', this.selectedFile);
     }
-    
+
     this.ProSer.saveProductos(formData).subscribe({
       next: (data) => {
         console.log('Producto creado:', data);
@@ -187,7 +187,7 @@ export class ProductosComponent implements OnInit {
         this.mensajeToast = 'Producto creado exitosamente'
         this.mostrarToast()
         this.cerrarModal()
-      }, 
+      },
       error: (error) => {
         console.error('Error al crear producto:', error);
         this.exito = false
@@ -249,11 +249,11 @@ export class ProductosComponent implements OnInit {
     }
     const formData = new FormData();
     formData.append('producto', JSON.stringify(producto));
-    
+
     if (this.selectedFile) {
       formData.append('foto', this.selectedFile);
     }
-    
+
     this.ProSer.modificarProducto(formData).subscribe({
       next: (data) => {
         console.log('Producto actualizado:', data);
@@ -264,7 +264,7 @@ export class ProductosComponent implements OnInit {
         this.mensajeToast = 'Producto actualizado exitosamente'
         this.mostrarToast()
         this.cerrarModal()
-      }, 
+      },
       error: (error) => {
         console.error('Error al actualizar producto:', error);
         this.exito = false
@@ -273,7 +273,7 @@ export class ProductosComponent implements OnInit {
       }
     })
   }
-  
+
   mostrarToast() {
     const toastEl = document.getElementById('toastProducto');
     if (toastEl) {
@@ -281,7 +281,7 @@ export class ProductosComponent implements OnInit {
       toast.show();
     }
   }
-  
+
   cerrarModal() {
     const modalEl = document.getElementById('modalProducto');
     if (modalEl) {
@@ -334,7 +334,7 @@ export class ProductosComponent implements OnInit {
           this.exito = true
           this.mensajeToast = `Producto ${this.estadoTemporal == 1 ? 'activado' : 'desactivado'} exitosamente`
           this.mostrarToast()
-        }, 
+        },
         error: (error) => {
           console.error('Error al cambiar estado:', error);
           this.exito = false

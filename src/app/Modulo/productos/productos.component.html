@@ -20,26 +20,26 @@
             <i class="bi bi-upc-scan"></i>
             Código
           </label>
-          <input 
-            type="text" 
-            class="form-control filter-input" 
-            [ngModel]="codigo" 
+          <input
+            type="text"
+            class="form-control filter-input"
+            [ngModel]="codigo"
             (ngModelChange)="codigo = $event.toUpperCase()"
             placeholder="Buscar por código">
         </div>
-        
+
         <div class="filter-item">
           <label class="filter-label">
             <i class="bi bi-search"></i>
             Nombre
           </label>
-          <input 
-            type="text" 
-            class="form-control filter-input" 
-            [(ngModel)]="nombre" 
+          <input
+            type="text"
+            class="form-control filter-input"
+            [(ngModel)]="nombre"
             placeholder="Buscar por nombre">
         </div>
-        
+
         <div class="filter-item">
           <label class="filter-label">
             <i class="bi bi-tags"></i>
@@ -50,7 +50,7 @@
             <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">{{cat.nombre}}</option>
           </select>
         </div>
-        
+
         <div class="filter-item">
           <label class="filter-label">
             <i class="bi bi-toggle-on"></i>
@@ -62,11 +62,11 @@
             <option value="">Todos</option>
           </select>
         </div>
-        
+
         <div class="filter-item">
-          <button 
-            class="btn-nuevo" 
-            data-bs-toggle="modal" 
+          <button
+            class="btn-nuevo"
+            data-bs-toggle="modal"
             data-bs-target="#modalProducto"
             (click)="abrirModalNuevo()">
             <i class="bi bi-plus-circle"></i>
@@ -101,8 +101,8 @@
               <td>{{i+1}}</td>
               <td>
                 <div class="product-image-wrapper">
-                  <img 
-                    [src]="pro.foto ? 'http://localhost:3001/uploads/' + pro.foto : '../../../assets/image-not-found.png'" 
+                  <img
+                    [src]="pro.foto ? 'http://localhost:3001/uploads/' + pro.foto : '../../../assets/image-not-found.png'"
                     alt="{{pro.nombre}}"
                     class="product-image">
                 </div>
@@ -122,9 +122,9 @@
               </td>
               <td>
                 <div class="form-check form-switch estado-switch">
-                  <input 
-                    class="form-check-input" 
-                    type="checkbox" 
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
                     [checked]="pro.estado == 1"
                     (change)="showModal($event, pro)">
                   <label class="form-check-label">
@@ -139,17 +139,17 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <button 
-                    class="btn-action btn-edit" 
-                    data-bs-toggle="modal" 
+                  <button
+                    class="btn-action btn-edit"
+                    data-bs-toggle="modal"
                     data-bs-target="#modalProducto"
                     (click)="cargarDatosProducto(pro)"
                     title="Editar producto">
                     <i class="bi bi-pencil-square"></i>
                   </button>
-                  <button 
-                    class="btn-action btn-view" 
-                    data-bs-toggle="modal" 
+                  <button
+                    class="btn-action btn-view"
+                    data-bs-toggle="modal"
                     data-bs-target="#detproducto"
                     (click)="Detalle(pro)"
                     title="Ver detalles">
@@ -161,9 +161,9 @@
           </tbody>
         </table>
       </div>
-      
+
       <div class="pagination-wrapper">
-        <pagination-controls 
+        <pagination-controls
           (pageChange)="page = $event"
           previousLabel="Anterior"
           nextLabel="Siguiente">
@@ -187,13 +187,13 @@
         </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" (click)="limpiar()"></button>
       </div>
-      
+
       <div class="modal-body">
         <div class="info-alert">
           <i class="bi bi-info-circle-fill"></i>
           <span>Los campos marcados con <span class="required-mark">*</span> son obligatorios</span>
         </div>
-        
+
         <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
           <div class="row g-3">
             <!-- Nombre -->
@@ -201,10 +201,10 @@
               <label class="form-label-custom">
                 Nombre <span class="required-mark">*</span>
               </label>
-              <input 
-                type="text" 
-                formControlName="nombre" 
-                class="form-control form-control-modern" 
+              <input
+                type="text"
+                formControlName="nombre"
+                class="form-control form-control-modern"
                 placeholder="Ingrese el nombre del producto"
                 maxlength="40"
                 [ngClass]="{
@@ -213,16 +213,16 @@
                 }">
               <div class="invalid-feedback">Nombre requerido (3-40 caracteres)</div>
             </div>
-            
+
             <!-- Código -->
             <div class="col-md-6">
               <label class="form-label-custom">
                 Código <span class="required-mark">*</span>
               </label>
-              <input 
-                type="text" 
-                formControlName="codigo" 
-                class="form-control form-control-modern" 
+              <input
+                type="text"
+                formControlName="codigo"
+                class="form-control form-control-modern"
                 placeholder="Código del producto"
                 maxlength="8"
                 (keyup)="validarCodigo($event)"
@@ -233,16 +233,16 @@
               <div class="invalid-feedback" *ngIf="codigoDuplicado">El código ya existe</div>
               <div class="invalid-feedback" *ngIf="!codigoDuplicado">Código requerido (máx. 8 caracteres)</div>
             </div>
-            
+
             <!-- Stock -->
             <div class="col-md-6">
               <label class="form-label-custom">
                 Stock <span class="required-mark">*</span>
               </label>
-              <input 
-                type="number" 
-                formControlName="stock" 
-                class="form-control form-control-modern" 
+              <input
+                type="number"
+                formControlName="stock"
+                class="form-control form-control-modern"
                 placeholder="Cantidad en stock"
                 min="1"
                 max="9999"
@@ -252,16 +252,16 @@
                 }">
               <div class="invalid-feedback">Stock requerido (1-9999)</div>
             </div>
-            
+
             <!-- Stock Mínimo -->
             <div class="col-md-6">
               <label class="form-label-custom">
                 Stock Mínimo <span class="required-mark">*</span>
               </label>
-              <input 
-                type="number" 
-                formControlName="stock_minimo" 
-                class="form-control form-control-modern" 
+              <input
+                type="number"
+                formControlName="stock_minimo"
+                class="form-control form-control-modern"
                 placeholder="Stock mínimo"
                 min="1"
                 max="9999"
@@ -271,7 +271,7 @@
                 }">
               <div class="invalid-feedback">Stock mínimo requerido (1-9999)</div>
             </div>
-            
+
             <!-- Precio Compra -->
             <div class="col-md-6">
               <label class="form-label-custom">
@@ -279,10 +279,10 @@
               </label>
               <div class="input-group">
                 <span class="input-group-text">Bs.</span>
-                <input 
-                  type="number" 
-                  formControlName="precio_compra" 
-                  class="form-control form-control-modern" 
+                <input
+                  type="number"
+                  formControlName="precio_compra"
+                  class="form-control form-control-modern"
                   placeholder="0.00"
                   min="0.01"
                   step="0.01"
@@ -295,7 +295,7 @@
                 Precio requerido (mayor a 0)
               </div>
             </div>
-            
+
             <!-- Precio Venta -->
             <div class="col-md-6">
               <label class="form-label-custom">
@@ -303,10 +303,10 @@
               </label>
               <div class="input-group">
                 <span class="input-group-text">Bs.</span>
-                <input 
-                  type="number" 
-                  formControlName="precio_venta" 
-                  class="form-control form-control-modern" 
+                <input
+                  type="number"
+                  formControlName="precio_venta"
+                  class="form-control form-control-modern"
                   placeholder="0.00"
                   min="0.01"
                   step="0.01"
@@ -319,14 +319,14 @@
                 Precio requerido (mayor a 0)
               </div>
             </div>
-            
+
             <!-- Proveedor -->
             <div class="col-md-6">
               <label class="form-label-custom">
                 Proveedor <span class="required-mark">*</span>
               </label>
-              <select 
-                formControlName="id_proveedor" 
+              <select
+                formControlName="id_proveedor"
                 class="form-select form-control-modern"
                 [ngClass]="{
                   'is-valid': control['id_proveedor'].valid && control['id_proveedor'].touched,
@@ -339,14 +339,14 @@
               </select>
               <div class="invalid-feedback">Seleccione un proveedor</div>
             </div>
-            
+
             <!-- Categoría -->
             <div class="col-md-6">
               <label class="form-label-custom">
                 Categoría <span class="required-mark">*</span>
               </label>
-              <select 
-                formControlName="id_categoria" 
+              <select
+                formControlName="id_categoria"
                 class="form-select form-control-modern"
                 [ngClass]="{
                   'is-valid': control['id_categoria'].valid && control['id_categoria'].touched,
@@ -359,14 +359,14 @@
               </select>
               <div class="invalid-feedback">Seleccione una categoría</div>
             </div>
-            
+
             <!-- Marca -->
             <div class="col-md-6">
               <label class="form-label-custom">
                 Marca <span class="required-mark">*</span>
               </label>
-              <select 
-                formControlName="id_marca" 
+              <select
+                formControlName="id_marca"
                 class="form-select form-control-modern"
                 [ngClass]="{
                   'is-valid': control['id_marca'].valid && control['id_marca'].touched,
@@ -379,14 +379,14 @@
               </select>
               <div class="invalid-feedback">Seleccione una marca</div>
             </div>
-            
+
             <!-- Unidad de Medida -->
             <div class="col-md-6">
               <label class="form-label-custom">
                 Unidad de Medida <span class="required-mark">*</span>
               </label>
-              <select 
-                formControlName="id_unidad_medida" 
+              <select
+                formControlName="id_unidad_medida"
                 class="form-select form-control-modern"
                 [ngClass]="{
                   'is-valid': control['id_unidad_medida'].valid && control['id_unidad_medida'].touched,
@@ -399,28 +399,28 @@
               </select>
               <div class="invalid-feedback">Seleccione una unidad de medida</div>
             </div>
-            
+
             <!-- Foto -->
             <div class="col-md-12">
               <label class="form-label-custom">
                 Foto del Producto
               </label>
-              <input 
-                type="file" 
-                class="form-control form-control-modern" 
+              <input
+                type="file"
+                class="form-control form-control-modern"
                 (change)="onFileSelected($event)"
                 accept="image/*">
               <small class="text-muted">Formatos permitidos: JPG, PNG, GIF</small>
             </div>
-            
+
             <!-- Descripción -->
             <div class="col-md-12">
               <label class="form-label-custom">
                 Descripción
               </label>
-              <textarea 
-                formControlName="descripcion" 
-                class="form-control form-control-modern" 
+              <textarea
+                formControlName="descripcion"
+                class="form-control form-control-modern"
                 rows="3"
                 placeholder="Descripción del producto..."
                 maxlength="50"
@@ -431,11 +431,11 @@
               <small class="text-muted">Opcional (6-50 caracteres)</small>
             </div>
           </div>
-          
+
           <div class="modal-footer modal-footer-custom">
-            <button 
-              type="button" 
-              class="btn-cancelar" 
+            <button
+              type="button"
+              class="btn-cancelar"
               data-bs-dismiss="modal"
               (click)="limpiar()">
               <i class="bi bi-x-circle"></i>
@@ -521,8 +521,8 @@
           <!-- Imagen del producto -->
           <div class="col-md-4">
             <div class="detail-image-wrapper">
-              <img 
-                [src]="detProducto?.foto ? 'http://localhost:3001/uploads/' + detProducto.foto : '../../../assets/image-not-found.png'" 
+              <img
+                [src]="detProducto?.foto ? 'http://localhost:3001/uploads/' + detProducto.foto : '../../../assets/image-not-found.png'"
                 alt="{{detProducto?.nombre}}"
                 class="detail-image">
             </div>
@@ -532,7 +532,7 @@
           <div class="col-md-8">
             <h4 class="detail-title">{{detProducto?.nombre}}</h4>
             <p class="detail-code">Código: <span class="codigo-badge">{{detProducto?.codigo}}</span></p>
-            
+
             <div class="detail-info-grid">
               <div class="detail-info-item">
                 <i class="bi bi-calendar3"></i>
@@ -541,7 +541,7 @@
                   <p>{{detProducto?.fecha_registro}}</p>
                 </div>
               </div>
-              
+
               <div class="detail-info-item">
                 <i class="bi bi-tag"></i>
                 <div>
@@ -549,7 +549,7 @@
                   <p>{{detProducto?.categorium.nombre}}</p>
                 </div>
               </div>
-              
+
               <div class="detail-info-item">
                 <i class="bi bi-buildings"></i>
                 <div>
@@ -557,7 +557,7 @@
                   <p>{{detProducto?.marca.nombre}}</p>
                 </div>
               </div>
-              
+
               <div class="detail-info-item">
                 <i class="bi bi-truck"></i>
                 <div>
@@ -565,7 +565,7 @@
                   <p>{{detProducto?.proveedor.nombre}}</p>
                 </div>
               </div>
-              
+
               <div class="detail-info-item">
                 <i class="bi bi-rulers"></i>
                 <div>
@@ -573,7 +573,7 @@
                   <p>{{detProducto?.unidad_medida.nombre}}</p>
                 </div>
               </div>
-              
+
               <div class="detail-info-item">
                 <i class="bi bi-toggle-on"></i>
                 <div>
@@ -589,7 +589,7 @@
                 </div>
               </div>
             </div>
-            
+
             <div class="detail-pricing">
               <div class="pricing-card pricing-compra">
                 <small>Precio Compra</small>
@@ -608,7 +608,7 @@
                 <h5>{{detProducto?.stock_minimo}}</h5>
               </div>
             </div>
-            
+
             <div class="detail-description" *ngIf="detProducto?.descripcion">
               <h6>Descripción</h6>
               <p>{{detProducto?.descripcion}}</p>
