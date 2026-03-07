@@ -46,6 +46,8 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   codigo: string = ''
   nombre: string = ''
   categoria = ''
+  subcategoria = ''
+  subCategoriasFiltro: Categoria[] = []
   estado = '1'
   page: number = 1
 
@@ -429,9 +431,22 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   cerrarModalProveedor() {
     if (this.modalProveedor) {
       this.modalProveedor.hide();
-      document.querySelector('.modal-backdrop')?.remove();
-      document.body.style.overflow = 'auto';
-      document.body.style.paddingRight = '0';
+      // Restaurar el backdrop del modal principal si está abierto
+      setTimeout(() => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        // Eliminar todos los backdrops excepto uno si el modal principal está abierto
+        if (this.modalAgregarRef.nativeElement.classList.contains('show')) {
+          backdrops.forEach((backdrop, index) => {
+            if (index > 0) backdrop.remove();
+          });
+          document.body.classList.add('modal-open');
+        } else {
+          backdrops.forEach(b => b.remove());
+          document.body.classList.remove('modal-open');
+        }
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }, 100);
     }
   }
 
@@ -474,9 +489,22 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   cerrarModalMarca() {
     if (this.modalMarca) {
       this.modalMarca.hide();
-      document.querySelector('.modal-backdrop')?.remove();
-      document.body.style.overflow = 'auto';
-      document.body.style.paddingRight = '0';
+      // Restaurar el backdrop del modal principal si está abierto
+      setTimeout(() => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        // Eliminar todos los backdrops excepto uno si el modal principal está abierto
+        if (this.modalAgregarRef.nativeElement.classList.contains('show')) {
+          backdrops.forEach((backdrop, index) => {
+            if (index > 0) backdrop.remove();
+          });
+          document.body.classList.add('modal-open');
+        } else {
+          backdrops.forEach(b => b.remove());
+          document.body.classList.remove('modal-open');
+        }
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }, 100);
     }
   }
 
@@ -508,7 +536,25 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     });
   }
 
-  // ========== MÉTODOS PARA CATEGORÍA/SUBCATEGORÍA ==========
+  // ========== MÉTODOS PARA FILTROS DE CATEGORÍA/SUBCATEGORÍA ==========
+  onFiltroCategoriaPrincipalChange(event: any) {
+    const categoriaId = event.target.value;
+    this.categoria = categoriaId;
+    this.subcategoria = '';
+
+    if (categoriaId) {
+      const categoriaSeleccionada = this.apiCategorias.find(c => c.id_categoria == categoriaId);
+      if (categoriaSeleccionada && categoriaSeleccionada.subCategoria && categoriaSeleccionada.subCategoria.length > 0) {
+        this.subCategoriasFiltro = categoriaSeleccionada.subCategoria;
+      } else {
+        this.subCategoriasFiltro = [];
+      }
+    } else {
+      this.subCategoriasFiltro = [];
+    }
+  }
+
+  // ========== MÉTODOS PARA CATEGORÍA/SUBCATEGORÍA DEL FORMULARIO ==========
   onCategoriaChange(event: any) {
     const categoriaId = parseInt(event.target.value);
     this.categoriaSeleccionada = this.apiCategorias.find(c => c.id_categoria === categoriaId) || null;

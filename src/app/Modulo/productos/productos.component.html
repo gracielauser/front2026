@@ -53,9 +53,20 @@
             <i class="bi bi-tags"></i>
             Categoría
           </label>
-          <select class="form-select filter-select" [(ngModel)]="categoria">
+          <select class="form-select filter-select" [(ngModel)]="categoria" (change)="onFiltroCategoriaPrincipalChange($event)">
             <option value="">Todas las categorías</option>
             <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">{{cat.nombre}}</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-bookmark"></i>
+            Subcategoría
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="subcategoria" [disabled]="subCategoriasFiltro.length === 0">
+            <option value="">Todas las subcategorías</option>
+            <option *ngFor="let subcat of subCategoriasFiltro" [value]="subcat.id_categoria">{{subcat.nombre}}</option>
           </select>
         </div>
 
@@ -93,7 +104,7 @@
           </thead>
           <tbody>
             <tr
-              *ngFor="let pro of apiProductos | codigo:codigo | nombre:nombre | categoria:categoria | estado:estado | paginate: { itemsPerPage: 6, currentPage: page }; let i=index"
+              *ngFor="let pro of apiProductos | codigo:codigo | nombre:nombre | categoria:categoria:subcategoria | estado:estado | paginate: { itemsPerPage: 6, currentPage: page }; let i=index"
               class="table-row">
               <td>{{i+1}}</td>
               <td>
