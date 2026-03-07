@@ -7,7 +7,8 @@
     <div class="card-body">
       <div class="row mb-3">
         <div class="col-md-3">
-          <input type="text" class="form-control" placeholder="Buscar por Nombre" aria-label="Buscar por nombre">
+          <input type="text" class="form-control" placeholder="Buscar por Nombre"
+                 [(ngModel)]="nombre" aria-label="Buscar por nombre">
         </div>
         <div class="col-md-4">
         </div>
@@ -20,8 +21,9 @@
         </div>
         <div class="col-md-2">
           <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addproveedor">
-            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
-            Nuevo Proveedor</button>
+            <i class="bi bi-plus-circle"></i>
+            Nuevo Proveedor
+          </button>
         </div>
       </div>
 
@@ -38,7 +40,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let i=index; let pro of apiProveedor|paginate: { itemsPerPage: 6, currentPage: page }|estado:estado">
+            <tr *ngFor="let i=index; let pro of apiProveedor|nombre:nombre|estado:estado|paginate: { itemsPerPage: 6, currentPage: page }">
               <td>{{i+1}}</td>
               <td>{{pro.nombre}}</td>
               <td>{{pro.celular}}</td>
@@ -112,7 +114,7 @@
           </div>
           <div class="col-md-6">
   <label for="correo" class="form-label">Email</label>
-  <input type="email" formControlName="email" class="form-control" id="correo" 
+  <input type="email" formControlName="email" class="form-control" id="correo"
          placeholder="Ingrese email"
          [ngClass]="{
            'is-invalid': control['email'].invalid && (control['email'].dirty || control['email'].touched)
@@ -201,8 +203,7 @@
             <select class="form-select" formControlName="ciudad" id="ciudad" required [ngClass]="{
          'is-valid': control['ciudad'].valid && (control['ciudad'].dirty||control['ciudad'].touched),
          'is-invalid': control['ciudad'].invalid && (control['ciudad'].dirty||control['ciudad'].touched)}">
-              <option selected disabled value="">Seleccione...</option>
-              <option>Tarija</option>
+              <option value="Tarija" selected>Tarija</option>
               <option>La Paz</option>
               <option>Santa Cruz</option>
               <option>Potósi</option>
@@ -271,7 +272,7 @@
           </div>
           <div class="col-md-6">
   <label for="correo" class="form-label">Email</label>
-  <input type="email" formControlName="email" class="form-control" id="correo" 
+  <input type="email" formControlName="email" class="form-control" id="correo"
          placeholder="Ingrese email"
          [ngClass]="{
            'is-invalid': control['email'].invalid && (control['email'].dirty || control['email'].touched)
@@ -362,8 +363,7 @@
             <select class="form-select" formControlName="ciudad" id="ciudad" required [ngClass]="{
          'is-valid': control['ciudad'].valid && (control['ciudad'].dirty||control['ciudad'].touched),
          'is-invalid': control['ciudad'].invalid && (control['ciudad'].dirty||control['ciudad'].touched)}">
-              <option selected disabled value="">Seleccione...</option>
-              <option>Tarija</option>
+              <option value="Tarija">Tarija</option>
               <option>La Paz</option>
               <option>Santa Cruz</option>
               <option>Potósi</option>

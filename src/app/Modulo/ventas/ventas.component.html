@@ -1,467 +1,930 @@
-<div class="container-fluid me-3 ">
-    <div class="card">
-        <div class="card-header">
-            <h5>Gestionar Ventas</h5>
+<div class="ventas-container">
+  <!-- Header Profesional con Gradiente -->
+  <div class="ventas-header">
+    <div class="header-left">
+      <div class="icon-wrapper-animated">
+        <div class="icon-circle">
+          <i class="bi bi-cart-check-fill"></i>
         </div>
-        <div class="card-body">
-            <div class="row ">
-                <div class="col-md-2">
-                    <input type="text" class="form-control" [ngModel]="nroventa"
-                        (ngModelChange)="nroventa = $event.toUpperCase()" placeholder="Buscar por Nro Venta">
-                </div>
-                <div class="col-md-2">
-                    <input type="text" class="form-control" placeholder="Buscar por cliente"
-                        aria-label="Buscar por cliente">
-                </div>
-                <div class="col-md-3">
+        <div class="icon-pulse"></div>
+      </div>
+      <div class="header-info">
+        <h1 class="header-title">
+          <span class="title-gradient">Gestión de Ventas</span>
+        </h1>
+        <!-- <p class="header-subtitle">
+          <i class="bi bi-graph-up-arrow me-1"></i>
+          Sistema integral de administración y control de ventas
+        </p> -->
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-nuevo-venta" (click)="nuevaVenta()">
+          <i class=" bi bi-plus-lg"></i>
+        Nueva Venta
 
-                </div>
-                <div class="col-md-3">
-                  <!--  <select class="form-select">
-                        <option selected>Tipo</option>
-                        <option value="1">Activos</option>
-                        <option value="2">Inactivos</option>
-                        <option value="3">Todos</option>
-                    </select>-->
-                </div>
-                <div class="col-md-2">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addventa">Nueva
-                        Venta</button>
-                </div>
-                <div class="col-md-4">
-                    <label for="f1">Desde::</label>
-                    <input type="date" id="f1" class="form-control">
-                </div>
-                <div class="col-md-4">
-                    <label for="f1">Hasta::</label>
-                    <input type="date" id="f1" class="form-control">
-                </div>
-                <div class="col-md-3 ">
-                    <label>Estado</label>
-                    <select class="form-select" [(ngModel)]="estado">
-                        <option value="1" selected>Vigentes</option>
-                        <option value="2">Anuladas</option>
-                        <option value="">Todas las compras</option>
-                    </select>
-                </div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenido Principal -->
+  <div class="ventas-content">
+    <!-- Secci\u00f3n de Filtros -->
+    <div class="filters-section">
+      <div class="filters-header">
+        <div class="filters-title-section">
+          <div class="filters-icon">
+            <i class="bi bi-funnel-fill"></i>
+          </div>
+          <div>
+            <h3 class="filters-title">Filtros de Búsqueda</h3>
+            <p class="filters-subtitle">Refina tus resultados con criterios específicos</p>
+          </div>
+        </div>
+        <div class="filters-stats">
+          <div class="stat-badge stat-primary">
+            <i class="bi bi-file-earmark-text"></i>
+            <span class="stat-number">{{ (apiVentas | nroVenta:nroventa | estado:estado).length }}</span>
+            <span class="stat-label">Registros</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filters-body">
+        <div class="filters-grid-modern">
+          <!-- Filtro 1: Número de Venta -->
+          <div class="filter-box">
+            <label class="filter-label-modern">
+              <i class="bi bi-hash"></i>
+              <span>Número de Venta</span>
+              <span class="required-star">*</span>
+            </label>
+            <div class="input-with-icon">
+              <i class="bi bi-search input-prefix-icon"></i>
+              <input
+                type="text"
+                class="modern-input"
+                [(ngModel)]="nroventa"
+                placeholder="Ej: V001, V002, V0..."
+              />
+              <div class="input-underline"></div>
             </div>
-            <div class="table-responsive tamaño">
-                <table class="table table-striped">
+          </div>
+
+          <!-- Filtro 2: Cliente -->
+          <div class="filter-box">
+            <label class="filter-label-modern">
+              <i class="bi bi-person-circle"></i>
+              <span>Cliente</span>
+            </label>
+            <div class="input-with-icon">
+              <i class="bi bi-search input-prefix-icon"></i>
+              <input
+                type="text"
+                class="modern-input"
+                placeholder="Buscar por nombre..."
+              />
+              <div class="input-underline"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 3: Estado -->
+          <div class="filter-box">
+            <label class="filter-label-modern">
+              <i class="bi bi-toggles"></i>
+              <span>Estado</span>
+            </label>
+            <div class="select-wrapper">
+              <select class="modern-select" [(ngModel)]="estado">
+                <option value="1">✓ Vigentes</option>
+                <option value="2">✗ Anuladas</option>
+                <option value="">● Todas</option>
+              </select>
+              <i class="bi bi-chevron-down select-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Filtro 4: Fecha Desde -->
+          <div class="filter-box">
+            <label class="filter-label-modern">
+              <i class="bi bi-calendar-range"></i>
+              <span>Desde</span>
+            </label>
+            <div class="input-with-icon">
+              <i class="bi bi-calendar3 input-prefix-icon"></i>
+              <input type="date" class="modern-input" />
+              <div class="input-underline"></div>
+            </div>
+          </div>
+
+          <!-- Filtro 5: Fecha Hasta -->
+          <div class="filter-box">
+            <label class="filter-label-modern">
+              <i class="bi bi-calendar-check"></i>
+              <span>Hasta</span>
+            </label>
+            <div class="input-with-icon">
+              <i class="bi bi-calendar3 input-prefix-icon"></i>
+              <input type="date" class="modern-input" />
+              <div class="input-underline"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-section">
+      <!-- Header de la Tabla -->
+      <div class="table-header-section">
+        <div class="table-title-area">
+          <div class="table-icon-circle">
+            <i class="bi bi-receipt-cutoff"></i>
+          </div>
+          <div>
+            <h3 class="table-title">Registro de Ventas</h3>
+            <p class="table-description">Vista completa de todas las transacciones</p>
+          </div>
+        </div>
+        <div class="table-header-stats">
+          <div class="header-stat success">
+            <div class="stat-icon">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ (apiVentas | estado:'1').length }}</span>
+              <span class="stat-name">Vigentes</span>
+            </div>
+          </div>
+          <div class="header-stat danger">
+            <div class="stat-icon">
+              <i class="bi bi-x-circle-fill"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value">{{ (apiVentas | estado:'2').length }}</span>
+              <span class="stat-name">Anuladas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla -->
+      <div class="table-content-wrapper">
+        <div class="table-scroll-container">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th class="col-number">#</th>
+                <th class="col-primary">
+                  <div class="th-content">
+                    <i class="bi bi-upc-scan"></i>
+                    <span>Nro. Venta</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-content">
+                    <i class="bi bi-calendar3"></i>
+                    <span>Fecha</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-content">
+                    <i class="bi bi-person"></i>
+                    <span>Cliente</span>
+                  </div>
+                </th>
+                <th class="col-amount">
+                  <div class="th-content">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Monto Total</span>
+                  </div>
+                </th>
+                <th class="col-center">
+                  <div class="th-content">
+                    <i class="bi bi-tag"></i>
+                    <span>Tipo</span>
+                  </div>
+                </th>
+                <th class="col-actions">
+                  <div class="th-content">
+                    <i class="bi bi-gear"></i>
+                    <span>Acciones</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
+                  class="data-row"
+                  [class.row-anulada]="ven.estado == 2">
+                <td class="col-number">
+                  <div class="number-badge">{{ i + 1 }}</div>
+                </td>
+                <td class="col-primary">
+                  <div class="nro-venta-display">
+                    <div class="nro-icon">
+                      <i class="bi bi-file-earmark-text-fill"></i>
+                    </div>
+                    <span class="nro-code">{{ ven.nro_venta }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="fecha-display">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>{{ ven.fecha_registro }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="cliente-display">
+                    <div class="cliente-avatar-mini" [class.avatar-general]="ven.cliente == null">
+                      <i class="bi"
+                         [class.bi-person-fill]="ven.cliente != null"
+                         [class.bi-people-fill]="ven.cliente == null"></i>
+                    </div>
+                    <div class="cliente-info">
+                      <span class="cliente-name">{{ (ven.cliente != null) ? ven.cliente.nombres : 'Público General' }}</span>
+                      <span class="cliente-type">{{ (ven.cliente != null) ? 'Cliente registrado' : 'Sin registro' }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="col-amount">
+                  <div class="amount-display">
+                    <span class="amount-currency">Bs</span>
+                    <span class="amount-value">{{ ven.monto_total | number:'1.2-2' }}</span>
+                  </div>
+                </td>
+                <td class="col-center">
+                  <div class="tipo-badge"
+                       [class.tipo-fisico]="ven.tipo_venta == 1"
+                       [class.tipo-pedido]="ven.tipo_venta != 1">
+                    <i class="bi"
+                       [class.bi-shop]="ven.tipo_venta == 1"
+                       [class.bi-truck]="ven.tipo_venta != 1"></i>
+                    <span>{{ ven.tipo_venta == 1 ? 'Físico' : 'Pedido' }}</span>
+                  </div>
+                </td>
+                <td class="col-actions">
+                  <div class="actions-group">
+                    <button
+                      class="action-btn btn-view-modern"
+                      (click)="detalle(ven)"
+                      title="Ver detalle completo"
+                    >
+                      <i class="bi bi-eye-fill"></i>
+                      <span class="action-tooltip">Ver</span>
+                    </button>
+                    <button
+                      *ngIf="ven.estado != 2"
+                      class="action-btn btn-delete-modern"
+                      (click)="anularVenta(ven)"
+                      title="Anular venta"
+                    >
+                      <i class="bi bi-trash-fill"></i>
+                      <span class="action-tooltip">Anular</span>
+                    </button>
+                    <div *ngIf="ven.estado == 2" class="status-anulado">
+                      <i class="bi bi-x-octagon-fill"></i>
+                      <span>Anulada</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado).length === 0">
+                <td colspan="7">
+                  <div class="empty-state-modern">
+                    <div class="empty-icon-circle">
+                      <i class="bi bi-inbox"></i>
+                    </div>
+                    <h4 class="empty-title">No se encontraron ventas</h4>
+                    <p class="empty-description">Intenta ajustar los filtros de búsqueda o registra una nueva venta</p>
+                    <button class="btn-empty-action" (click)="nuevaVenta()">
+                      <i class="bi bi-plus-circle"></i>
+                      Nueva Venta
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer de la Tabla -->
+      <div class="table-footer-section">
+        <div class="footer-info">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado).length }}</strong> venta(s)</span>
+        </div>
+        <div class="pagination-modern">
+          <pagination-controls (pageChange)="page = $event"></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVA VENTA - Diseño Profesional Completo -->
+<div class="modal fade" #modalAgregar tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content modal-ultra-modern">
+      <!-- Header Ultra Profesional -->
+      <div class="modal-header-ultra">
+        <div class="modal-header-left">
+          <div class="modal-icon-animated">
+            <div class="icon-bg-pulse"></div>
+            <i class="bi bi-cart-plus-fill"></i>
+          </div>
+          <div class="modal-title-ultra">
+            <h2>Nueva Venta</h2>
+            <p>Complete los datos y seleccione los productos para la venta</p>
+          </div>
+        </div>
+        <button class="btn-close-ultra" (click)="cerrarModalAgregar()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- Body Ultra Moderno -->
+      <div class="modal-body-ultra">
+        <form [formGroup]="ventaForm" (ngSubmit)="agregarVenta()">
+          <div class="ultra-grid-layout">
+            <!-- Panel Izquierdo: Catálogo de Productos -->
+            <div class="productos-panel-ultra">
+              <div class="panel-header-ultra">
+                <div class="panel-header-content">
+                  <div class="panel-icon-circle">
+                    <i class="bi bi-box-seam-fill"></i>
+                  </div>
+                  <div class="panel-header-text">
+                    <h4>Catálogo de Productos</h4>
+                    <span class="products-count">{{ (apiProductos | codigo:codigo | nombre:nombre).length }} productos disponibles</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel-body-ultra">
+                <!-- Búsqueda Avanzada -->
+                <div class="search-ultra-section">
+                  <div class="search-ultra-grid">
+                    <div class="search-ultra-field">
+                      <label class="ultra-label">
+                        <i class="bi bi-upc-scan"></i>
+                        <span>Código de Barras</span>
+                      </label>
+                      <div class="ultra-input-wrapper">
+                        <input
+                          type="text"
+                          class="ultra-input"
+                          [(ngModel)]="codigo"
+                          [ngModelOptions]="{standalone: true}"
+                          placeholder="Escanear o escribir código..."
+                        />
+                        <i class="bi bi-search ultra-input-icon"></i>
+                      </div>
+                    </div>
+
+                    <div class="search-ultra-field">
+                      <label class="ultra-label">
+                        <i class="bi bi-tag-fill"></i>
+                        <span>Nombre del Producto</span>
+                      </label>
+                      <div class="ultra-input-wrapper">
+                        <input
+                          type="text"
+                          class="ultra-input"
+                          [(ngModel)]="nombre"
+                          [ngModelOptions]="{standalone: true}"
+                          placeholder="Buscar por nombre..."
+                        />
+                        <i class="bi bi-search ultra-input-icon"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tabla de Productos Ultra Moderna -->
+                <div class="productos-ultra-table-container">
+                  <table class="productos-ultra-table">
                     <thead>
-                        <tr>
-                            <th scope="col">Nro</th>
-                            <th scope="col">Nro.Venta</th>
-                            <th scope="col">Fecha registro</th>
-                            <th scope="col">Cliente</th>
-                            <th scope="col">Monto Total</th>
-                            <th scope="col">Tipo de Venta</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
+                      <tr>
+                        <th>
+                          <div class="th-ultra">
+                            <i class="bi bi-upc"></i>
+                            <span>Código</span>
+                          </div>
+                        </th>
+                        <th>
+                          <div class="th-ultra">
+                            <i class="bi bi-box-fill"></i>
+                            <span>Producto</span>
+                          </div>
+                        </th>
+                        <th>
+                          <div class="th-ultra">
+                            <i class="bi bi-cash-stack"></i>
+                            <span>Precio</span>
+                          </div>
+                        </th>
+                        <th>
+                          <div class="th-ultra">
+                            <i class="bi bi-boxes"></i>
+                            <span>Stock</span>
+                          </div>
+                        </th>
+                        <th class="th-center-ultra">Acción</th>
+                      </tr>
                     </thead>
                     <tbody>
-                        <tr
-                            *ngFor="let i=index; let ven of apiVentas | nroVenta:nroventa |estado:estado| paginate: { itemsPerPage: 6, currentPage: page }">
-                            <td>{{i+1}}</td>
-                            <td>{{ven.nro_venta}}</td>
-                            <td>{{ven.fecha_registro}}</td>
-                            <td>{{(ven.cliente!=null)?ven.cliente.nombres:"Publico general"}}</td>
-                            <td>{{ven.monto_total}}</td>
-                            <td>{{ven.tipo_venta==1?"Fisico":"Pedido"}}</td>
-                            <td>
-                                <!--Anular-->
-                                <button *ngIf="ven.estado!=2" (click)="anularVenta(ven)" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#anuventa">
-                                    <i class="bi bi-trash"></i> Anular
-                                </button>
-                                <!--Detalle-->
-                                <button (click)="detalle(ven)" class="btn btn-outline-primary btn-sm ms-2"
-                                    data-bs-toggle="modal" data-bs-target="#detventa">
-                                    <i class="bi bi-card-text"></i> Detalle
-                                </button>
-                                <span *ngIf="ven.estado==2" class="text-muted ms-2">Compra anulada</span>
-                            </td>
-                        </tr>
+                      <tr *ngFor="let pro of apiProductos | codigo:codigo | nombre:nombre" class="producto-ultra-row">
+                        <td>
+                          <code class="codigo-ultra">{{ pro.codigo }}</code>
+                        </td>
+                        <td>
+                          <div class="producto-name-ultra">
+                            <div class="producto-icon-mini">
+                              <i class="bi bi-box-fill"></i>
+                            </div>
+                            <span>{{ pro.nombre }}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="precio-ultra">
+                            <span class="moneda">Bs</span>
+                            <span class="valor">{{ pro.precio_venta | number:'1.2-2' }}</span>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="stock-ultra-badge"
+                               [class.stock-alto]="pro.stock > 10"
+                               [class.stock-medio]="pro.stock <= 10 && pro.stock > 0"
+                               [class.stock-agotado]="pro.stock <= 0">
+                            <i class="bi"
+                               [class.bi-check-circle-fill]="pro.stock > 10"
+                               [class.bi-exclamation-triangle-fill]="pro.stock <= 10 && pro.stock > 0"
+                               [class.bi-x-circle-fill]="pro.stock <= 0"></i>
+                            <span>{{ pro.stock }}</span>
+                          </div>
+                        </td>
+                        <td class="th-center-ultra">
+                          <button
+                            type="button"
+                            class="btn-add-ultra"
+                            (click)="agregarProducto(pro)"
+                            [disabled]="pro.stock <= 0"
+                          >
+                            <i class="bi bi-plus-lg"></i>
+                            <span>Agregar</span>
+                          </button>
+                        </td>
+                      </tr>
+                      <tr *ngIf="(apiProductos | codigo:codigo | nombre:nombre).length === 0">
+                        <td colspan="5">
+                          <div class="empty-productos-ultra">
+                            <i class="bi bi-search"></i>
+                            <p>No se encontraron productos</p>
+                          </div>
+                        </td>
+                      </tr>
                     </tbody>
-                </table>
+                  </table>
+                </div>
+              </div>
             </div>
-            <div class="pagination-wrapper">
-                <pagination-controls (pageChange)="page = $event"></pagination-controls>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- MODAL ADICIONAR -->
-<div class="modal fade" id="addventa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-fullscreen ">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Nueva Venta</h1>
-            </div>
-            <div class="modal-body">
-                <form class="row g-3 needs-validation" [formGroup]="ventaForm" (ngSubmit)="agregarVenta()">
-                    <div class="container">
-                        <!--<div class="row g-3" modal-dialog-scrollable>
-                            <div class="col-md-6">
-                          <fieldset class="border p-1 f1" >
-                              <legend class="float-none w-auto">Información Venta</legend>
-                              <div class="row g-2">
-                                 <div class="col-md-5">
-                                    <label for="fecha">Fecha</label>
-                                    <input type="date" class="form-control" formControlName="fecha" id="fecha">
-                                 </div>
-                                 <div class="col-md-5">
-                                    <label for="nroventa">Nro Venta</label>
-                                    <input type="text" class="form-control" formControlName="nroVenta" id="nroventa" >
-                                </div>
-                                <div class="col-md-2">
-                                   Con Factura
-                                        <div class="form-check">
-                                             <input (click)="observarFactura(1)" class="form-check-input" formControlName="tipov" type="radio"  id="habi" value=1>
-                                            <label class="form-check-label" for="habi">SI</label>
-                                            <br>
-                                             <input (click)="observarFactura(2)" class="form-check-input" formControlName="tipov" type="radio"  id="desa" value=2>
-                                            <label class="form-check-label" for="desa">NO </label>
-                                        </div>
-                                  </div>
-                              </div>
-                          </fieldset> 
-                      </div>-->
-                        <!--     <div class="col-md-6">
-                                <fieldset class="border p-2 ">
-                                    <legend class="float-none  w-auto">Información del Cliente</legend>
-                                    <div class="row">
-                                        <div class="col-md-6 ">
-                                            <label for="cliente" class="form-label">Cliente:</label>
-                                            <select id="cliente" class="form-select" formControlName="cliente">
-                                                <option value="1" selected>Publico General</option>
-                                                <option [ngValue]="cli" *ngFor="let cli of clientes">{{cli.nombres}}
-                                                </option>
 
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 ">
-                                            <label for="nombre">Cliente</label>
-                                            <input type="text" class="form-control" formControlName="nombre_cliente"
-                                                id="nombre">
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-4 ">
-                                            <label for="cinit">CI/NIT</label>
-                                            <input type="text" formControlName="ci_nit" class="form-control" id="cinit">
-                                        </div>
-                                        <div class="col-md-4 ">
-                                            <label for="cliente" class="form-label">Tipo Documento:</label>
-                                            <select id="cliente" class="form-select" formControlName="documento">
-                                                <option selected value="1">NIT</option>
-                                                <option value="2">CI</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4 ">
-                                            <button class="btn btn-info mt-4" data-bs-toggle="modal"
-                                                data-bs-target="#addcliente" [disabled]="tipo==2?true:false">Completar
-                                                Info.</button>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div>-->
-                        <div class="row">
-                            <div class="col-md-6"><!-- Lista de productos -->
-                                <fieldset class="border px-3 "><!--Segunda fila-->
-                                    <legend class="float-none w-auto ">Productos</legend>
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <input type="text" class="form-control" (keyup)="ponerCodigo($event)"
-                                                placeholder="Buscar por código"
-                                                oninput="this.value = this.value.toUpperCase();">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <input type="text" class="form-control" (keyup)="ponerNombre($event)"
-                                                style="text-transform: capitalize;" placeholder="Buscar por nombre">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <select class="form-select" (change)="ponerCat($event)">
-                                                <option value="">Todos</option>
-                                                <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">
-                                                    {{cat.nombre}}</option>
-                                            </select>
-                                        </div>
-                                    </div>
+            <!-- Panel Derecho: Detalle de Venta -->
+            <div class="detalle-panel-ultra">
+              <div class="panel-header-ultra panel-header-detalle">
+                <div class="panel-header-content">
+                  <div class="panel-icon-circle">
+                    <i class="bi bi-receipt-cutoff"></i>
+                  </div>
+                  <div class="panel-header-text">
+                    <h4>Detalle de la Venta</h4>
+                    <span class="products-count">{{ productosVender.length }} producto(s) seleccionado(s)</span>
+                  </div>
+                </div>
+              </div>
 
-                                    <div class="table-responsive tamaño2">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Nro</th>
-                                                    <th scope="col">Cod Producto</th>
-                                                    <th scope="col">Nombre</th>
-                                                    <th scope="col">Precio Venta</th>
-                                                    <th scope="col">Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr
-                                                    *ngFor="let i=index; let pro of apiProductos|codigo:codigo |nombre:nombre | categoria:categoria ">
-                                                    <td>{{i+1}}</td>
-                                                    <td>{{pro.codigo}}</td>
-                                                    <td>{{pro.nombre}}</td>
-                                                    <td>{{pro.precio_venta}}</td>
-                                                    <td>
-                                                        <!--Agregar-->
-                                                        <button class="btn btn-outline-success btn-sm"
-                                                            (click)="agregarProducto(pro)">
-                                                            <i class="bi bi-plus-circle"></i>Agregar
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </fieldset>
-                            </div>
-                            <div class="col-md-6">
-                                <fieldset class="border px-3 ">
-                                    <legend class="float-none w-auto ">Detalle de la Venta</legend>
-                                    <div class="col-md-6 pb-2">
-                                        <label for="cliente" class="form-label">Cliente:</label>
-                                        <select id="cliente" class="form-select" formControlName="cliente">
-                                            <option value="1" selected>Publico General</option>
-                                            <option [ngValue]="cli" *ngFor="let cli of apiClientes">{{cli.nombre}}
-                                                {{cli.ap_paterno}} {{cli.ap_materno}}
-                                            </option>
-
-                                        </select>
-                                    </div>
-                                    <div class="table-responsive tamaño" style="max-height: 400px; overflow-y: auto;">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Nro</th>
-                                                    <th scope="col">Producto</th>
-                                                    <th scope="col">Precio Venta</th>
-                                                    <th scope="col">Cantidad</th>
-                                                    <th scope="col">Sub Total</th>
-                                                    <th scope="col">Acciones</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr *ngFor="let i=index; let pro of productosVender">
-                                                    <td>{{i+1}}</td>
-                                                    <td>{{pro.nombre}}</td>
-                                                    <td>{{pro.precio_venta}}</td>
-                                                    <td>
-                                                        <input type="number" class="form-control"
-                                                            style="width: 80px !important;"
-                                                            [value]="productosVentaCantidades[i]" min="1"
-                                                            (keydown)="bloquearTeclasInvalidas($event)"
-                                                            (change)="nuevaCantidad(i,$event)">
-                                                    </td>
-                                                    <td>{{productosVentaCantidades[i]*pro.precio_venta}}</td>
-                                                    <td>
-                                                        <button (click)="quitarProducto(i)"
-                                                            class="btn btn-outline-danger btn-sm">
-                                                            <i class="bi bi-trash"></i>Quitar
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="row ">
-                                        <div class="col-md-4 pb-2 ">
-                                            <label for="nombre">Tipo de Pago</label>
-                                            <select class="form-select" formControlName="tipo_pago">
-                                                <option value="1">Efectivo</option>
-                                                <option value="2">QR</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4 mt-2">
-                                            <div class="input-group">
-                                                <label class="input-group-text">Descuento:</label>
-                                                <input type="text" class="form-control" id="total"
-                                                    formControlName="descuento" (change)="descontar($event)">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 mt-2">
-                                            <div class="input-group">
-                                                <span class="input-group-text">Total:</span>
-                                                <input type="text" class="form-control" formControlName="total"
-                                                    id="total" readonly [value]="total">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                        </div>
+              <div class="panel-body-ultra panel-body-detalle">
+                <!-- Información de la Venta -->
+                <div class="info-venta-section-ultra">
+                  <div class="section-title-ultra">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span>Información de la Venta</span>
+                  </div>
+                  <div class="info-venta-grid">
+                    <div class="info-field-ultra">
+                      <label>Nro. Venta</label>
+                      <input
+                        type="text"
+                        class="ultra-readonly-input"
+                        formControlName="nro_venta"
+                        readonly
+                      />
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" [disabled]="ventaForm.invalid"
-                            data-bs-dismiss="modal">Guardar</button>
-                        <button (click)="Cancelar()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <div class="info-field-ultra">
+                      <label>Fecha</label>
+                      <input
+                        type="date"
+                        class="ultra-readonly-input"
+                        formControlName="fecha"
+                        readonly
+                      />
                     </div>
-                </form>
-            </div>
+                    <div class="info-field-ultra info-field-full">
+                      <label>Vendedor</label>
+                      <input
+                        type="text"
+                        class="ultra-readonly-input"
+                        formControlName="vendedor"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                </div>
 
-        </div>
-    </div>
-</div>
-<!-- MODAL DETALLE -->
-<div class="modal fade" id="detventa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
-    <div class="modal-content border-0 shadow-lg">
-      <div class="modal-header">
-        <h5 class="modal-title d-flex align-items-center">
-          <i class="bi bi-receipt-cutoff me-2 fs-4"></i> Detalle de Venta
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+                <!-- Opciones de Venta -->
+                <div class="opciones-venta-section-ultra">
+                  <div class="section-title-ultra">
+                    <i class="bi bi-sliders"></i>
+                    <span>Configuración de la Venta</span>
+                  </div>
+                  <div class="opciones-venta-grid">
+                    <div class="opcion-ultra-field">
+                      <label class="opcion-ultra-label">
+                        <i class="bi bi-cart-check"></i>
+                        <span>Tipo de Venta</span>
+                      </label>
+                      <select class="ultra-select" formControlName="tipo_venta">
+                        <option value="1">Venta Física (Mostrador)</option>
+                        <option value="2">Venta por Pedido</option>
+                      </select>
+                    </div>
+                    <div class="opcion-ultra-field">
+                      <label class="opcion-ultra-label">
+                        <i class="bi bi-credit-card"></i>
+                        <span>Método de Pago</span>
+                      </label>
+                      <select class="ultra-select" formControlName="tipo_pago">
+                        <option value="1">Efectivo</option>
+                        <option value="2">Código QR</option>
+                      </select>
+                    </div>
+                    <div class="opcion-ultra-field">
+                      <label class="opcion-ultra-label">
+                        <i class="bi bi-file-earmark-text"></i>
+                        <span>Facturación</span>
+                      </label>
+                      <select class="ultra-select" formControlName="tipov" (change)="observarFactura($any($event.target).value)">
+                        <option value="2">Sin Factura</option>
+                        <option value="1">Con Factura</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
 
-      <div class="modal-body bg-light">
-        <div class="container">
-          
-          <!-- Información General -->
-          <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header  d-flex align-items-center">
-              <i class="bi bi-info-circle-fill me-2"></i>
-              <h6 class="mb-0 fw-semibold">Información General</h6>
-            </div>
-            <div class="card-body">
-                 <div class="row gy-2">
-              <div class="col-md-4">
-                <i class="bi bi-calendar3 me-1"></i>
-                <strong>Fecha de Venta:</strong> {{ DetVenta?.fecha_registro }}
+                <!-- Carrito de Productos -->
+                <div class="carrito-section-ultra">
+                  <div class="section-title-ultra">
+                    <i class="bi bi-cart-fill"></i>
+                    <span>Carrito de Compras</span>
+                  </div>
+                  <div class="carrito-ultra-container">
+                    <table class="carrito-ultra-table">
+                      <thead>
+                        <tr>
+                          <th>Producto</th>
+                          <th>Precio</th>
+                          <th class="th-center-ultra">Cant.</th>
+                          <th class="th-right-ultra">Subtotal</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let pro of productosVender; let i = index" class="carrito-ultra-row">
+                          <td>
+                            <div class="carrito-producto-name">
+                              <i class="bi bi-box-fill"></i>
+                              <span>{{ pro.nombre }}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <span class="carrito-precio">{{ pro.precio_venta | currency:'BOB':'symbol':'1.2-2' }}</span>
+                          </td>
+                          <td class="th-center-ultra">
+                            <input
+                              type="number"
+                              class="cantidad-ultra-input"
+                              [value]="productosVentaCantidades[i]"
+                              (input)="nuevaCantidad(i, $event)"
+                              (keydown)="bloquearTeclasInvalidas($event)"
+                              min="1"
+                            />
+                          </td>
+                          <td class="th-right-ultra">
+                            <span class="carrito-subtotal">
+                              {{ (pro.precio_venta * productosVentaCantidades[i]) | currency:'BOB':'symbol':'1.2-2' }}
+                            </span>
+                          </td>
+                          <td class="th-center-ultra">
+                            <button
+                              type="button"
+                              class="btn-quitar-ultra"
+                              (click)="quitarProducto(i)"
+                            >
+                              <i class="bi bi-trash-fill"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        <tr *ngIf="productosVender.length === 0">
+                          <td colspan="5">
+                            <div class="carrito-empty-ultra">
+                              <i class="bi bi-cart-x"></i>
+                              <p>No hay productos en el carrito</p>
+                              <small>Selecciona productos del catálogo</small>
+                            </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- Totales Ultra Modernos -->
+                <div class="totales-ultra-section">
+                  <div class="descuento-ultra-row">
+                    <div class="descuento-ultra-field">
+                      <label class="descuento-ultra-label">
+                        <i class="bi bi-percent"></i>
+                        <span>Descuento (Bs)</span>
+                      </label>
+                      <input
+                        type="number"
+                        class="descuento-ultra-input"
+                        formControlName="descuento"
+                        (input)="descontar($event)"
+                        placeholder="0.00"
+                        min="0"
+                      />
+                    </div>
+
+                    <div class="total-ultra-card">
+                      <div class="total-ultra-header">
+                        <i class="bi bi-cash-stack"></i>
+                        <span>TOTAL A PAGAR</span>
+                      </div>
+                      <div class="total-ultra-amount">
+                        {{ (total - (ventaForm.get('descuento')?.value || 0)) | currency:'BOB':'symbol':'1.2-2' }}
+                      </div>
+                      <div class="total-ultra-footer">
+                        <i class="bi bi-cart-check"></i>
+                        <span>{{ productosVender.length }} producto(s)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="col-md-4">
-                <i class="bi bi-hash  me-1"></i>
-                <strong>N° Venta:</strong> {{ DetVenta?.id_venta }}
-              </div>
-              <div class="col-md-4">
-                <i class="bi bi-person-badge  me-1"></i>
-                <strong>Vendedor:</strong>
-                {{ DetVenta?.usuario.empleado.nombre }}
-                {{ DetVenta?.usuario.empleado.ap_paterno }}
-                {{ DetVenta?.usuario.empleado.ap_materno }}
-              </div>
-              <div class="col-md-4">
-                <i class="bi bi-receipt  me-1"></i>
-                <strong>Factura:</strong>
-                {{ DetVenta?.confactura==1 ? "Con factura" : "Sin factura" }}
-              </div>
-              <div class="col-md-4">
-                <i class="bi bi-cart me-1"></i>
-                <strong>Tipo de Venta:</strong>
-                {{ DetVenta?.tipo_venta==1 ? "Presencial" : "A pedido" }}
-              </div>
-              <div class="col-md-4">
-                <i class="bi bi-credit-card  me-1"></i>
-                <strong>Tipo de Pago:</strong>
-                {{ DetVenta?.tipo_pago==1 ? "Efectivo" : "QR" }}
-              </div>
-              <div class="col-md-4">
-                <i class="bi bi-person-circle  me-1"></i>
-                <strong>Cliente:</strong>
-                {{ DetVenta?.cliente==null ? "Público general" : DetVenta?.cliente.nombres }}
-              </div>
-            </div>
-              
             </div>
           </div>
 
-          <!-- Productos Vendidos -->
-          <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header  d-flex align-items-center">
-              <i class="bi bi-box-seam me-2"></i>
-              <h6 class="mb-0 fw-semibold">Productos Vendidos</h6>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table align-middle table-striped table-hover">
-                  <thead class="table-primary">
-                    <tr>
-                      <th>#</th>
-                      <th>Producto</th>
-                      <th>Cantidad</th>
-                      <th>Precio Unitario</th>
-                      <th>Subtotal</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let d of detallesVenta; let i = index">
-                      <td>{{i+1}}</td>
-                      <td>{{d.producto.nombre}}</td>
-                      <td>{{d.cantidad}}</td>
-                      <td>{{d.precio_unitario | currency:'BOB':'symbol':'1.2-2'}}</td>
-                      <td><strong>{{d.sub_total | currency:'BOB':'symbol':'1.2-2'}}</strong></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- Totales -->
-          <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header d-flex align-items-center">
-              <i class="bi bi-cash-stack me-2"></i>
-              <h6 class="mb-0 fw-semibold">Totales</h6>
-            </div>
-            <div class="card-body">
-              <div class="row gy-2">
-                <div class="col-md-4">
-                  <strong>Subtotal:</strong> {{DetVenta?.monto_total | currency:'BOB':'symbol':'1.2-2'}}
-                </div>
-                <div class="col-md-4">
-                  <strong>Descuento:</strong> {{(DetVenta?.descuento)?(DetVenta?.descuento | currency:'BOB':'symbol':'1.2-2'):"No hay descuento"}}
-                </div>
-                <div class="col-md-4">
-                  <strong>Total General:</strong>
-                  <span class="text-success fw-bold">
-                    {{(DetVenta?.monto_total-DetVenta?.descuento) | currency:'BOB':'symbol':'1.2-2'}}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Botones -->
-          <div class="d-flex justify-content-start gap-3 mt-3">
-            <button (click)="generarPdf()" class="btn btn-danger d-flex align-items-center">
-              <i class="bi bi-file-earmark-pdf-fill me-2"></i> Nota de Venta
+          <!-- Footer Ultra Moderno -->
+          <div class="modal-footer-ultra">
+            <button
+              type="button"
+              class="btn-ultra btn-ultra-cancel"
+              (click)="Cancelar()"
+            >
+              <i class="bi bi-x-circle"></i>
+              <span>Cancelar</span>
             </button>
-            <!-- <button class="btn btn-secondary d-flex align-items-center">
-              <i class="bi bi-receipt me-2"></i> Factura
-            </button> -->
+            <button
+              type="submit"
+              class="btn-ultra btn-ultra-save"
+              [disabled]="ventaForm.invalid || productosVender.length === 0"
+            >
+              <i class="bi bi-check-circle-fill"></i>
+              <span>Registrar Venta</span>
+              <div class="btn-ultra-glow"></div>
+            </button>
           </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
+<!-- MODAL DETALLE - Ultra Modernizado -->
+<div class="modal fade" #modalDetalle tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content modal-ultra-modern">
+      <div class="modal-header-ultra modal-header-info">
+        <div class="modal-header-left">
+          <div class="modal-icon-animated">
+            <div class="icon-bg-pulse"></div>
+            <i class="bi bi-receipt-cutoff"></i>
+          </div>
+          <div class="modal-title-ultra">
+            <h2>Detalle de Venta</h2>
+            <p>Información completa de la transacción</p>
+          </div>
+        </div>
+        <button class="btn-close-ultra" (click)="cerrarModalDetalle()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body-ultra">
+       <!-- Información General Ultra -->
+        <div class="detalle-ultra-section">
+          <div class="detalle-section-header">
+            <i class="bi bi-info-circle-fill"></i>
+            <span>Información General</span>
+          </div>
+          <div class="detalle-ultra-grid">
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-calendar3"></i></div>
+              <div class="item-content">
+                <span class="item-label">Fecha de Venta</span>
+                <span class="item-value">{{ DetVenta?.fecha_registro }}</span>
+              </div>
+            </div>
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-hash"></i></div>
+              <div class="item-content">
+                <span class="item-label">N° de Venta</span>
+                <span class="item-value">{{ DetVenta?.nro_venta }}</span>
+              </div>
+            </div>
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-person-badge"></i></div>
+              <div class="item-content">
+                <span class="item-label">Vendedor</span>
+                <span class="item-value">
+                  {{ DetVenta?.usuario?.empleado?.nombre }}
+                  {{ DetVenta?.usuario?.empleado?.ap_paterno }}
+                  {{ DetVenta?.usuario?.empleado?.ap_materno }}
+                </span>
+              </div>
+            </div>
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-receipt"></i></div>
+              <div class="item-content">
+                <span class="item-label">Facturación</span>
+                <span class="item-value">{{ DetVenta?.confactura == 1 ? 'Con factura' : 'Sin factura' }}</span>
+              </div>
+            </div>
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-cart"></i></div>
+              <div class="item-content">
+                <span class="item-label">Tipo de Venta</span>
+                <span class="item-value">{{ DetVenta?.tipo_venta == 1 ? 'Presencial' : 'A pedido' }}</span>
+              </div>
+            </div>
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-credit-card"></i></div>
+              <div class="item-content">
+                <span class="item-label">Tipo de Pago</span>
+                <span class="item-value">{{ DetVenta?.tipo_pago == 1 ? 'Efectivo' : 'QR' }}</span>
+              </div>
+            </div>
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-person-circle"></i></div>
+              <div class="item-content">
+                <span class="item-label">Cliente</span>
+                <span class="item-value">
+                  {{ DetVenta?.cliente == null ? 'Público general' : DetVenta?.cliente?.nombres }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Productos Vendidos Ultra -->
+        <div class="detalle-ultra-section">
+          <div class="detalle-section-header">
+            <i class="bi bi-box-seam"></i>
+            <span>Productos Vendidos</span>
+          </div>
+          <div class="detalle-table-ultra-container">
+            <table class="detalle-ultra-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Producto</th>
+                  <th>Precio Unit.</th>
+                  <th class="th-center-ultra">Cantidad</th>
+                  <th class="th-right-ultra">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let d of detallesVenta; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <div class="producto-name-detalle">
+                      <i class="bi bi-box-fill"></i>
+                      <span>{{ d.producto?.nombre }}</span>
+                    </div>
+                  </td>
+                  <td>{{ d.precio_unitario | currency:'BOB':'symbol':'1.2-2' }}</td>
+                  <td class="th-center-ultra">
+                    <span class="cantidad-badge">{{ d.cantidad }}</span>
+                  </td>
+                  <td class="th-right-ultra">
+                    <span class="subtotal-detalle">{{ d.sub_total | currency:'BOB':'symbol':'1.2-2' }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Totales Ultra -->
+        <div class="detalle-ultra-section">
+          <div class="detalle-section-header">
+            <i class="bi bi-cash-stack"></i>
+            <span>Resumen de Totales</span>
+          </div>
+          <div class="totales-detalle-ultra">
+            <div class="total-detalle-row">
+              <span class="total-detalle-label">Subtotal</span>
+              <span class="total-detalle-value">{{ DetVenta?.monto_total | currency:'BOB':'symbol':'1.2-2' }}</span>
+            </div>
+            <div class="total-detalle-row">
+              <span class="total-detalle-label">Descuento</span>
+              <span class="total-detalle-value discount">
+                {{ (DetVenta?.descuento) ? (DetVenta?.descuento | currency:'BOB':'symbol':'1.2-2') : 'Sin descuento' }}
+              </span>
+            </div>
+            <div class="total-detalle-row total-final-row">
+              <span class="total-final-label">Total General</span>
+              <span class="total-final-value">
+                {{ ((DetVenta?.monto_total || 0) - (DetVenta?.descuento || 0)) | currency:'BOB':'symbol':'1.2-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="actions-detalle-ultra">
+          <button class="btn-action-ultra btn-pdf" (click)="generarPdf()">
+            <i class="bi bi-file-earmark-pdf-fill"></i>
+            <span>Descargar PDF</span>
+          </button>
         </div>
       </div>
 
-      <div class="modal-footer bg-light">
-        <button type="button" class="btn btn-success" data-bs-dismiss="modal">
-          <i class="bi bi-check-circle me-1"></i> Aceptar
+      <div class="modal-footer-ultra">
+        <button class="btn-ultra btn-ultra-secondary" (click)="cerrarModalDetalle()">
+          <i class="bi bi-check-circle"></i>
+          <span>Cerrar</span>
         </button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODAL Anular -->
-<div class="modal fade" id="anuventa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog ">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Anular Venta</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body d-flex flex-column justify-content-center align-items-center">
-                <i class="bi bi-exclamation-circle-fill fs-1"></i>
-                Estas seguro de anular la Venta de compra Seleccionada?
-            </div>
-            <div class="modal-footer">
-                <button (click)="confirmarAnular()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Guardar</button>
-                <button  type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            </div>
+<!-- MODAL ANULAR - Ultra Modernizado -->
+<div class="modal fade" #modalAnular tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-ultra-modern">
+      <div class="modal-header-ultra modal-header-warning">
+        <div class="modal-header-left">
+          <div class="modal-icon-animated">
+            <div class="icon-bg-pulse warning"></div>
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <div class="modal-title-ultra">
+            <h2>Anular Venta</h2>
+            <p>Esta acción no se puede deshacer</p>
+          </div>
         </div>
+        <button class="btn-close-ultra" (click)="cerrarModalAnular()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body-ultra modal-body-center">
+        <div class="warning-ultra-content">
+          <div class="warning-ultra-icon">
+            <i class="bi bi-exclamation-circle-fill"></i>
+          </div>
+          <h3 class="warning-ultra-title">¿Confirmar anulación?</h3>
+          <p class="warning-ultra-text">
+            Estás a punto de anular esta venta. Esta acción es irreversible y afectará el inventario.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer-ultra">
+        <button class="btn-ultra btn-ultra-cancel" (click)="cerrarModalAnular()">
+          <i class="bi bi-x-circle"></i>
+          <span>Cancelar</span>
+        </button>
+        <button class="btn-ultra btn-ultra-danger" (click)="confirmarAnular()">
+          <i class="bi bi-check-circle-fill"></i>
+          <span>Confirmar Anulación</span>
+        </button>
+      </div>
     </div>
+  </div>
 </div>

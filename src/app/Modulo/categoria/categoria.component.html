@@ -1,268 +1,360 @@
-<div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h5>Gestionar Categoria</h5>
-      <p class="mb-0">Administra la información de las categorias</p>
+<div class="categoria-container">
+  <!-- Header -->
+  <div class="categoria-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="bi bi-tags-fill"></i>
+      </div>
+      <div>
+        <h2 class="header-title">Gestión de Categorías</h2>
+        <p class="header-subtitle">Administra categorías y subcategorías del sistema</p>
+      </div>
+      <div class="align-self-end ms-auto">
+        <button class="btn-nuevo" (click)="abrirModalNueva()">
+            <i class="bi bi-plus-circle-fill"></i>
+            Nueva Categoría
+          </button>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="row mb-1">
-        <div class="col-md-4">
-           <input type="text" class="form-control" placeholder="Buscar por nombre"
-                      [(ngModel)]="nombre" >
-        </div>
-        <div class="col-md-3">
+  </div>
 
+  <!-- Content -->
+  <div class="categoria-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-search"></i>
+            Buscar
+          </label>
+          <input type="text" class="filter-input" placeholder="Buscar por nombre" [(ngModel)]="nombre">
         </div>
-        <div class="col-md-3">
-          <select class="form-select" (change)="cambioEstado($event)">
-            <option  value="">Todos</option>
-            <option selected value="1">Activos</option>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-funnel"></i>
+            Estado
+          </label>
+          <select class="filter-select" (change)="cambioEstado($event)">
+            <option value='' selected>Todos</option>
+            <option  value="1">Activos</option>
             <option value="2">Inactivos</option>
           </select>
         </div>
-        <div class="col-md-2">
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addcate">Nueva Categoria</button>
-        </div>
+
       </div>
-      <div class="table-responsive tamaño">
-        <table class="table table-striped">
+    </div>
+
+    <!-- Tabla Jerárquica -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="categoria-table">
           <thead>
             <tr>
-              <th scope="col">Nro</th>
-              <th scope="col">Nombre</th>
-              <th scope="col">Descripcion</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Acciones</th>
+              <th style="width: 60px;">Nro</th>
+              <th>Nombre</th>
+              <th>Descripción</th>
+              <th style="width: 120px;">Subcategorías</th>
+              <th style="width: 100px;">Estado</th>
+              <th style="width: 200px;">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let i=index; let cat of apiCategoria | estado:estado| nombre:nombre|paginate: { itemsPerPage: 6, currentPage: page }">
+            <tr *ngFor="let cat of getCategoriasPadre() | estado:estado | nombre:nombre | paginate: { itemsPerPage: 6, currentPage: page }; let i=index" class="categoria-padre-row">
               <td>{{i+1}}</td>
-              <td>{{cat.nombre}}</td>
-              <td>{{cat.descripcion}}</td>
-               <!--Estado "-->
-                              <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" [checked]="cat.estado==1"
-                                        (change)="showModal($event, cat)">
-                                </div>
-                            </td>
-              <!--Modificar-->
               <td>
-                <button (click)="ModificarCategoria(cat)" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modcate">
-                  <i class="bi bi-pencil"></i> Editar
-                </button>
+                <div class="categoria-nombre">
+                  <i class="bi bi-folder-fill categoria-icon"></i>
+                  <strong>{{cat.nombre}}</strong>
+                </div>
+              </td>
+              <td>
+                <span class="descripcion-text">{{cat.descripcion || 'Sin descripción'}}</span>
+              </td>
+              <td>
+                <span class="subcategoria-count" *ngIf="cat.subCategoria && cat.subCategoria.length > 0">
+                  <i class="bi bi-files"></i>
+                  {{cat.subCategoria.length}}
+                </span>
+                <span class="text-muted" *ngIf="!cat.subCategoria || cat.subCategoria.length === 0">
+                  <i class="bi bi-dash-circle"></i>
+                  0
+                </span>
+              </td>
+              <td>
+                <div class="estado-switch">
+                  <input class="form-check-input" type="checkbox" [checked]="cat.estado==1"
+                         (change)="showModal($event, cat)">
+                  <span class="badge" [ngClass]="{
+                    'badge-activo': cat.estado == 1,
+                    'badge-inactivo': cat.estado != 1
+                  }">
+                    {{cat.estado == 1 ? 'Activo' : 'Inactivo'}}
+                  </span>
+                </div>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit" (click)="abrirModalEditar(cat, false)" title="Editar categoría">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                </div>
               </td>
             </tr>
-            <!-- Repite las filas según sea necesario -->
           </tbody>
         </table>
       </div>
+
+      <!-- Paginación -->
       <div class="pagination-wrapper">
         <pagination-controls (pageChange)="page = $event"></pagination-controls>
       </div>
     </div>
   </div>
 </div>
-<!-- MODAL  -->
-<div class="modal fade" id="addcate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+<!-- Modal Unificado (Categoría Padre) -->
+<div class="modal fade" id="modalUnificado" tabindex="-1" #modalUnificado>
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Categoria</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <!-- ALERTA AZUL -->
-        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
-          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
-          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+    <div class="modal-content modal-modern">
+      <div class="modal-header modal-header-custom">
+        <div class="modal-title-wrapper">
+          <i class="bi" [ngClass]="{
+            'bi-tags-fill': !isEditMode,
+            'bi-pencil-square': isEditMode
+          }"></i>
+          <h5 class="modal-title">{{modalTitle}}</h5>
         </div>
-        <form class="row g-3 " [formGroup]="cateForm" (ngSubmit)="AgregarCategoria()">
-          <!--NOMBRES-->
-          <div class="col-md-6">
-            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
-            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
-              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
-         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
-              oninput="
-             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
-           if(this.value.length>15){
-             document.getElementById('msgMaxLetras').style.display='block';
-             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
-             this.value=this.value.slice(0,15);
-           }
-           if(this.value.length>0 && this.value.length<3){
-             document.getElementById('msgMinLetras').style.display='block';
-             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
-           }
-         " [ngClass]="{
-         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
-         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
-            <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
-            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
-            </div>
-            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
-              letras.</div>
-            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
-              letras.</div>
-          </div>
-          <!--DESCRIPCION-->
-          <div class="col-md-12">
-            <div class="mb-3">
-              <label for="descripcion" class="form-label">Descripcion</label>
-              <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
-                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
-         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
-                oninput="
-             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
-           if(this.value.length>50){
-             document.getElementById('msgMaxLetrasDes').style.display='block';
-             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
-             this.value=this.value.slice(0,50);
-           }
-           if(this.value.length>0 && this.value.length<6){
-             document.getElementById('msgMinLetrasDes').style.display='block';
-             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
-           }
-         " [ngClass]="{
-         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
-                        }"></textarea>
-              <div class="valid-feedback">Correcto.</div>
-              <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
-                números, solo letras. </div>
-              <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
-                puede tener más de 50 letras.</div>
-              <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
-                tener al menos 6 letras.</div>
-            </div>
-          </div>
-          <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="cateForm.invalid"
-         >Guardar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
-        </form>
-      </div>
-      
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="modcate" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modificar Categoria</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <!-- ALERTA AZUL -->
-        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
-          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
-          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
-        </div>
-        <form class="row g-3 " [formGroup]="cateForm" (ngSubmit)="GuardarModificacion()">
-          <!--NOMBRES-->
-          <div class="col-md-6">
-            <label class="form-label">Nombre <span class="text-danger"> * </span></label>
-            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
-              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
-         setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
-              oninput="
-             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
-           if(this.value.length>15){
-             document.getElementById('msgMaxLetras').style.display='block';
-             setTimeout(()=>document.getElementById('msgMaxLetras').style.display='none',2000);
-             this.value=this.value.slice(0,15);
-           }
-           if(this.value.length>0 && this.value.length<3){
-             document.getElementById('msgMinLetras').style.display='block';
-             setTimeout(()=>document.getElementById('msgMinLetras').style.display='none',2000);
-           }
-         " [ngClass]="{
-         'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
-         'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
-            <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
-            <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
-            </div>
-            <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
-              letras.</div>
-            <div id="msgMinLetras" class="invalid-feedback" style="display:none;">El Nombre debe tener al menos 3
-              letras.</div>
-          </div>
-          <!--DESCRIPCION-->
-          <div class="col-md-12">
-            <div class="mb-3">
-              <label for="descripcion" class="form-label">Descripcion</label>
-              <textarea class="form-control" formControlName="descripcion" id="descripcion" rows="3"
-                pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$" onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
-         setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
-                oninput="
-             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
-           if(this.value.length>50){
-             document.getElementById('msgMaxLetrasDes').style.display='block';
-             setTimeout(()=>document.getElementById('msgMaxLetrasDes').style.display='none',2000);
-             this.value=this.value.slice(0,50);
-           }
-           if(this.value.length>0 && this.value.length<6){
-             document.getElementById('msgMinLetrasDes').style.display='block';
-             setTimeout(()=>document.getElementById('msgMinLetrasDes').style.display='none',2000);
-           }
-         " [ngClass]="{
-         'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched)
-                        }"></textarea>
-              <div class="valid-feedback">Correcto.</div>
-              <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">No se aceptan
-                números, solo letras. </div>
-              <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">La descripcion no
-                puede tener más de 50 letras.</div>
-              <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">La descripcion debe
-                tener al menos 6 letras.</div>
-            </div>
-          </div>
-          <div class="modal-footer">
-        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" 
-         >Guardar</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-      </div>
-        </form>
-      </div>
-      
-    </div>
-  </div>
-</div>
-  <!-- Modal único -->
-<div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog ">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
-        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
-        <span>
-          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> la
-          categoría?
-        </span>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalUnificado(); limpiarForm()"></button>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
-        <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
-          data-bs-dismiss="modal">Cancelar</button>
+      <div class="modal-body">
+        <!-- Alerta informativa -->
+        <div class="info-alert">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>
+            Los campos marcados con <span class="required-mark">*</span> son obligatorios.
+          </span>
+        </div>
+
+        <form [formGroup]="cateForm" (ngSubmit)="guardarCategoria()">
+          <div class="row g-3">
+            <!-- Nombre -->
+            <div class="col-md-12">
+              <label class="form-label-custom">
+                Nombre <span class="required-mark">*</span>
+              </label>
+              <input type="text" formControlName="nombre" class="form-control form-control-modern"
+                     placeholder="Ingrese el nombre" maxlength="15"
+                     [ngClass]="{
+                       'is-valid': control['nombre'].valid && control['nombre'].touched,
+                       'is-invalid': control['nombre'].invalid && control['nombre'].touched
+                     }">
+              <div class="invalid-feedback">
+                El nombre es obligatorio (3-15 caracteres).
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="col-md-12">
+              <label class="form-label-custom">Descripción</label>
+              <textarea formControlName="descripcion" class="form-control form-control-modern" rows="3"
+                        placeholder="Ingrese una descripción (opcional)" maxlength="50"
+                        [ngClass]="{
+                          'is-valid': control['descripcion'].valid && control['descripcion'].touched && control['descripcion'].value,
+                          'is-invalid': control['descripcion'].invalid && control['descripcion'].touched
+                        }"></textarea>
+              <small class="text-muted">Opcional (6-50 caracteres)</small>
+            </div>
+          </div>
+
+          <!-- Lista de Subcategorías (solo cuando se edita una categoría padre) -->
+          <div class="subcategorias-section" *ngIf="isEditMode && categoriaEnEdicion">
+            <div class="subcategorias-header">
+              <h6>
+                <i class="bi bi-files"></i>
+                Subcategorías ({{getSubcategorias(categoriaEnEdicion.id_categoria!).length}})
+              </h6>
+              <button type="button" class="btn-add-sub" (click)="abrirModalNueva(categoriaEnEdicion)">
+                <i class="bi bi-plus-circle-fill"></i>
+                Agregar Subcategoría
+              </button>
+            </div>
+
+            <div class="subcategorias-list" *ngIf="getSubcategorias(categoriaEnEdicion.id_categoria!).length > 0">
+              <div class="subcategoria-item" *ngFor="let subCat of getSubcategorias(categoriaEnEdicion.id_categoria!); let idx = index">
+                <div class="subcategoria-info">
+                  <i class="bi bi-file-earmark-fill subcategoria-icon"></i>
+                  <div>
+                    <strong>{{subCat.nombre}}</strong>
+                    <small class="d-block text-muted">{{subCat.descripcion || 'Sin descripción'}}</small>
+                  </div>
+                </div>
+                <div class="subcategoria-actions">
+                  <span class="badge-mini" [ngClass]="{
+                    'badge-activo': subCat.estado == 1,
+                    'badge-inactivo': subCat.estado != 1
+                  }">
+                    {{subCat.estado == 1 ? 'Activo' : 'Inactivo'}}
+                  </span>
+                  <input class="form-check-input me-2" type="checkbox" [checked]="subCat.estado==1"
+                         (change)="showModal($event, subCat)" title="Cambiar estado">
+                  <button type="button" class="btn-action-mini btn-edit" (click)="abrirModalEditar(subCat, true)"
+                          title="Editar subcategoría">
+                    <i class="bi bi-pencil-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="empty-subcategorias" *ngIf="getSubcategorias(categoriaEnEdicion.id_categoria!).length === 0">
+              <i class="bi bi-inbox"></i>
+              <p>No hay subcategorías. Haz clic en "Agregar Subcategoría" para crear una.</p>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-custom">
+            <button type="button" class="btn-cancelar" (click)="cerrarModalUnificado(); limpiarForm()">
+              <i class="bi bi-x-circle"></i>
+              Cancelar
+            </button>
+            <button type="submit" class="btn-guardar" [disabled]="cateForm.invalid">
+              <i class="bi" [ngClass]="{
+                'bi-floppy': !isEditMode,
+                'bi-arrow-repeat': isEditMode
+              }"></i>
+              {{isEditMode ? 'Actualizar' : 'Guardar'}}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
-<!-- Modal de éxito -->
+
+<!-- Modal Unificado Subcategoría -->
+<div class="modal fade" id="modalUnificadoSubcategoria" tabindex="-1" #modalUnificadoSubcategoria>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modal-modern">
+      <div class="modal-header modal-header-custom">
+        <div class="modal-title-wrapper">
+          <i class="bi" [ngClass]="{
+            'bi-tag-fill': !isEditMode,
+            'bi-pencil-square': isEditMode
+          }"></i>
+          <h5 class="modal-title">{{modalTitle}}</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalSubcategoria()"></button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Alerta informativa -->
+        <div class="info-alert">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>
+            <ng-container *ngIf="!isEditMode">
+              Estás creando una subcategoría de <strong>"{{categoriaPadreNombre}}"</strong>.
+            </ng-container>
+            <ng-container *ngIf="isEditMode">
+              Los campos marcados con <span class="required-mark">*</span> son obligatorios.
+            </ng-container>
+          </span>
+        </div>
+
+        <form [formGroup]="cateForm" (ngSubmit)="guardarCategoria()">
+          <div class="row g-3">
+            <!-- Nombre -->
+            <div class="col-md-12">
+              <label class="form-label-custom">
+                Nombre <span class="required-mark">*</span>
+              </label>
+              <input type="text" formControlName="nombre" class="form-control form-control-modern"
+                     placeholder="Ingrese el nombre" maxlength="15"
+                     [ngClass]="{
+                       'is-valid': control['nombre'].valid && control['nombre'].touched,
+                       'is-invalid': control['nombre'].invalid && control['nombre'].touched
+                     }">
+              <div class="invalid-feedback">
+                El nombre es obligatorio (3-15 caracteres).
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="col-md-12">
+              <label class="form-label-custom">Descripción</label>
+              <textarea formControlName="descripcion" class="form-control form-control-modern" rows="3"
+                        placeholder="Ingrese una descripción (opcional)" maxlength="50"
+                        [ngClass]="{
+                          'is-valid': control['descripcion'].valid && control['descripcion'].touched && control['descripcion'].value,
+                          'is-invalid': control['descripcion'].invalid && control['descripcion'].touched
+                        }"></textarea>
+              <small class="text-muted">Opcional (6-50 caracteres)</small>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-custom">
+            <button type="button" class="btn-cancelar" (click)="cerrarModalSubcategoria()">
+              <i class="bi bi-x-circle"></i>
+              Cancelar
+            </button>
+            <button type="submit" class="btn-guardar" [disabled]="cateForm.invalid">
+              <i class="bi" [ngClass]="{
+                'bi-floppy': !isEditMode,
+                'bi-arrow-repeat': isEditMode
+              }"></i>
+              {{isEditMode ? 'Actualizar' : 'Guardar'}}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Confirmación de Estado -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" #modalConfirmacion>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirmation">
+      <div class="modal-header modal-header-warning">
+        <div class="modal-title-wrapper">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <h5 class="modal-title">Confirmar cambio de estado</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalConfirmacion()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="confirmation-text">
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> esta categoría?
+        </p>
+      </div>
+      <div class="modal-footer modal-footer-custom">
+        <button type="button" class="btn-cancelar" (click)="cancelarCambio()">
+          <i class="bi bi-x-circle"></i>
+          Cancelar
+        </button>
+        <button type="button" class="btn-confirmar" (click)="guardarCambio()">
+          <i class="bi bi-check-circle"></i>
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast de Notificación -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
-  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+  <div id="toastCategoria" class="toast align-items-center border-0" [ngClass]="{
+    'toast-success': exito,
+    'toast-error': !exito
+  }" role="alert">
     <div class="d-flex">
       <div class="toast-body">
-         Los cambios fueron guardados exitosamente.
+        <i class="bi me-2" [ngClass]="{
+          'bi-check-circle-fill': exito,
+          'bi-x-circle-fill': !exito
+        }"></i>
+        {{mensajeToast}}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>

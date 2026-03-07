@@ -6,12 +6,13 @@ import { Proveedor } from '../../Modelos/proveedor';
 import { ProveedorService } from '../../Servicios/proveedor.service';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { EstadoPipe } from '../../Filtros/estado.pipe';
+import { NombrePipe } from '../../Filtros/nombre.pipe';
 
 
 @Component({
   selector: 'app-proveedores',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,NgxPaginationModule,FormsModule,EstadoPipe],
+  imports: [CommonModule, ReactiveFormsModule,NgxPaginationModule,FormsModule,EstadoPipe,NombrePipe],
   templateUrl: './proveedores.component.html',
   styleUrls: ['./proveedores.component.css']
 })
@@ -20,6 +21,7 @@ export class ProveedoresComponent implements OnInit {
   proveedorModel!: Proveedor;
   apiProveedor: any[] = [];
   estado='1'
+  nombre:string=''
   departamento:string=''
   page:number=1
   mensajeExito: string | null = null;
@@ -46,7 +48,7 @@ export class ProveedoresComponent implements OnInit {
       Validators.maxLength(50),
       Validators.pattern(/^[\w\.-]+@([\w-]+\.)+[A-Za-z]{2,}$/)
     ]),
-    ciudad: new FormControl('', Validators.required),
+    ciudad: new FormControl('Tarija', Validators.required),
     direccion: new FormControl(''),
     estado: new FormControl('1'),
   });

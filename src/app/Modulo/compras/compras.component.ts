@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators, FormArray } from '@angular/forms';
 import { DetallePedido } from '../../Modelos/detalle-pedido';
 import { Pedido } from '../../Modelos/pedido';
@@ -28,7 +28,20 @@ import { FechasPipe } from "../../Filtros/fechas.pipe";
   templateUrl: './compras.component.html',
   styleUrls: ['./compras.component.css']
 })
-export class ComprasComponent implements OnInit {
+export class ComprasComponent implements OnInit, AfterViewInit {
+
+  // Referencias a modales
+  @ViewChild('modalAgregar') modalAgregarRef!: ElementRef;
+  @ViewChild('modalDetalle') modalDetalleRef!: ElementRef;
+  @ViewChild('modalRecepcion') modalRecepcionRef!: ElementRef;
+  @ViewChild('modalAnular') modalAnularRef!: ElementRef;
+  @ViewChild('modalAgregarProducto') modalAgregarProductoRef!: ElementRef;
+
+  private modalAgregar?: Modal;
+  private modalDetalle?: Modal;
+  private modalRecepcion?: Modal;
+  private modalAnular?: Modal;
+  private modalProducto?: Modal;
 
   apiCompra:any = []
   apiProveedor:any[]=[]
@@ -52,45 +65,117 @@ export class ComprasComponent implements OnInit {
         private InvSer: InventarioService,
   ) { }
 
-  nuevaCompra(){
-    this.compraForm.reset()
-    this.abrirModalNuevo()
+  ngAfterViewInit(): void {
+    // Inicializa los modales de Bootstrap
+    this.modalAgregar = new Modal(this.modalAgregarRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    this.modalDetalle = new Modal(this.modalDetalleRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    this.modalRecepcion = new Modal(this.modalRecepcionRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    this.modalAnular = new Modal(this.modalAnularRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    this.modalProducto = new Modal(this.modalAgregarProductoRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
   }
-  @ViewChild('modalAgregar') modalAgregarRef!: ElementRef; // Referencia al modal
-  private nuevaCompraModal?: Modal;
-  @ViewChild('modalAgregarProducto') modalAgregarProductoRef!: ElementRef; // Referencia al modal
-  private nuevoProductoModal?: Modal;
-   ngAfterViewInit() {
-    // Inicializa el modal de Bootstrap
-    this.nuevaCompraModal = new Modal(this.modalAgregarRef.nativeElement);
-    this.nuevoProductoModal = new Modal(this.modalAgregarProductoRef.nativeElement);
-  }
-  abrirModalNuevo(){//nueva compra modeal
-    this.nuevaCompraModal?.show()
-    this.nextNumber = this.apiCompra.length + 1;
-  this.nroCompra = 'C' + this.nextNumber.toString().padStart(3, '0');
 
-  this.compraForm.patchValue({
-    fecha_registro: this.obtenerFechaActual(),
-    nro_compra: this.nroCompra
-  });
+  // ==================== MÉTODOS DE CONTROL DE MODALES ====================
+
+  abrirModalAgregar(): void {
+    if (this.modalAgregar) {
+      this.modalAgregar.show();
+    }
   }
-  abrirModalProducto(){
-    this.nuevoProductoModal?.show()
+
+  cerrarModalAgregar(): void {
+    if (this.modalAgregar) {
+      this.modalAgregar.hide();
+      this.limpiarBackdrop();
+    }
   }
- cerrarModal() {
-    this.nuevaCompraModal?.hide(); // Cierra el modal agregar
-    this.compraForm.reset(); // Limpia el formularios
-    document.querySelector('.modal-backdrop')?.remove();
+
+  abrirModalDetalle(): void {
+    if (this.modalDetalle) {
+      this.modalDetalle.show();
+    }
+  }
+
+  cerrarModalDetalle(): void {
+    if (this.modalDetalle) {
+      this.modalDetalle.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  abrirModalRecepcion(): void {
+    if (this.modalRecepcion) {
+      this.modalRecepcion.show();
+    }
+  }
+
+  cerrarModalRecepcion(): void {
+    if (this.modalRecepcion) {
+      this.modalRecepcion.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  abrirModalAnular(): void {
+    if (this.modalAnular) {
+      this.modalAnular.show();
+    }
+  }
+
+  cerrarModalAnular(): void {
+    if (this.modalAnular) {
+      this.modalAnular.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  abrirModalProducto(): void {
+    if (this.modalProducto) {
+      this.modalProducto.show();
+    }
+  }
+
+  cerrarModalProducto(): void {
+    if (this.modalProducto) {
+      this.modalProducto.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  limpiarBackdrop(): void {
+    // Elimina todos los backdrops residuales
+    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
+    // Habilita el scroll del body
     document.body.style.overflow = 'auto';
-    document.body.style.paddingRight = '0'; // Elimina el padding que añade Bootstrap
+    document.body.style.paddingRight = '0';
+    document.body.classList.remove('modal-open');
   }
-  cerrarModalProducto() {
-    this.nuevoProductoModal?.hide(); // Cierra el modal agregar
-    //this.compraForm.reset(); // Limpia el formularios
-    document.querySelector('.modal-backdrop')?.remove();
-    document.body.style.overflow = 'auto';
-    document.body.style.paddingRight = '0'; // Elimina el padding que añade Bootstrap
+
+  // ==================== MÉTODOS PRINCIPALES ====================
+
+  nuevaCompra(){
+    this.compraForm.reset();
+    this.nextNumber = this.apiCompra.length + 1;
+    this.nroCompra = 'C' + this.nextNumber.toString().padStart(3, '0');
+    this.compraForm.patchValue({
+      fecha_registro: this.obtenerFechaActual(),
+      nro_compra: this.nroCompra
+    });
+    this.abrirModalAgregar();
   }
 filtrarProducto(event: any){
   const valor=event.target.value.trim().toLowerCase();
@@ -114,14 +199,17 @@ filtrarProducto(event: any){
     })
   }
   compraParaAnular:any
+
   anularCompra(compra:any){
-    this.compraParaAnular=compra
+    this.compraParaAnular=compra;
+    this.abrirModalAnular();
   }
+
   confirmarAnular(){
     this.ComSer.anular(this.compraParaAnular.id_compra).subscribe((data)=>{
       console.log('Respuesta despues de anular: ',data);
-      
-      this.listarCompra()
+      this.listarCompra();
+      this.cerrarModalAnular();
     })
   }
   listarP() {
@@ -207,24 +295,24 @@ filtrarProducto(event: any){
       id_usuario: JSON.parse(localStorage.getItem('usuario')).id_usuario
     }
     Compra.fecha_registro = this.obtenerFechaActual();
-    Compra.estado=1
+    Compra.estado=1;
     console.log("compra : ", Compra);
     console.log("productos compra : ", this.detallesCompra);
     this.ComSer.saveCompra(Compra).subscribe(data => {
       console.log("vuelve creado", data);
       for(let i=0;i<this.detallesCompra.length;i++ ){
-        this.detallesCompra[i].id_compra=data.id_compra
-        this.detallesCompra[i].id_producto=this.detallesCompra[i].producto.id_producto
+        this.detallesCompra[i].id_compra=data.id_compra;
+        this.detallesCompra[i].id_producto=this.detallesCompra[i].producto.id_producto;
         this.DetCSer.saveDP(this.detallesCompra[i]).subscribe(()=>{
          if(i==this.detallesCompra.length-1){
-          this.detalleForm.reset()
-          this.detallesCompra=[]
+          this.detalleForm.reset();
+          this.detallesCompra=[];
          }
         })
       }
-      this.compraForm.reset() 
-      this.cerrarModal()//cierra el modal de la compra
-      this.listarCompra()
+      this.compraForm.reset();
+      this.cerrarModalAgregar();
+      this.listarCompra();
     })
   }
   fechaD!:Date
@@ -236,16 +324,17 @@ filtrarProducto(event: any){
   }
   detCompra?:any
   detalleCompra:any[]=[]
-  // Flag global que indica si existen errores en las cantidades ingresadas en la recepción
   errorCantidades: boolean = false;
+
   Detalle(compra:any){
-    this.detCompra=compra
-    console.log('cantida recibi: ',this.detCompra.det_compras[0].cantidad_recibida,' '+this.detCompra.det_compras[0].defectuosos);
-    
-   // Inicializa detalleCompra y valores por defecto para recepción
-   this.detalleCompra = (compra.det_compras || [])
-   // validar después de inicializar
-   this.validarCantidades();
+    this.detCompra=compra;
+    console.log('cantidad recibida: ',this.detCompra.det_compras[0].cantidad_recibida,' '+this.detCompra.det_compras[0].defectuosos);
+
+    // Inicializa detalleCompra y valores por defecto para recepción
+    this.detalleCompra = (compra.det_compras || []);
+    // validar después de inicializar
+    this.validarCantidades();
+    this.abrirModalDetalle();
   }
   recibiendo(event:any,index:number){
     const det = this.detalleCompra[index];
@@ -279,7 +368,7 @@ filtrarProducto(event: any){
   det.valid_recibido = Number(det.cantidad_recibida) >= 0 && Number(det.cantidad_recibida) <= max;
   this.validarCantidades();
   }
-  
+
   validarCantidades() {
     // Si alguna fila es inválida, activamos errorCantidades
     let anyInvalid = false;
@@ -320,7 +409,8 @@ filtrarProducto(event: any){
     console.log('fecha compra recibida',modificacion);
     this.ComSer.recibirCompra(modificacion).subscribe((data)=>{
       console.log(data);
-      this.listarCompra()
+      this.listarCompra();
+      this.cerrarModalRecepcion();
     })
   }
 
@@ -333,7 +423,7 @@ filtrarProducto(event: any){
   }
   generarPDF() {
   }
-   
+
   bloquearTeclasInvalidas(event: KeyboardEvent) {
   const teclasBloqueadas = ['-', 'e', 'E', '+', '.', '0'];
   if (teclasBloqueadas.includes(event.key)) {
@@ -479,7 +569,7 @@ actualizarSubtotal(index: number) {
       this.VerificarPedido(orden)
       this.resaltarFila(i)
     }
-    
+
     /*VerificarPedido(ped: Pedido) {
       this.pedido = ped
       this.mostrar = !this.mostrar;
@@ -510,18 +600,18 @@ actualizarSubtotal(index: number) {
         defectuosos: this.recepForm.get('defectuosos')?.value,
         proveedor: this.pedido.proveedor.nombre_empresarial,
         precio_compra: this.detProducto.precio_unitario,
-  
+
       })
     }
     botonhabi: number = -1
     permitido(index: number) {
       console.log("datos de cantidad: ", this.recepForm.get('cantidad_recibida')?.value);
-  
+
       if (this.recepForm.get('cantidad_recibida')?.value == null) this.botonhabi = -1
       else this.botonhabi = index
     }
-  
-  
+
+
    VerificarPedido(ped: Pedido) {
      this.pedido = ped
      this.mostrar = !this.mostrar;
@@ -535,7 +625,7 @@ actualizarSubtotal(index: number) {
      console.log("paso",this.ApiDetallesPedido)
    }
      })
-   
+
 }
 
   // Indica si la recepción no es válida (fecha faltante o errores en cantidades)

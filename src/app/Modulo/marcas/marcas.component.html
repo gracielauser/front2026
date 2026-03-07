@@ -5,22 +5,26 @@
       <p class="mb-0">Administra la información de las marcas</p>
     </div>
     <div class="card-body">
-      <div class="row mb-1">
+      <div class="row mb-3">
         <div class="col-md-4">
-       <input type="text" class="form-control" placeholder="Buscar por nombre"
-                      [(ngModel)]="nombre" > </div>
+          <input type="text" class="form-control" placeholder="Buscar por nombre"
+                 [(ngModel)]="nombre">
+        </div>
         <div class="col-md-3">
 
         </div>
         <div class="col-md-3">
-           <select class="form-select" [(ngModel)]="estado">
+          <select class="form-select" [(ngModel)]="estado">
             <option selected value="1">Activos</option>
             <option value="2">Inactivos</option>
             <option value="">Todos</option>
           </select>
         </div>
         <div class="col-md-2">
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addcate">Nueva Marca</button>
+          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addcate">
+            <i class="bi bi-plus-circle"></i>
+            Nueva Marca
+          </button>
         </div>
       </div>
       <div class="table-responsive tamaño">
@@ -143,7 +147,7 @@
       </div>
         </form>
       </div>
-      
+
     </div>
   </div>
 </div>
@@ -227,7 +231,7 @@
       </div>
         </form>
       </div>
-      
+
     </div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 
 import * as bootstrap from 'bootstrap';
@@ -15,6 +15,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { CodigoPipe } from '../../Filtros/codigo.pipe';
 import { NombrePipe } from '../../Filtros/nombre.pipe';
 import { CategoriaPipe } from '../../Filtros/categoria.pipe';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-productos',
@@ -24,8 +25,15 @@ import { CategoriaPipe } from '../../Filtros/categoria.pipe';
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
 })
-export class ProductosComponent implements OnInit {
+export class ProductosComponent implements OnInit, AfterViewInit {
+  @ViewChild('modalProducto') modalAgregarRef!: ElementRef; // Referencia al modal
+  @ViewChild('modalProveedor') modalProveedorRef!: ElementRef; // Referencia al modal proveedor
+  @ViewChild('modalMarca') modalMarcaRef!: ElementRef; // Referencia al modal marca
+  private modalAgregar?: bootstrap.Modal;
+  private modalProveedor?: bootstrap.Modal;
+  private modalMarca?: bootstrap.Modal;
 
+  apiUrl = environment.apiUrl + '/uploads/';
   productosModel!: Producto;
 
   //*ngfor lists
@@ -52,6 +60,12 @@ export class ProductosComponent implements OnInit {
 
   // Validación de código duplicado
   codigoDuplicado: boolean = false;
+
+  // Categoría y Subcategoría
+  categoriaSeleccionada: Categoria | null = null;
+  subCategorias: Categoria[] = [];
+  subcategoriaSeleccionada: number | null = null;
+
   constructor(
     private CatSer: CategoriaService,
     private ProSer: ProductoService,
@@ -71,6 +85,13 @@ export class ProductosComponent implements OnInit {
     this.listar()
     this.productoForm.get('fecha_registro').disable()
   }
+
+  ngAfterViewInit() {
+    // Inicializa los modales de Bootstrap
+    this.modalAgregar = new bootstrap.Modal(this.modalAgregarRef.nativeElement);
+    this.modalProveedor = new bootstrap.Modal(this.modalProveedorRef.nativeElement);
+    this.modalMarca = new bootstrap.Modal(this.modalMarcaRef.nativeElement);
+  }
   listar() {
     this.ProSer.getListaProductos().subscribe((lista) => {
       this.apiProductos = lista
@@ -86,9 +107,31 @@ export class ProductosComponent implements OnInit {
       console.log("unidades de medida", this.apiUnidadesMedida);
     })
   }
+  // Formulario de Proveedor
+  proveedorForm = new UntypedFormGroup({
+    nombre: new FormControl('', Validators.required),
+    celular: new FormControl('', Validators.required),
+    email: new FormControl('', [
+      Validators.email,
+      Validators.minLength(6),
+      Validators.maxLength(50),
+      Validators.pattern(/^[\w\.-]+@([\w-]+\.)+[A-Za-z]{2,}$/)
+    ]),
+    ciudad: new FormControl('', Validators.required),
+    direccion: new FormControl(''),
+    estado: new FormControl('1')
+  });
+
+  // Formulario de Marca
+  marcaForm = new UntypedFormGroup({
+    nombre: new FormControl('', Validators.required),
+    descripcion: new FormControl(''),
+    estado: new FormControl('1', Validators.required)
+  });
+
   productoForm = new UntypedFormGroup({
     nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
-    codigo: new FormControl('', [Validators.required, Validators.maxLength(8)]),
+    codigo: new FormControl('', [Validators.required, Validators.maxLength(20)]),
     descripcion: new FormControl('', [Validators.minLength(6), Validators.maxLength(50)]),
     estado: new FormControl('1'),
     precio_compra: new FormControl('', [Validators.required, Validators.min(0.01)]),
@@ -99,11 +142,19 @@ export class ProductosComponent implements OnInit {
     stock_minimo: new FormControl('', [Validators.required, Validators.min(1), Validators.max(9999)]),
     id_categoria: new FormControl('', [Validators.required]),
     id_proveedor: new FormControl('', [Validators.required]),
-    id_unidad_medida: new FormControl('', [Validators.required]),
+    id_unidad_medida: new FormControl(1, [Validators.required]),
     id_marca: new FormControl('', [Validators.required])
   })
   get control() {
     return this.productoForm.controls
+  }
+
+  get controlProveedor() {
+    return this.proveedorForm.controls
+  }
+
+  get controlMarca() {
+    return this.marcaForm.controls
   }
   Listar() {
     this.ProSer.getListaProductos().subscribe((lista) => {
@@ -125,10 +176,18 @@ export class ProductosComponent implements OnInit {
     this.idProducto = 0
     this.productoForm.reset({
       estado: '1',
-      fecha_registro: this.obtenerFechaActual()
+      fecha_registro: this.obtenerFechaActual(),
+      id_unidad_medida: 1
     })
     this.selectedFile = null
     this.codigoDuplicado = false
+    this.abrirModal()
+  }
+
+  abrirModal() {
+    if (this.modalAgregar) {
+      this.modalAgregar.show(); // Abre el modal
+    }
   }
 
   cargarDatosProducto(producto: any) {
@@ -283,12 +342,13 @@ export class ProductosComponent implements OnInit {
   }
 
   cerrarModal() {
-    const modalEl = document.getElementById('modalProducto');
-    if (modalEl) {
-      const modal = bootstrap.Modal.getInstance(modalEl);
-      if (modal) {
-        modal.hide();
-      }
+    console.log("cerrar modal");
+    if (this.modalAgregar) {
+      this.modalAgregar.hide(); // Cierra el modal
+      document.querySelector('.modal-backdrop')?.remove();
+      // Habilita el scroll del body (Bootstrap lo desactiva)
+      document.body.style.overflow = 'auto';
+      document.body.style.paddingRight = '0'; // Elimina el padding que añade Bootstrap
     }
   }
   detProducto: any
@@ -348,12 +408,136 @@ export class ProductosComponent implements OnInit {
   limpiar() {
     this.productoForm.reset({
       estado: '1',
-      fecha_registro: this.obtenerFechaActual()
+      fecha_registro: this.obtenerFechaActual(),
+      id_unidad_medida: 1
     })
     this.selectedFile = null
     this.codigoDuplicado = false
     this.isEditMode = false
     this.modalTitle = 'Nuevo Producto'
     this.idProducto = 0
+  }
+
+  // ========== MÉTODOS PARA MODAL DE PROVEEDOR ==========
+  abrirModalProveedor() {
+    this.proveedorForm.reset({ estado: '1' });
+    if (this.modalProveedor) {
+      this.modalProveedor.show();
+    }
+  }
+
+  cerrarModalProveedor() {
+    if (this.modalProveedor) {
+      this.modalProveedor.hide();
+      document.querySelector('.modal-backdrop')?.remove();
+      document.body.style.overflow = 'auto';
+      document.body.style.paddingRight = '0';
+    }
+  }
+
+  guardarProveedor() {
+    if (this.proveedorForm.invalid) {
+      this.proveedorForm.markAllAsTouched();
+      return;
+    }
+
+    const proveedor = this.proveedorForm.value;
+    this.ProvSer.saveProveedor(proveedor).subscribe({
+      next: (response) => {
+        console.log('Proveedor creado:', response);
+        // Agregar el nuevo proveedor a la lista
+        this.apiProveedores.push(response);
+        // Seleccionar automáticamente el nuevo proveedor
+        this.productoForm.patchValue({ id_proveedor: response.id_proveedor });
+        this.cerrarModalProveedor();
+        this.exito = true;
+        this.mensajeToast = 'Proveedor creado exitosamente';
+        this.mostrarToast();
+      },
+      error: (error) => {
+        console.error('Error al crear proveedor:', error);
+        this.exito = false;
+        this.mensajeToast = 'Error al crear el proveedor';
+        this.mostrarToast();
+      }
+    });
+  }
+
+  // ========== MÉTODOS PARA MODAL DE MARCA ==========
+  abrirModalMarca() {
+    this.marcaForm.reset({ estado: '1' });
+    if (this.modalMarca) {
+      this.modalMarca.show();
+    }
+  }
+
+  cerrarModalMarca() {
+    if (this.modalMarca) {
+      this.modalMarca.hide();
+      document.querySelector('.modal-backdrop')?.remove();
+      document.body.style.overflow = 'auto';
+      document.body.style.paddingRight = '0';
+    }
+  }
+
+  guardarMarca() {
+    if (this.marcaForm.invalid) {
+      this.marcaForm.markAllAsTouched();
+      return;
+    }
+
+    const marca = this.marcaForm.value;
+    this.MarSer.saveMarca(marca).subscribe({
+      next: (response) => {
+        console.log('Marca creada:', response);
+        // Agregar la nueva marca a la lista
+        this.apiMarcas.push(response);
+        // Seleccionar automáticamente la nueva marca
+        this.productoForm.patchValue({ id_marca: response.id_marca });
+        this.cerrarModalMarca();
+        this.exito = true;
+        this.mensajeToast = 'Marca creada exitosamente';
+        this.mostrarToast();
+      },
+      error: (error) => {
+        console.error('Error al crear marca:', error);
+        this.exito = false;
+        this.mensajeToast = 'Error al crear la marca';
+        this.mostrarToast();
+      }
+    });
+  }
+
+  // ========== MÉTODOS PARA CATEGORÍA/SUBCATEGORÍA ==========
+  onCategoriaChange(event: any) {
+    const categoriaId = parseInt(event.target.value);
+    this.categoriaSeleccionada = this.apiCategorias.find(c => c.id_categoria === categoriaId) || null;
+
+    if (this.categoriaSeleccionada && this.categoriaSeleccionada.subCategoria && this.categoriaSeleccionada.subCategoria.length > 0) {
+      this.subCategorias = this.categoriaSeleccionada.subCategoria;
+      this.subcategoriaSeleccionada = null;
+      // Si hay subcategorías, esperar a que seleccione una
+      this.productoForm.patchValue({ id_categoria: categoriaId });
+    } else {
+      // No hay subcategorías, usar la categoría padre
+      this.subCategorias = [];
+      this.subcategoriaSeleccionada = null;
+      this.productoForm.patchValue({ id_categoria: categoriaId });
+    }
+  }
+
+  onSubcategoriaChange(event: any) {
+    const subcategoriaId = parseInt(event.target.value);
+    if (subcategoriaId) {
+      // Si se selecciona una subcategoría, usar su ID
+      this.subcategoriaSeleccionada = subcategoriaId;
+      this.productoForm.patchValue({ id_categoria: subcategoriaId });
+    } else {
+      // Si no se selecciona subcategoría, usar la categoría padre
+      this.subcategoriaSeleccionada = null;
+      if (this.categoriaSeleccionada) {
+        this.productoForm.patchValue({ id_categoria: this.categoriaSeleccionada.id_categoria });
+      }
+    }
   }
 }

@@ -1,27 +1,30 @@
 <div class="container-fluid">
       <div class="card">
           <div class="card-header">
-              <h5>Gestionar Unidad</h5>
-              <p class="mb-0">Administra la información de las unidades</p>
+              <h5>Gestionar Unidades de Medida</h5>
+              <p class="mb-0">Administra la información de las unidades de medida</p>
           </div>
           <div class="card-body">
               <div class="row mb-3">
                   <div class="col-md-4">
-                   <input type="text" class="form-control" placeholder="Buscar por nombre"
-                      [(ngModel)]="nombre" >
-                     </div>
+                    <input type="text" class="form-control" placeholder="Buscar por nombre"
+                           [(ngModel)]="nombre">
+                  </div>
                   <div class="col-md-3">
-                    
-                </div>
+
+                  </div>
                   <div class="col-md-3">
-                     <select class="form-select" [(ngModel)]="estado">
-            <option selected value="1">Activos</option>
-            <option value="2">Inactivos</option>
-            <option value="">Todos</option>
-          </select>
+                    <select class="form-select" [(ngModel)]="estado">
+                      <option selected value="1">Activos</option>
+                      <option value="2">Inactivos</option>
+                      <option value="">Todos</option>
+                    </select>
                   </div>
                   <div class="col-md-2">
-                      <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUnidad">Nueva Unidad</button>
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUnidad">
+                      <i class="bi bi-plus-circle"></i>
+                      Nueva Unidad
+                    </button>
                   </div>
               </div>
               <div class="table-responsive tamaño">
@@ -144,7 +147,7 @@
         </div>
       </div>
     </div>
-  </div> 
+  </div>
    <!-- MODAL  -->
   <div class="modal fade" id="modUnidad" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -226,7 +229,7 @@
         </div>
       </div>
     </div>
-  </div> 
+  </div>
   <!-- Modal único -->
 <div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog ">
@@ -238,7 +241,7 @@
       <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
         <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
         <span>
-          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> la 
+          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> la
           unidad de medida?
         </span>
       </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { FormControlName, UntypedFormGroup, FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { Cliente } from '../../Modelos/cliente';
 import { DetalleVenta } from '../../Modelos/detalle-venta';
@@ -24,11 +24,19 @@ import { EstadoPipe } from '../../Filtros/estado.pipe';
   selector: 'app-ventas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule,
-    FormsModule, CodigoPipe, NombrePipe, CategoriaPipe, NroVentaPipe, EstadoPipe],
+    FormsModule, CodigoPipe, NombrePipe, NroVentaPipe, EstadoPipe],
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })
-export class VentasComponent implements OnInit {
+export class VentasComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('modalAgregar') modalAgregarRef!: ElementRef;
+  @ViewChild('modalDetalle') modalDetalleRef!: ElementRef;
+  @ViewChild('modalAnular') modalAnularRef!: ElementRef;
+
+  private modalAgregar: any;
+  private modalDetalle: any;
+  private modalAnular: any;
 
   usu: Usuario = JSON.parse(localStorage.getItem('usuario'))
   apiVentas: any[] = []
@@ -76,7 +84,7 @@ export class VentasComponent implements OnInit {
     this.cliSer.getListaClientes().subscribe(data => {
       this.apiClientes = data
       console.log("clientes-----------",this.apiClientes);
-      
+
     })
     this.CatSer.getListaCategoria().subscribe((lista) => {
       this.apiCategorias = lista
@@ -100,6 +108,71 @@ export class VentasComponent implements OnInit {
     this.ventaForm.get('nombre_cliente').disable()
     this.ventaForm.get('fecha').disable()
   }
+
+  ngAfterViewInit(): void {
+    // Importar Modal de Bootstrap dinámicamente
+    if (typeof window !== 'undefined' && (window as any).bootstrap) {
+      const Modal = (window as any).bootstrap.Modal;
+      this.modalAgregar = new Modal(this.modalAgregarRef.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      this.modalDetalle = new Modal(this.modalDetalleRef.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+      this.modalAnular = new Modal(this.modalAnularRef.nativeElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
+    }
+  }
+
+  abrirModalAgregar(): void {
+    if (this.modalAgregar) {
+      this.modalAgregar.show();
+    }
+  }
+
+  cerrarModalAgregar(): void {
+    if (this.modalAgregar) {
+      this.modalAgregar.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  abrirModalDetalle(): void {
+    if (this.modalDetalle) {
+      this.modalDetalle.show();
+    }
+  }
+
+  cerrarModalDetalle(): void {
+    if (this.modalDetalle) {
+      this.modalDetalle.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  abrirModalAnular(): void {
+    if (this.modalAnular) {
+      this.modalAnular.show();
+    }
+  }
+
+  cerrarModalAnular(): void {
+    if (this.modalAnular) {
+      this.modalAnular.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  limpiarBackdrop(): void {
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    document.body.style.overflow = '';
+    document.body.classList.remove('modal-open');
+  }
   ventaForm = new UntypedFormGroup({
     //para la venta
     //nroVenta: new FormControl(this.apiVentas.length + 1),
@@ -109,7 +182,7 @@ export class VentasComponent implements OnInit {
     tipo_venta: new FormControl('1'),//fisico o pedido
     tipov: new FormControl('2'),//si o no factura
     tipo_pago: new FormControl('1'),
-    // pa los detalles 
+    // pa los detalles
     documento: new FormControl(''),
     ci_nit: new FormControl(''),
     nombre_cliente: new FormControl(''),
@@ -118,6 +191,26 @@ export class VentasComponent implements OnInit {
     descuento: new FormControl(''),
     total: new FormControl('0')
   })
+
+  nuevaVenta(): void {
+    this.ventaForm.reset({
+      nro_venta: 'V00',
+      fecha: this.obtenerFechaActual(),
+      tipo_venta: '1',
+      tipov: '2',
+      tipo_pago: '1',
+      descuento: '',
+      total: '0'
+    });
+    this.ventaForm.patchValue({
+      vendedor: this.usu.persona?.nombre + " " + this.usu.persona?.ap_paterno + " " + this.usu.persona?.ap_materno
+    });
+    this.productosVender = [];
+    this.productosVentaCantidades = [];
+    this.total = 0;
+    this.tipo = 2;
+    this.abrirModalAgregar();
+  }
 
   agregarVenta() {
     const venta: any = {
@@ -130,7 +223,7 @@ export class VentasComponent implements OnInit {
       nro_venta: this.ventaForm.get('nro_venta')?.value,
       descuento: Number(this.ventaForm.get('descuento')?.value),
       id_usuario: this.usu.id_usuario,
-      id_cliente: 8,//cliente temporal generico luego cambiar si se elige por el dinamico 
+      id_cliente: 8,//cliente temporal generico luego cambiar si se elige por el dinamico
     }
     venta.detallesVenta = []
     for (let i = 0; i < this.productosVender.length; i++) {
@@ -146,7 +239,8 @@ export class VentasComponent implements OnInit {
     console.log('DETALLES DE VENTA------', venta);
 
     this.ventaSer.saveVenta(venta).subscribe(data => {//data es la venta creada que volvio ya con id_venta
-      this.listarVentas()
+      this.listarVentas();
+      this.cerrarModalAgregar();
     })
   }
   agregarProducto(pro: Producto) {
@@ -169,20 +263,23 @@ export class VentasComponent implements OnInit {
       })
   }
   Cancelar(){
-    this.ventaForm.reset()
+    this.ventaForm.reset();
+    this.cerrarModalAgregar();
   }
-ventaParaAnular:any
+
+  ventaParaAnular: any;
+
   anularVenta(venta: any){
-   this.ventaParaAnular=venta
+    this.ventaParaAnular = venta;
+    this.abrirModalAnular();
   }
-  
- confirmarAnular(){
-  console.log('confirmando anulacion');
-  
+
+  confirmarAnular(){
+    console.log('confirmando anulacion');
     this.ventaSer.anular(this.ventaParaAnular.id_venta).subscribe((data)=>{
       console.log('Respuesta despues de anular: ',data);
-      
-      this.listarVentas()
+      this.listarVentas();
+      this.cerrarModalAnular();
     })
   }
   agregarCantidad(cantidad: number) {
@@ -253,12 +350,14 @@ ventaParaAnular:any
     const day = String(hoy.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
-  // DETALEE-------------------------------------------Ç
-  DetVenta: any
-  detallesVenta: any[] = []
+  // DETALLE-------------------------------------------
+  DetVenta: any;
+  detallesVenta: any[] = [];
+
   detalle(venta: any) {
-    this.DetVenta = venta
-    this.detallesVenta = venta.det_venta
+    this.DetVenta = venta;
+    this.detallesVenta = venta.det_venta;
+    this.abrirModalDetalle();
   }
 }
 // this.ventaForm.patchValue({ es para dar valores cuando se requiera
