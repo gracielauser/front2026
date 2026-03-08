@@ -1,5 +1,5 @@
 // src/environments/environment.prod.ts
 export const environment = {
   production: true,
-  apiUrl: 'https://backend2026-jqwt.onrender.com'  // tu backend real
+  apiUrl: 'https://unimmersed-gonidial-bell.ngrok-free.dev'  // tu backend real
 };
