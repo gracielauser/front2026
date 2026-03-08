@@ -406,7 +406,7 @@
 /* ==================== INFO CARDS ==================== */
 .info-card {
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   background: white;
 }
@@ -419,6 +419,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  border-radius: 12px 12px 0 0;
 }
 
 .info-card-header i {
@@ -427,6 +428,7 @@
 
 .info-card-body {
   padding: 1.5rem;
+  overflow: visible;
 }
 
 .info-item {
@@ -493,7 +495,7 @@
   border-radius: 8px;
   max-height: 300px;
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 2000;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   margin-top: 0.5rem;
 }
@@ -525,10 +527,13 @@
   display: block;
   color: #1e293b;
   font-weight: 600;
+  margin-bottom: 0.25rem;
 }
 
 .producto-info small {
   color: #64748b;
+  font-size: 0.85rem;
+  margin-right: 1rem;
 }
 
 .producto-item-empty {
@@ -541,6 +546,17 @@
   font-size: 3rem;
   display: block;
   margin-bottom: 0.5rem;
+}
+
+.producto-item.text-muted {
+  cursor: default;
+  background: #f8fafc;
+  border-top: 2px solid #e2e8f0;
+  padding: 0.75rem;
+}
+
+.producto-item.text-muted:hover {
+  background: #f8fafc;
 }
 
 /* ==================== TABLA PRODUCTOS ==================== */

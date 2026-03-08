@@ -31,7 +31,7 @@ export class ReportesComponent implements OnInit {
   apiDetalleVenta: DetalleVenta[] = []
   apiProducto: Producto[] = []
   apiCategoria:Categoria[]=[]
- 
+
   compras: any[] = [];
   constructor(
     private VenSer: VentaService,
@@ -42,7 +42,7 @@ export class ReportesComponent implements OnInit {
     private CatSer:CategoriaService
   ) { }
   //para los filtros
- 
+
   ngOnInit(): void {
 
    this.compras = [
@@ -141,9 +141,9 @@ export class ReportesComponent implements OnInit {
         ]
       }
     ];
-  
+
   }
-  
+
    async descargarPDF(): Promise<void> {
     console.log("haciendo pdf");
 
@@ -154,7 +154,7 @@ export class ReportesComponent implements OnInit {
     // Generar las filas dinámicamente desde el array `ventas`
     const filas = this.apiVentas.map((venta, index) => [
 
-     
+
       index + 1,
       venta.id_venta.toString(),
       venta.fecha_registro.toString(),
@@ -163,7 +163,7 @@ export class ReportesComponent implements OnInit {
       venta.monto_total.toString()+" Bs."
     ]
   );
-    
+
     // Definición del contenido del PDF
     const documentDefinition: any = {
       content: [
@@ -285,7 +285,17 @@ export class ReportesComponent implements OnInit {
   }
 
 
+ ventasPDF(){
+  console.log('llamando pdf en ts');
 
+ this.VenSer.getPDF().subscribe((pdfBlob) => {
+      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+
+      // Abre en una nueva pestaña
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+}
 
 
 }

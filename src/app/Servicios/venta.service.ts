@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Venta } from '../Modelos/venta';
@@ -27,4 +27,25 @@ export class VentaService {
       let url = this.baseUrl+"/anular/"+id_venta;
       return this.xhttp.put(url, null)
      }
+       notaVenta(idVenta:number): Observable<Blob> {
+  // const params = new HttpParams()// Opción B: Construir parámetros en cadena
+  //     .set('idVenta', idVenta)
+  // .set('partido', this.currentUser().partido);
+
+  return this.xhttp.get(`${environment.apiUrl}/api/reporte-venta/notaVenta/`+idVenta, {
+    // params,
+    responseType: 'blob' // 👈 clave para manejar PDF
+  });
+}
+     getPDF(body={}): Observable<Blob> {
+  //const params = new HttpParams()// Opción B: Construir parámetros en cadena
+  //     .set('id_actividad', idActividad)
+  // .set('id_institucion', id_institucion)
+  // .set('partido', this.currentUser().partido);
+
+  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/reporteVentas`,body, {
+    // params,
+    responseType: 'blob' // 👈 clave para manejar PDF
+  });
+}
 }

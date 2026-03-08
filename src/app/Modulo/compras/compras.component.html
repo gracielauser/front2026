@@ -49,10 +49,10 @@
             Estado
           </label>
           <select class="filter-select" [(ngModel)]="estado">
+            <option value="">Todas las compras</option>
             <option value="1">Compras Pendientes</option>
             <option value="2">Compras Recibidas</option>
             <option value="3">Compras Canceladas</option>
-            <option value="">Todas las compras</option>
           </select>
         </div>
 
@@ -84,9 +84,10 @@
               <th>Nro. Compra</th>
               <th>Fecha Registro</th>
               <th>Proveedor</th>
+              <th style="width: 100px;">Cant Productos</th>
               <th>Monto Total</th>
               <th style="width: 120px;">Estado</th>
-              <th style="width: 250px;">Acciones</th>
+              <th style="width: 180px;">Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -96,9 +97,12 @@
               <td>
                 <span class="nro-compra">{{com.nro_compra}}</span>
               </td>
-              <td>{{com.fecha_registro}}</td>
+              <td>{{formatearFecha(com.fecha_registro)}}</td>
               <td>
                 <span class="proveedor-nombre">{{com.proveedor.nombre}}</span>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-info text-dark">{{calcularTotalProductos(com)}}</span>
               </td>
               <td>
                 <span class="monto-total">{{com.monto_total}} Bs.</span>
@@ -114,38 +118,20 @@
               </td>
               <td>
                 <div class="action-buttons">
-                  <!-- Botones para compras pendientes -->
-                  <ng-container *ngIf="com.estado == 1">
-                    <button class="btn-action btn-view" (click)="Detalle(com)" title="Ver detalle">
-                      <i class="bi bi-eye-fill"></i>
-                    </button>
-                    <button class="btn-action btn-receive" (click)="Detalle(com); abrirModalRecepcion()" title="Recepcionar">
-                      <i class="bi bi-box-seam-fill"></i>
-                    </button>
-                    <button class="btn-action btn-cancel" (click)="anularCompra(com)" title="Anular">
-                      <i class="bi bi-x-circle-fill"></i>
-                    </button>
-                  </ng-container>
+                  <!-- Ver detalle -->
+                  <button class="btn-action btn-view" (click)="Detalle(com)" title="Ver detalle">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
 
-                  <!-- Botones para compras recibidas -->
-                  <ng-container *ngIf="com.estado == 2">
-                    <button class="btn-action btn-view" (click)="Detalle(com)" title="Ver detalle">
-                      <i class="bi bi-eye-fill"></i>
-                    </button>
-                    <span class="badge badge-sm bg-success">
-                      <i class="bi bi-check-circle-fill"></i> Completada
-                    </span>
-                  </ng-container>
+                  <!-- Recepcionar (solo pendientes) -->
+                  <button *ngIf="com.estado == 1" class="btn-action btn-receive" (click)="Detalle(com); abrirModalRecepcion()" title="Recepcionar">
+                    <i class="bi bi-box-seam-fill"></i>
+                  </button>
 
-                  <!-- Botones para compras canceladas -->
-                  <ng-container *ngIf="com.estado == 3">
-                    <button class="btn-action btn-view" (click)="Detalle(com)" title="Ver detalle">
-                      <i class="bi bi-eye-fill"></i>
-                    </button>
-                    <span class="badge badge-sm bg-danger">
-                      <i class="bi bi-slash-circle-fill"></i> Anulada
-                    </span>
-                  </ng-container>
+                  <!-- Anular (solo pendientes y recibidas) -->
+                  <button *ngIf="com.estado == 1 || com.estado == 2" class="btn-action btn-cancel" (click)="anularCompra(com)" title="Anular">
+                    <i class="bi bi-x-circle-fill"></i>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -191,6 +177,7 @@
                       <input type="text" class="form-control form-control-modern"
                              formControlName="nro_compra"
                              placeholder="Ej: C001"
+                             (focus)="seleccionarCodigoProducto($event)"
                              [ngClass]="{'is-invalid': controlC['nro_compra'].invalid && controlC['nro_compra'].touched}">
                       <div class="invalid-feedback">Campo obligatorio</div>
                     </div>
@@ -228,20 +215,20 @@
                   </div>
 
                   <!-- Info adicional del proveedor -->
-                  <div class="row g-2 mt-2" *ngIf="controlC['id_proveedor'].value">
+                  <!-- <div class="row g-2 mt-2" *ngIf="controlC['id_proveedor'].value">
                     <div class="col-md-6">
                       <div class="info-item">
                         <i class="bi bi-telephone-fill"></i>
-                        <span>{{controlC['id_proveedor'].value.telefono}}</span>
+                        <span>{{controlC['id_proveedor'].value.celular}}</span>
                       </div>
                     </div>
                     <div class="col-md-6">
                       <div class="info-item">
                         <i class="bi bi-envelope-fill"></i>
-                        <span>{{controlC['id_proveedor'].value.correo}}</span>
+                        <span>{{controlC['id_proveedor'].value.correo? 'No registrado':''}}</span>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -265,17 +252,24 @@
 
                       <!-- Lista de productos -->
                       <div class="productos-lista" *ngIf="mostrarLista && nombre">
-                        <div class="producto-item" *ngFor="let prod of apiProductos | nombre:nombre"
+                        <div class="producto-item" *ngFor="let prod of (apiProductos | nombre:nombre).slice(0, 6)"
                              (mousedown)="agregarProductoATabla(prod, buscarProducto)">
                           <i class="bi bi-box"></i>
                           <div class="producto-info">
                             <strong>{{prod.nombre}}</strong>
-                            <small>Precio: {{prod.precio_compra}} Bs.</small>
+                            <div>
+                              <small>Código: <span class="text-dark">{{prod.codigo}}</span></small>
+                              <small class="text-primary fw-semibold">| Precio: {{prod.precio_compra}} Bs.</small>
+                            </div>
                           </div>
                         </div>
                         <div class="producto-item-empty" *ngIf="(apiProductos | nombre:nombre).length === 0">
                           <i class="bi bi-inbox"></i>
                           <span>No se encontraron productos</span>
+                        </div>
+                        <div class="producto-item text-center text-muted"
+                             *ngIf="(apiProductos | nombre:nombre).length > 6">
+                          <small><i class="bi bi-three-dots"></i> {{(apiProductos | nombre:nombre).length - 6}} productos más... Refine su búsqueda</small>
                         </div>
                       </div>
                     </div>
@@ -389,7 +383,7 @@
           </div>
           <div class="detalle-info-item">
             <label>Proveedor:</label>
-            <span>{{detCompra?.proveedor.nombre}}</span>
+            <span>{{detCompra?.proveedor.nombre}} | {{detCompra?.proveedor.celular}}</span>
           </div>
           <div class="detalle-info-item">
             <label>Usuario:</label>
@@ -397,7 +391,7 @@
           </div>
           <div class="detalle-info-item">
             <label>Fecha Registro:</label>
-            <span>{{detCompra?.fecha_registro}}</span>
+            <span>{{formatearFecha(detCompra?.fecha_registro)}}</span>
           </div>
           <div class="detalle-info-item">
             <label>Estado:</label>
@@ -650,7 +644,8 @@
             <div class="col-md-6">
               <label class="form-label-custom">Celular <span class="required-mark">*</span></label>
               <input type="text" formControlName="celular" class="form-control form-control-modern"
-                     placeholder="Ingrese celular" pattern="[0-9]+" maxlength="8"
+                     placeholder="Ingrese celular" pattern="[0-9]+" maxlength="20"
+                     (keydown)="bloquearTeclasSoloNumeros($event)"
                      [ngClass]="{
                        'is-valid': controlProveedor['celular'].valid && controlProveedor['celular'].touched,
                        'is-invalid': controlProveedor['celular'].invalid && controlProveedor['celular'].touched
@@ -767,6 +762,7 @@
                 class="form-control form-control-modern"
                 placeholder="Código del producto"
                 maxlength="20"
+                (focus)="seleccionarCodigoProducto($event)"
                 [ngClass]="{
                   'is-valid': controlProducto['codigo'].valid && controlProducto['codigo'].touched,
                   'is-invalid': controlProducto['codigo'].invalid && controlProducto['codigo'].touched

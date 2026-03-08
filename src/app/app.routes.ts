@@ -7,6 +7,7 @@ import { PersonalComponent } from './Modulo/personal/personal.component';
 import { ProveedoresComponent } from './Modulo/proveedores/ProveedoresComponent';
 import { ClientesComponent } from './Modulo/clientes/clientes.component';
 import { VentasComponent } from './Modulo/ventas/ventas.component';
+import { NuevaVentaComponent } from './Modulo/ventas/nueva-venta/nueva-venta.component';
 import { InventarioComponent } from './Modulo/inventario/inventario.component';
 import { ProductosComponent } from './Modulo/productos/productos.component';
 import { ComprasComponent } from './Modulo/compras/compras.component';
@@ -28,6 +29,7 @@ export const routes: Routes = [
     //{path: '', component:LoginComponent},
   {path:'',redirectTo:'/login', pathMatch:'full'},
    {path: 'login', component:LoginComponent},
+  {path: 'nueva-venta', component:NuevaVentaComponent}, // Ruta independiente para ventana nueva
   { path:'home', component:HomeComponent,
     children:[
        { path: '', redirectTo: 'principal', pathMatch: 'full' },

@@ -65,7 +65,7 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   nrocompra:string=''
   nombre:string=''
   mostrarLista: boolean = false;
-  estado='1'
+  estado=''
   page:number=1
   exito: boolean = true
   mensajeToast: string = ''
@@ -168,6 +168,8 @@ export class ComprasComponent implements OnInit, AfterViewInit {
 
   abrirModalAgregarProducto(): void {
     this.productoFormCompra.reset({
+      nombre: '',
+      codigo: '0',
       id_categoria: '',
       sub_categoria: '',
       id_unidad_medida: 1,
@@ -196,7 +198,7 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   }
 
   abrirModalProveedor(): void {
-    this.proveedorForm.reset({ ciudad: '' });
+    this.proveedorForm.reset({ ciudad: 'Tarija' });
     if (this.modalProveedor) {
       // Ajustar z-index del backdrop del modal de proveedor
       this.modalProveedor.show();
@@ -367,11 +369,18 @@ filtrarProducto(event: any){
   }
 
   confirmarAnular(){
-    this.ComSer.anular(this.compraParaAnular.id_compra).subscribe((data)=>{
-      console.log('Respuesta despues de anular: ',data);
-      this.listarCompra();
-      this.cerrarModalAnular();
-    })
+    this.ComSer.anular(this.compraParaAnular.id_compra).subscribe({
+      next: (data) => {
+        console.log('Respuesta despues de anular: ', data);
+        this.listarCompra();
+        this.cerrarModalAnular();
+        this.mostrarToast(true, 'Compra anulada exitosamente');
+      },
+      error: (error) => {
+        console.error('Error al anular compra:', error);
+        this.mostrarToast(false, 'Error al anular la compra');
+      }
+    });
   }
   listarP() {
     this.ProSer.getListaProveedor().subscribe(algo => {
@@ -423,7 +432,7 @@ filtrarProducto(event: any){
     nro_compra: new FormControl(this.nroCompra, [Validators.required]),
     monto_total: new FormControl('0'),
     estado: new FormControl('Pendiente'),
-    fecha_recepcion: new FormControl('', [Validators.required]),
+    fecha_recepcion: new FormControl(''),
     id_usuario: new FormControl(this.obtenerUsuario()),
     id_proveedor: new FormControl('', [Validators.required]),
   })
@@ -577,8 +586,10 @@ filtrarProducto(event: any){
     })
   }
   guardarCompra() {
+    const fechaConHora = this.obtenerFechaConHora(this.compraForm.get('fecha_registro').value);
+
     const Compra: any = {
-      fecha_registro: this.compraForm.get('fecha_registro').value,
+      fecha_registro: fechaConHora,
       nro_compra: this.compraForm.get('nro_compra').value,
       monto_total: this.compraForm.get('monto_total').value,
       estado: 1,
@@ -587,24 +598,12 @@ filtrarProducto(event: any){
     }
     console.log("compra : ", Compra);
     console.log("productos compra : ", this.detallesCompra);
-    // this.ComSer.saveCompra(Compra).subscribe(data => {
-      // console.log("compra creada: ", data);
-      for(let i=0;i<this.detallesCompra.length;i++ ){
-        console.log('detalles de compras: ',this.detallesCompra[i]);
-
-        // this.detallesCompra[i].id_compra=data.id_compra;
-        // this.detallesCompra[i].id_producto=this.detallesCompra[i].producto.id_producto;
-        // this.DetCSer.saveDP(this.detallesCompra[i]).subscribe(()=>{
-        //  if(i==this.detallesCompra.length-1){
-        //   this.detalleForm.reset();
-        //   this.detallesCompra=[];
-        //  }
-        // })
-      }
-    //   this.compraForm.reset();
-    //   this.cerrarModalAgregar();
-    //   this.listarCompra();
-    // })
+    Compra.detalle=this.detallesCompra
+    this.ComSer.saveCompra(Compra).subscribe(data => {
+      this.compraForm.reset();
+      this.cerrarModalAgregar();
+      this.listarCompra();
+    })
   }
   fechaD!:Date
   fechaA!:Date
@@ -711,6 +710,50 @@ filtrarProducto(event: any){
   const month = String(hoy.getMonth() + 1).padStart(2, '0'); // meses empiezan en 0
   const day = String(hoy.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+  }
+
+  obtenerFechaConHora(fecha: string): string {
+    // Si la fecha ya viene con hora, retornarla tal cual
+    if (fecha && fecha.includes(':')) {
+      return fecha;
+    }
+
+    // Si no, agregarle la hora actual
+    const ahora = new Date();
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
+
+    return `${fecha} ${horas}:${minutos}:${segundos}`;
+  }
+
+  formatearFecha(fechaStr: string): string {
+    if (!fechaStr) return '';
+
+    const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+    // Separar fecha y hora si existe
+    const partes = fechaStr.split(' ');
+    let fechaParte = partes[0];
+    let horaParte = partes.slice(1).join(' ');
+
+    // Parsear la fecha
+    const [year, month, day] = fechaParte.split('-');
+    const mesIndex = parseInt(month) - 1;
+    const diaNum = parseInt(day);
+
+    // Formatear: "8 Mar 2026, hh:mm:ss"
+    return `${diaNum} ${meses[mesIndex]} ${year}${horaParte ? ', ' + horaParte : ''}`;
+  }
+
+  calcularTotalProductos(compra: any): number {
+    if (!compra.det_compras || compra.det_compras.length === 0) return 0;
+    return compra.det_compras.reduce((total: number, detalle: any) => total + (detalle.cantidad || 0), 0);
+  }
+
+  seleccionarCodigoProducto(event: FocusEvent): void {
+    const input = event.target as HTMLInputElement;
+    input.select();
   }
   generarPDF() {
   }
