@@ -17,7 +17,7 @@ export class ProveedorService {
     console.log("en servicio proveedors");
     return this.xhttp.get<any[]>(this.baseUrl+'/listar');
    }
-   saveProveedor(pro:Proveedor):Observable<any>{
+   saveProveedor(pro:any):Observable<any>{
     let url = this.baseUrl+"/agregar";
     return this.xhttp.post(url,pro)
    }

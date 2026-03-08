@@ -19,6 +19,9 @@ import { ProductoService } from '../../Servicios/producto.service';
 import { NombrePipe } from '../../Filtros/nombre.pipe';
 import { Modal } from 'bootstrap';
 import { FechasPipe } from "../../Filtros/fechas.pipe";
+import { CategoriaService } from '../../Servicios/categoria.service';
+import { UnidadMedidaService } from '../../Servicios/unidad-medida.service';
+import { MarcaService } from '../../Servicios/marca.service';
 
 @Component({
   selector: 'app-compras',
@@ -36,12 +39,16 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   @ViewChild('modalRecepcion') modalRecepcionRef!: ElementRef;
   @ViewChild('modalAnular') modalAnularRef!: ElementRef;
   @ViewChild('modalAgregarProducto') modalAgregarProductoRef!: ElementRef;
+  @ViewChild('modalProveedor') modalProveedorRef!: ElementRef;
+  @ViewChild('modalMarca') modalMarcaRef!: ElementRef;
 
   private modalAgregar?: Modal;
   private modalDetalle?: Modal;
   private modalRecepcion?: Modal;
   private modalAnular?: Modal;
-  private modalProducto?: Modal;
+  private modalProductoRapido?: Modal;
+  private modalProveedor?: Modal;
+  private modalMarca?: Modal;
 
   apiCompra:any = []
   apiProveedor:any[]=[]
@@ -49,7 +56,10 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   apiPedidos: Pedido[] = []
   apiProveedores: Proveedor[] = []
   apiCategorias: Categoria[] = []
+  apiMarcas: any[] = []
+  apiUnidadesMedida: any[] = []
   detallesCompra: any = []
+  subCategoriasCompra: Categoria[] = []
 
   proveedor=0
   nrocompra:string=''
@@ -57,12 +67,17 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   mostrarLista: boolean = false;
   estado='1'
   page:number=1
+  exito: boolean = true
+  mensajeToast: string = ''
   constructor(
         private ComSer: CompraService,
         private ProSer: ProveedorService,
         private ProducSer: ProductoService,
         private DetCSer: DetallepedidoService,
         private InvSer: InventarioService,
+        private CatSer: CategoriaService,
+        private UniMedSer: UnidadMedidaService,
+        private MarSer: MarcaService
   ) { }
 
   ngAfterViewInit(): void {
@@ -83,7 +98,15 @@ export class ComprasComponent implements OnInit, AfterViewInit {
       backdrop: 'static',
       keyboard: false
     });
-    this.modalProducto = new Modal(this.modalAgregarProductoRef.nativeElement, {
+    this.modalProductoRapido = new Modal(this.modalAgregarProductoRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    this.modalProveedor = new Modal(this.modalProveedorRef.nativeElement, {
+      backdrop: 'static',
+      keyboard: false
+    });
+    this.modalMarca = new Modal(this.modalMarcaRef.nativeElement, {
       backdrop: 'static',
       keyboard: false
     });
@@ -143,17 +166,150 @@ export class ComprasComponent implements OnInit, AfterViewInit {
     }
   }
 
-  abrirModalProducto(): void {
-    if (this.modalProducto) {
-      this.modalProducto.show();
+  abrirModalAgregarProducto(): void {
+    this.productoFormCompra.reset({
+      id_categoria: '',
+      sub_categoria: '',
+      id_unidad_medida: 1,
+      id_marca: '',
+      precio_compra: '',
+      precio_venta: ''
+    });
+    this.subCategoriasCompra = [];
+    if (this.modalProductoRapido) {
+      this.modalProductoRapido.show();
+      setTimeout(() => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        if (backdrops.length > 1) {
+          const lastBackdrop = backdrops[backdrops.length - 1] as HTMLElement;
+          lastBackdrop.style.zIndex = '1055';
+        }
+      }, 100);
     }
   }
 
-  cerrarModalProducto(): void {
-    if (this.modalProducto) {
-      this.modalProducto.hide();
+  cerrarModalAgregarProducto(): void {
+    if (this.modalProductoRapido) {
+      this.modalProductoRapido.hide();
       this.limpiarBackdrop();
     }
+  }
+
+  abrirModalProveedor(): void {
+    this.proveedorForm.reset({ ciudad: '' });
+    if (this.modalProveedor) {
+      // Ajustar z-index del backdrop del modal de proveedor
+      this.modalProveedor.show();
+      setTimeout(() => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        if (backdrops.length > 1) {
+          const lastBackdrop = backdrops[backdrops.length - 1] as HTMLElement;
+          lastBackdrop.style.zIndex = '1055';
+        }
+      }, 100);
+    }
+  }
+
+  cerrarModalProveedor(): void {
+    if (this.modalProveedor) {
+      this.modalProveedor.hide();
+      this.limpiarBackdrop();
+    }
+  }
+
+  guardarProveedor(): void {
+    if (this.proveedorForm.invalid) {
+      this.proveedorForm.markAllAsTouched();
+      return;
+    }
+
+    const datosProveedor = {
+      nombre: this.proveedorForm.get('nombre')?.value,
+      celular: this.proveedorForm.get('celular')?.value,
+      correo: this.proveedorForm.get('email')?.value,
+      ciudad: this.proveedorForm.get('ciudad')?.value,
+      direccion: this.proveedorForm.get('direccion')?.value,
+      estado: 1
+    };
+
+    this.ProSer.saveProveedor(datosProveedor).subscribe({
+      next: (response) => {
+        console.log('Proveedor guardado:', response);
+        // Agregar el nuevo proveedor a la lista
+        this.apiProveedor.push(response);
+        // Seleccionar automáticamente el nuevo proveedor
+        this.compraForm.patchValue({ id_proveedor: response.id_proveedor });
+        this.cerrarModalProveedor();
+        this.proveedorForm.reset();
+        this.mostrarToast(true, 'Proveedor guardado exitosamente');
+      },
+      error: (error) => {
+        console.error('Error al guardar proveedor:', error);
+        this.mostrarToast(false, 'Error al guardar el proveedor');
+      }
+    });
+  }
+
+  abrirModalMarca(): void {
+    this.marcaForm.reset({ estado: '1' });
+    if (this.modalMarca) {
+      this.modalMarca.show();
+      setTimeout(() => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        if (backdrops.length > 1) {
+          // Ajustar z-index del último backdrop (marca) para que esté sobre el de producto rápido
+          const lastBackdrop = backdrops[backdrops.length - 1] as HTMLElement;
+          lastBackdrop.style.zIndex = '1065';
+        }
+      }, 100);
+    }
+  }
+
+  cerrarModalMarca(): void {
+    if (this.modalMarca) {
+      this.modalMarca.hide();
+      setTimeout(() => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        // Eliminar todos los backdrops excepto los necesarios
+        if (this.modalProductoRapido && this.modalAgregarProductoRef.nativeElement.classList.contains('show')) {
+          // Mantener solo el backdrop del modal de producto rápido
+          backdrops.forEach((backdrop, index) => {
+            if (index > 0) backdrop.remove();
+          });
+          document.body.classList.add('modal-open');
+        } else {
+          backdrops.forEach(b => b.remove());
+          document.body.classList.remove('modal-open');
+        }
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }, 100);
+    }
+  }
+
+  guardarMarca(): void {
+    if (this.marcaForm.invalid) {
+      this.marcaForm.markAllAsTouched();
+      return;
+    }
+
+    const marca = this.marcaForm.value;
+    this.MarSer.saveMarca(marca).subscribe({
+      next: (response) => {
+        console.log('Marca creada:', response);
+        // Agregar la nueva marca a la lista
+        this.apiMarcas.push(response);
+        // Seleccionar automáticamente la nueva marca
+        this.productoFormCompra.patchValue({ id_marca: response.id_marca });
+        this.cerrarModalMarca();
+        this.marcaForm.reset();
+        this.mostrarToast(true, 'Marca creada exitosamente');
+      },
+      error: (error) => {
+        console.error('Error al crear marca:', error);
+        this.mostrarToast(false, 'Error al crear la marca');
+      }
+    });
   }
 
   limpiarBackdrop(): void {
@@ -168,12 +324,16 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   // ==================== MÉTODOS PRINCIPALES ====================
 
   nuevaCompra(){
-    this.compraForm.reset();
+    this.detallesCompra = [];
     this.nextNumber = this.apiCompra.length + 1;
     this.nroCompra = 'C' + this.nextNumber.toString().padStart(3, '0');
-    this.compraForm.patchValue({
+    this.compraForm.reset({
       fecha_registro: this.obtenerFechaActual(),
-      nro_compra: this.nroCompra
+      nro_compra: this.nroCompra,
+      monto_total: '0',
+      estado: 'Pendiente',
+      id_usuario: this.obtenerUsuario(),
+      id_proveedor: ''
     });
     this.abrirModalAgregar();
   }
@@ -186,9 +346,10 @@ filtrarProducto(event: any){
     this.listarCompra()
     this.listarP()
     this.listarPro()
+    this.cargarCategorias()
+    this.cargarUnidadesMedida()
+    this.cargarMarcas()
     this.obtenerFechaActual()
-    this.compraForm.get('fecha_registro')?.disable()
-  this.compraForm.get('nro_compra')?.disable()
     // Flag para controlar errores en las cantidades de recepción
     this.errorCantidades = false;
   }
@@ -214,7 +375,7 @@ filtrarProducto(event: any){
   }
   listarP() {
     this.ProSer.getListaProveedor().subscribe(algo => {
-      this.apiProveedor = algo
+      this.apiProveedor = algo.filter(p => p.estado == 1) // Solo proveedores activos
       console.log('Proveedores:', this.apiProveedor);
     })
   }
@@ -224,6 +385,28 @@ filtrarProducto(event: any){
       console.log("productos",this.apiProductos);
     })
   }
+
+  cargarCategorias() {
+    this.CatSer.getListaCategoria().subscribe((lista) => {
+      this.apiCategorias = lista
+      console.log("categorias", this.apiCategorias);
+    })
+  }
+
+  cargarUnidadesMedida() {
+    this.UniMedSer.getListaUnidades().subscribe((lista) => {
+      this.apiUnidadesMedida = lista
+      console.log("unidades de medida", this.apiUnidadesMedida);
+    })
+  }
+
+  cargarMarcas() {
+    this.MarSer.getListaMarcas().subscribe((lista) => {
+      this.apiMarcas = lista
+      console.log("marcas", this.apiMarcas);
+    })
+  }
+
   obtenerUsuario(): string {
     const usuario: any = JSON.parse(localStorage.getItem('usuario'))
     console.log('usuario con persona',usuario);
@@ -236,13 +419,13 @@ filtrarProducto(event: any){
  nroCompra = 'C' + this.nextNumber.toString().padStart(3, '0');
 
   compraForm = new UntypedFormGroup({
-    fecha_registro: new FormControl(this.obtenerFechaActual()),
-    nro_compra: new FormControl(this.nroCompra),
+    fecha_registro: new FormControl(this.obtenerFechaActual(), [Validators.required]),
+    nro_compra: new FormControl(this.nroCompra, [Validators.required]),
     monto_total: new FormControl('0'),
     estado: new FormControl('Pendiente'),
     fecha_recepcion: new FormControl('', [Validators.required]),
     id_usuario: new FormControl(this.obtenerUsuario()),
-    id_proveedor: new FormControl('',[Validators.required]),
+    id_proveedor: new FormControl('', [Validators.required]),
   })
   get controlC() {
     return this.compraForm.controls;
@@ -259,6 +442,113 @@ filtrarProducto(event: any){
   get controlD(){
     return this.detalleForm.controls;
   }
+
+  proveedorForm = new UntypedFormGroup({
+    nombre: new FormControl('', Validators.required),
+    celular: new FormControl('', [Validators.required, Validators.pattern('[0-9]+')]),
+    email: new FormControl('', [Validators.email]),
+    ciudad: new FormControl('Tarija', Validators.required),
+    direccion: new FormControl('')
+  });
+
+  get controlProveedor() {
+    return this.proveedorForm.controls;
+  }
+
+  productoFormCompra = new UntypedFormGroup({
+    nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
+    codigo: new FormControl('', [Validators.required, Validators.maxLength(20)]),
+    descripcion: new FormControl('', [Validators.maxLength(50)]),
+    precio_compra: new FormControl('', [Validators.required, Validators.min(0.01)]),
+    precio_venta: new FormControl('', [Validators.required, Validators.min(0.01)]),
+    id_categoria: new FormControl('', [Validators.required]),
+    sub_categoria: new FormControl(''),
+    id_unidad_medida: new FormControl('', [Validators.required]),
+    id_marca: new FormControl('', [Validators.required])
+  });
+
+  get controlProducto() {
+    return this.productoFormCompra.controls;
+  }
+
+  marcaForm = new UntypedFormGroup({
+    nombre: new FormControl('', [Validators.required, Validators.minLength(3)]),
+    descripcion: new FormControl(''),
+    estado: new FormControl('1', Validators.required)
+  });
+
+  get controlMarca() {
+    return this.marcaForm.controls;
+  }
+
+  counterProductosNuevos = 1;
+
+  onCategoriaChangeCompra(event: any) {
+    const categoriaId = parseInt(event.target.value);
+    const categoriaSeleccionada = this.apiCategorias.find(c => c.id_categoria === categoriaId) || null;
+
+    if (categoriaSeleccionada && categoriaSeleccionada.subCategoria && categoriaSeleccionada.subCategoria.length > 0) {
+      this.subCategoriasCompra = categoriaSeleccionada.subCategoria;
+      this.productoFormCompra.patchValue({
+        id_categoria: categoriaId,
+        sub_categoria: ''
+      });
+    } else {
+      this.subCategoriasCompra = [];
+      this.productoFormCompra.patchValue({
+        id_categoria: categoriaId,
+        sub_categoria: ''
+      });
+    }
+  }
+
+  guardarProductoRapido() {
+    if (this.productoFormCompra.invalid) {
+      this.productoFormCompra.markAllAsTouched();
+      return;
+    }
+
+    const subCategoriaId = this.productoFormCompra.get('sub_categoria')?.value;
+    const categoriaId = this.productoFormCompra.get('id_categoria')?.value;
+    const idCategoriaFinal = subCategoriaId || categoriaId;
+
+    // Crear producto temporal con ID autogenerado que empieza con 'N'
+    const productoNuevo = {
+      id_producto: 'N' + this.counterProductosNuevos++,
+      nombre: this.productoFormCompra.get('nombre')?.value,
+      codigo: this.productoFormCompra.get('codigo')?.value,
+      descripcion: this.productoFormCompra.get('descripcion')?.value,
+      precio_compra: this.productoFormCompra.get('precio_compra')?.value,
+      precio_venta: this.productoFormCompra.get('precio_venta')?.value,
+      id_categoria: idCategoriaFinal,
+      categorium: this.apiCategorias.find(c => c.id_categoria == idCategoriaFinal) || null,
+      id_unidad_medida: this.productoFormCompra.get('id_unidad_medida')?.value,
+      id_marca: this.productoFormCompra.get('id_marca')?.value,
+      estado: 1,
+      stock: 0,
+      foto: 'default.png'
+    };
+
+    // Añadir a la lista de productos disponibles temporalmente
+    this.apiProductos.push(productoNuevo);
+
+    // Añadir automáticamente a la tabla de detalles
+    const detalle: any = {
+      cantidad: 1,
+      precio_unitario: productoNuevo.precio_compra,
+      sub_total: productoNuevo.precio_compra * 1,
+      producto: productoNuevo,
+      compra: null,
+    };
+    this.detallesCompra.push(detalle);
+    this.CalcularTotal();
+
+    // Cerrar modal y resetear formulario
+    this.cerrarModalAgregarProducto();
+    this.productoFormCompra.reset();
+    this.mostrarToast(true, 'Producto agregado a la compra');
+  }
+
   agregarDetalle() {
     const detalle: any = {
       cantidad:(this.detalleForm.get('cantidad')?.value<1)?1:this.detalleForm.get('cantidad').value,
@@ -288,32 +578,33 @@ filtrarProducto(event: any){
   }
   guardarCompra() {
     const Compra: any = {
-      fecha_registro: this.compraForm.get('fecha_registro').value ,
+      fecha_registro: this.compraForm.get('fecha_registro').value,
+      nro_compra: this.compraForm.get('nro_compra').value,
       monto_total: this.compraForm.get('monto_total').value,
       estado: 1,
       id_proveedor: this.compraForm.get('id_proveedor').value.id_proveedor,
       id_usuario: JSON.parse(localStorage.getItem('usuario')).id_usuario
     }
-    Compra.fecha_registro = this.obtenerFechaActual();
-    Compra.estado=1;
     console.log("compra : ", Compra);
     console.log("productos compra : ", this.detallesCompra);
-    this.ComSer.saveCompra(Compra).subscribe(data => {
-      console.log("vuelve creado", data);
+    // this.ComSer.saveCompra(Compra).subscribe(data => {
+      // console.log("compra creada: ", data);
       for(let i=0;i<this.detallesCompra.length;i++ ){
-        this.detallesCompra[i].id_compra=data.id_compra;
-        this.detallesCompra[i].id_producto=this.detallesCompra[i].producto.id_producto;
-        this.DetCSer.saveDP(this.detallesCompra[i]).subscribe(()=>{
-         if(i==this.detallesCompra.length-1){
-          this.detalleForm.reset();
-          this.detallesCompra=[];
-         }
-        })
+        console.log('detalles de compras: ',this.detallesCompra[i]);
+
+        // this.detallesCompra[i].id_compra=data.id_compra;
+        // this.detallesCompra[i].id_producto=this.detallesCompra[i].producto.id_producto;
+        // this.DetCSer.saveDP(this.detallesCompra[i]).subscribe(()=>{
+        //  if(i==this.detallesCompra.length-1){
+        //   this.detalleForm.reset();
+        //   this.detallesCompra=[];
+        //  }
+        // })
       }
-      this.compraForm.reset();
-      this.cerrarModalAgregar();
-      this.listarCompra();
-    })
+    //   this.compraForm.reset();
+    //   this.cerrarModalAgregar();
+    //   this.listarCompra();
+    // })
   }
   fechaD!:Date
   fechaA!:Date
@@ -627,6 +918,16 @@ actualizarSubtotal(index: number) {
      })
 
 }
+
+  mostrarToast(exito: boolean, mensaje: string): void {
+    this.exito = exito;
+    this.mensajeToast = mensaje;
+    const toastElement = document.querySelector('.toast');
+    if (toastElement) {
+      const toast = new (window as any).bootstrap.Toast(toastElement);
+      toast.show();
+    }
+  }
 
   // Indica si la recepción no es válida (fecha faltante o errores en cantidades)
   get recepcionInvalida(): boolean {

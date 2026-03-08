@@ -6,7 +6,6 @@ import { Categoria } from '../../Modelos/categoria';
 import { Producto } from '../../Modelos/producto';
 import { CategoriaService } from '../../Servicios/categoria.service';
 import { ProductoService } from '../../Servicios/producto.service';
-import { ProveedorService } from '../../Servicios/proveedor.service';
 import { CommonModule } from '@angular/common';
 import { UnidadMedidaService } from '../../Servicios/unidad-medida.service';
 import { MarcaService } from '../../Servicios/marca.service';
@@ -27,10 +26,8 @@ import { environment } from '../../../environments/environment';
 })
 export class ProductosComponent implements OnInit, AfterViewInit {
   @ViewChild('modalProducto') modalAgregarRef!: ElementRef; // Referencia al modal
-  @ViewChild('modalProveedor') modalProveedorRef!: ElementRef; // Referencia al modal proveedor
   @ViewChild('modalMarca') modalMarcaRef!: ElementRef; // Referencia al modal marca
   private modalAgregar?: bootstrap.Modal;
-  private modalProveedor?: bootstrap.Modal;
   private modalMarca?: bootstrap.Modal;
 
   apiUrl = environment.apiUrl + '/uploads/';
@@ -39,7 +36,6 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   //*ngfor lists
   apiProductos: any[] = []
   apiCategorias: Categoria[] = []
-  apiProveedores: any[] = []
   apiMarcas: any[] = []
   apiUnidadesMedida: any[] = []
   // Filtros
@@ -71,7 +67,6 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   constructor(
     private CatSer: CategoriaService,
     private ProSer: ProductoService,
-    private ProvSer: ProveedorService,
     private UniMedSer: UnidadMedidaService,
     private MarSer: MarcaService
   ) { }
@@ -80,10 +75,6 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     this.CatSer.getListaCategoria().subscribe((lista) => {
       this.apiCategorias = lista
     })
-    this.ProvSer.getListaProveedor().subscribe((lista) => {
-      this.apiProveedores = lista
-      console.log("proveedores", this.apiProveedores);
-    })
     this.listar()
     this.productoForm.get('fecha_registro').disable()
   }
@@ -91,7 +82,6 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     // Inicializa los modales de Bootstrap
     this.modalAgregar = new bootstrap.Modal(this.modalAgregarRef.nativeElement);
-    this.modalProveedor = new bootstrap.Modal(this.modalProveedorRef.nativeElement);
     this.modalMarca = new bootstrap.Modal(this.modalMarcaRef.nativeElement);
   }
   listar() {
@@ -109,20 +99,7 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       console.log("unidades de medida", this.apiUnidadesMedida);
     })
   }
-  // Formulario de Proveedor
-  proveedorForm = new UntypedFormGroup({
-    nombre: new FormControl('', Validators.required),
-    celular: new FormControl('', Validators.required),
-    email: new FormControl('', [
-      Validators.email,
-      Validators.minLength(6),
-      Validators.maxLength(50),
-      Validators.pattern(/^[\w\.-]+@([\w-]+\.)+[A-Za-z]{2,}$/)
-    ]),
-    ciudad: new FormControl('', Validators.required),
-    direccion: new FormControl(''),
-    estado: new FormControl('1')
-  });
+
 
   // Formulario de Marca
   marcaForm = new UntypedFormGroup({
@@ -143,16 +120,12 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     fecha_registro: new FormControl(this.obtenerFechaActual()),
     stock_minimo: new FormControl('', [Validators.required, Validators.min(1), Validators.max(9999)]),
     id_categoria: new FormControl('', [Validators.required]),
-    id_proveedor: new FormControl('', [Validators.required]),
+    sub_categoria: new FormControl(''),
     id_unidad_medida: new FormControl(1, [Validators.required]),
     id_marca: new FormControl('', [Validators.required])
   })
   get control() {
     return this.productoForm.controls
-  }
-
-  get controlProveedor() {
-    return this.proveedorForm.controls
   }
 
   get controlMarca() {
@@ -179,10 +152,15 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     this.productoForm.reset({
       estado: '1',
       fecha_registro: this.obtenerFechaActual(),
-      id_unidad_medida: 1
+      id_unidad_medida: 1,
+      sub_categoria: ''
     })
     this.selectedFile = null
     this.codigoDuplicado = false
+    // Resetear variables de categoría
+    this.categoriaSeleccionada = null
+    this.subCategorias = []
+    this.subcategoriaSeleccionada = null
     this.abrirModal()
   }
 
@@ -196,6 +174,38 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     this.isEditMode = true
     this.modalTitle = 'Editar Producto'
     this.idProducto = producto.id_producto
+
+    // Configurar categoría y subcategoría
+    if (producto.categorium) {
+      // Si tiene id_categoria_padre, es una subcategoría
+      if (producto.categorium.id_categoria_padre) {
+        // Es subcategoría
+        const categoriaPadreId = producto.categorium.id_categoria_padre;
+        this.categoriaSeleccionada = this.apiCategorias.find(c => c.id_categoria === categoriaPadreId) || null;
+
+        if (this.categoriaSeleccionada && this.categoriaSeleccionada.subCategoria) {
+          this.subCategorias = this.categoriaSeleccionada.subCategoria;
+          // Buscar la subcategoría donde subCategoria.id_categoria == producto.categorium.id_categoria
+          const subcatEncontrada = this.subCategorias.find(sub => sub.id_categoria === producto.categorium.id_categoria);
+          this.subcategoriaSeleccionada = subcatEncontrada ? subcatEncontrada.id_categoria : null;
+        } else {
+          this.subCategorias = [];
+          this.subcategoriaSeleccionada = null;
+        }
+      } else {
+        // Es categoría principal
+        this.categoriaSeleccionada = this.apiCategorias.find(c => c.id_categoria === producto.id_categoria) || null;
+
+        if (this.categoriaSeleccionada && this.categoriaSeleccionada.subCategoria) {
+          this.subCategorias = this.categoriaSeleccionada.subCategoria;
+        } else {
+          this.subCategorias = [];
+        }
+
+        this.subcategoriaSeleccionada = null;
+      }
+    }
+
     this.productoForm.patchValue({
       nombre: producto.nombre,
       codigo: producto.codigo,
@@ -207,8 +217,8 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       stock: producto.stock,
       fecha_registro: producto.fecha_registro,
       stock_minimo: producto.stock_minimo,
-      id_categoria: producto.id_categoria,
-      id_proveedor: producto.id_proveedor,
+      id_categoria: this.categoriaSeleccionada?.id_categoria || '',
+      sub_categoria: this.subcategoriaSeleccionada || '',
       id_unidad_medida: producto.id_unidad_medida,
       id_marca: producto.id_marca
     })
@@ -219,6 +229,14 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       this.productoForm.markAllAsTouched()
       return
     }
+
+    // Determinar el id_categoria final: si hay subcategoría, usar esa; sino, la categoría
+    const subCategoriaId = this.productoForm.get('sub_categoria')?.value;
+    const categoriaId = this.productoForm.get('id_categoria')?.value;
+    const idCategoriaFinal = subCategoriaId || categoriaId;
+
+    // Actualizar el id_categoria con el valor final
+    this.productoForm.patchValue({ id_categoria: idCategoriaFinal });
 
     if (this.isEditMode) {
       this.actualizarProducto()
@@ -232,6 +250,9 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     const producto = this.productoForm.getRawValue();
     producto.fecha_registro = this.obtenerFechaActual();
     producto.estado = '1';
+
+    // Eliminar sub_categoria del objeto ya que no se envía al backend
+    delete producto.sub_categoria;
 
     formData.append('producto', JSON.stringify(producto));
     if (this.selectedFile) {
@@ -308,6 +329,10 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       id_producto: this.idProducto,
       ...this.productoForm.getRawValue()
     }
+
+    // Eliminar sub_categoria del objeto ya que no se envía al backend
+    delete producto.sub_categoria;
+
     const formData = new FormData();
     formData.append('producto', JSON.stringify(producto));
 
@@ -347,10 +372,19 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     console.log("cerrar modal");
     if (this.modalAgregar) {
       this.modalAgregar.hide(); // Cierra el modal
-      document.querySelector('.modal-backdrop')?.remove();
-      // Habilita el scroll del body (Bootstrap lo desactiva)
-      document.body.style.overflow = 'auto';
-      document.body.style.paddingRight = '0'; // Elimina el padding que añade Bootstrap
+
+      // Eliminar TODOS los backdrops que puedan existir
+      setTimeout(() => {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(backdrop => backdrop.remove());
+
+        // Remover la clase modal-open del body
+        document.body.classList.remove('modal-open');
+
+        // Habilita el scroll del body (Bootstrap lo desactiva)
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = ''; // Elimina el padding que añade Bootstrap
+      }, 100);
     }
   }
   detProducto: any
@@ -411,71 +445,18 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     this.productoForm.reset({
       estado: '1',
       fecha_registro: this.obtenerFechaActual(),
-      id_unidad_medida: 1
+      id_unidad_medida: 1,
+      sub_categoria: ''
     })
     this.selectedFile = null
     this.codigoDuplicado = false
     this.isEditMode = false
     this.modalTitle = 'Nuevo Producto'
     this.idProducto = 0
-  }
-
-  // ========== MÉTODOS PARA MODAL DE PROVEEDOR ==========
-  abrirModalProveedor() {
-    this.proveedorForm.reset({ estado: '1' });
-    if (this.modalProveedor) {
-      this.modalProveedor.show();
-    }
-  }
-
-  cerrarModalProveedor() {
-    if (this.modalProveedor) {
-      this.modalProveedor.hide();
-      // Restaurar el backdrop del modal principal si está abierto
-      setTimeout(() => {
-        const backdrops = document.querySelectorAll('.modal-backdrop');
-        // Eliminar todos los backdrops excepto uno si el modal principal está abierto
-        if (this.modalAgregarRef.nativeElement.classList.contains('show')) {
-          backdrops.forEach((backdrop, index) => {
-            if (index > 0) backdrop.remove();
-          });
-          document.body.classList.add('modal-open');
-        } else {
-          backdrops.forEach(b => b.remove());
-          document.body.classList.remove('modal-open');
-        }
-        document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
-      }, 100);
-    }
-  }
-
-  guardarProveedor() {
-    if (this.proveedorForm.invalid) {
-      this.proveedorForm.markAllAsTouched();
-      return;
-    }
-
-    const proveedor = this.proveedorForm.value;
-    this.ProvSer.saveProveedor(proveedor).subscribe({
-      next: (response) => {
-        console.log('Proveedor creado:', response);
-        // Agregar el nuevo proveedor a la lista
-        this.apiProveedores.push(response);
-        // Seleccionar automáticamente el nuevo proveedor
-        this.productoForm.patchValue({ id_proveedor: response.id_proveedor });
-        this.cerrarModalProveedor();
-        this.exito = true;
-        this.mensajeToast = 'Proveedor creado exitosamente';
-        this.mostrarToast();
-      },
-      error: (error) => {
-        console.error('Error al crear proveedor:', error);
-        this.exito = false;
-        this.mensajeToast = 'Error al crear el proveedor';
-        this.mostrarToast();
-      }
-    });
+    // Resetear variables de categoría
+    this.categoriaSeleccionada = null
+    this.subCategorias = []
+    this.subcategoriaSeleccionada = null
   }
 
   // ========== MÉTODOS PARA MODAL DE MARCA ==========
@@ -563,27 +544,31 @@ export class ProductosComponent implements OnInit, AfterViewInit {
       this.subCategorias = this.categoriaSeleccionada.subCategoria;
       this.subcategoriaSeleccionada = null;
       // Si hay subcategorías, esperar a que seleccione una
-      this.productoForm.patchValue({ id_categoria: categoriaId });
+      this.productoForm.patchValue({
+        id_categoria: categoriaId,
+        sub_categoria: ''
+      });
     } else {
       // No hay subcategorías, usar la categoría padre
       this.subCategorias = [];
       this.subcategoriaSeleccionada = null;
-      this.productoForm.patchValue({ id_categoria: categoriaId });
+      this.productoForm.patchValue({
+        id_categoria: categoriaId,
+        sub_categoria: ''
+      });
     }
   }
 
   onSubcategoriaChange(event: any) {
     const subcategoriaId = parseInt(event.target.value);
     if (subcategoriaId) {
-      // Si se selecciona una subcategoría, usar su ID
+      // Si se selecciona una subcategoría, guardarla en sub_categoria
       this.subcategoriaSeleccionada = subcategoriaId;
-      this.productoForm.patchValue({ id_categoria: subcategoriaId });
+      this.productoForm.patchValue({ sub_categoria: subcategoriaId });
     } else {
-      // Si no se selecciona subcategoría, usar la categoría padre
+      // Si no se selecciona subcategoría, limpiar
       this.subcategoriaSeleccionada = null;
-      if (this.categoriaSeleccionada) {
-        this.productoForm.patchValue({ id_categoria: this.categoriaSeleccionada.id_categoria });
-      }
+      this.productoForm.patchValue({ sub_categoria: '' });
     }
   }
 }

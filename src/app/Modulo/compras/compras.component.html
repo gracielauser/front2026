@@ -176,58 +176,71 @@
       <div class="modal-body">
         <form [formGroup]="compraForm" (ngSubmit)="guardarCompra()">
           <div class="row g-3">
-            <!-- Info Compra -->
-            <div class="col-md-6">
+            <!-- Datos de Compra -->
+            <div class="col-12">
               <div class="info-card">
                 <div class="info-card-header">
                   <i class="bi bi-file-text-fill"></i>
-                  Información de Compra
+                  Datos de Compra
                 </div>
                 <div class="info-card-body">
-                  <div class="mb-3">
-                    <label class="form-label-custom">Nro. Compra</label>
-                    <input type="text" class="form-control form-control-modern" formControlName="nro_compra" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label-custom">Fecha de Registro</label>
-                    <input type="date" class="form-control form-control-modern" formControlName="fecha_registro" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label-custom">Usuario Responsable</label>
-                    <input type="text" class="form-control form-control-modern" formControlName="id_usuario" readonly>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  <div class="row g-3">
+                    <!-- Nro. Compra -->
+                    <div class="col-md-4">
+                      <label class="form-label-custom">Nro. Compra <span class="required-mark">*</span></label>
+                      <input type="text" class="form-control form-control-modern"
+                             formControlName="nro_compra"
+                             placeholder="Ej: C001"
+                             [ngClass]="{'is-invalid': controlC['nro_compra'].invalid && controlC['nro_compra'].touched}">
+                      <div class="invalid-feedback">Campo obligatorio</div>
+                    </div>
 
-            <!-- Info Proveedor -->
-            <div class="col-md-6">
-              <div class="info-card">
-                <div class="info-card-header">
-                  <i class="bi bi-building-fill"></i>
-                  Información del Proveedor
-                </div>
-                <div class="info-card-body">
-                  <div class="mb-3">
-                    <label class="form-label-custom">
-                      Proveedor <span class="required-mark">*</span>
-                    </label>
-                    <select class="form-select form-select-modern" formControlName="id_proveedor"
-                            [ngClass]="{'is-invalid': controlC['id_proveedor'].invalid && controlC['id_proveedor'].touched}">
-                      <option value="">Seleccione un proveedor</option>
-                      <option *ngFor="let prov of apiProveedor" [ngValue]="prov">{{prov.nombre}}</option>
-                    </select>
-                    <div class="invalid-feedback">
-                      Debe seleccionar un proveedor
+                    <!-- Fecha de Registro -->
+                    <div class="col-md-4">
+                      <label class="form-label-custom">Fecha de Registro <span class="required-mark">*</span></label>
+                      <input type="date" class="form-control form-control-modern"
+                             formControlName="fecha_registro"
+                             [ngClass]="{'is-invalid': controlC['fecha_registro'].invalid && controlC['fecha_registro'].touched}">
+                      <div class="invalid-feedback">Campo obligatorio</div>
+                    </div>
+
+                    <!-- Proveedor -->
+                    <div class="col-md-4">
+                      <label class="form-label-custom">
+                        Proveedor <span class="required-mark">*</span>
+                      </label>
+                      <div class="input-group">
+                        <select class="form-select form-select-modern" formControlName="id_proveedor"
+                                [ngClass]="{'is-invalid': controlC['id_proveedor'].invalid && controlC['id_proveedor'].touched}">
+                          <option value="">Seleccione un proveedor</option>
+                          <option *ngFor="let prov of apiProveedor" [ngValue]="prov.id_proveedor">{{prov.nombre}}</option>
+                        </select>
+                        <button type="button" class="btn btn-success" (click)="abrirModalProveedor()"
+                                title="Agregar nuevo proveedor">
+                          <i class="bi bi-plus-lg"></i>
+                        </button>
+                      </div>
+                      <div class="invalid-feedback d-block"
+                           *ngIf="controlC['id_proveedor'].invalid && controlC['id_proveedor'].touched">
+                        Debe seleccionar un proveedor
+                      </div>
                     </div>
                   </div>
-                  <div class="info-item" *ngIf="controlC['id_proveedor'].value">
-                    <i class="bi bi-telephone-fill"></i>
-                    <span>{{controlC['id_proveedor'].value.telefono}}</span>
-                  </div>
-                  <div class="info-item" *ngIf="controlC['id_proveedor'].value">
-                    <i class="bi bi-envelope-fill"></i>
-                    <span>{{controlC['id_proveedor'].value.correo}}</span>
+
+                  <!-- Info adicional del proveedor -->
+                  <div class="row g-2 mt-2" *ngIf="controlC['id_proveedor'].value">
+                    <div class="col-md-6">
+                      <div class="info-item">
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>{{controlC['id_proveedor'].value.telefono}}</span>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="info-item">
+                        <i class="bi bi-envelope-fill"></i>
+                        <span>{{controlC['id_proveedor'].value.correo}}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -242,7 +255,7 @@
                 </div>
                 <div class="info-card-body">
                   <div class="row g-3">
-                    <div class="col-md-6 position-relative">
+                    <div class="col-md-10 position-relative">
                       <label class="form-label-custom">Buscar Producto</label>
                       <input type="text" #buscarProducto class="form-control form-control-modern"
                              placeholder="Escriba el nombre del producto"
@@ -265,6 +278,14 @@
                           <span>No se encontraron productos</span>
                         </div>
                       </div>
+                    </div>
+
+                    <div class="col-md-2 d-flex align-items-end">
+                      <button type="button" class="btn btn-primary w-100" (click)="abrirModalAgregarProducto()"
+                              title="Crear producto rápido">
+                        <i class="bi bi-plus-circle-fill"></i>
+                        Nuevo
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -594,6 +615,393 @@
           Confirmar Anulación
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Proveedor -->
+<div class="modal fade" id="modalProveedor" #modalProveedor tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content modal-modern">
+      <div class="modal-header modal-header-custom">
+        <div class="modal-title-wrapper">
+          <h5 class="modal-title">Nuevo Proveedor</h5>
+        </div>
+        <!-- <button type="button"  (click)="cerrarModalProveedor()">
+          <i class="bi bi-x-lg"></i>
+        </button> -->
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="proveedorForm" (ngSubmit)="guardarProveedor()">
+          <div class="row g-3">
+            <!-- Nombre -->
+            <div class="col-md-6">
+              <label class="form-label-custom">Nombre <span class="required-mark">*</span></label>
+              <input type="text" formControlName="nombre" class="form-control form-control-modern"
+                     placeholder="Ingrese nombre del proveedor"
+                     [ngClass]="{
+                       'is-valid': controlProveedor['nombre'].valid && controlProveedor['nombre'].touched,
+                       'is-invalid': controlProveedor['nombre'].invalid && controlProveedor['nombre'].touched
+                     }">
+              <div class="invalid-feedback">Campo obligatorio</div>
+            </div>
+
+            <!-- Celular -->
+            <div class="col-md-6">
+              <label class="form-label-custom">Celular <span class="required-mark">*</span></label>
+              <input type="text" formControlName="celular" class="form-control form-control-modern"
+                     placeholder="Ingrese celular" pattern="[0-9]+" maxlength="8"
+                     [ngClass]="{
+                       'is-valid': controlProveedor['celular'].valid && controlProveedor['celular'].touched,
+                       'is-invalid': controlProveedor['celular'].invalid && controlProveedor['celular'].touched
+                     }">
+              <div class="invalid-feedback">Ingrese un celular válido</div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-12">
+              <label class="form-label-custom">Email</label>
+              <input type="email" formControlName="email" class="form-control form-control-modern"
+                     placeholder="ejemplo@correo.com"
+                     [ngClass]="{
+                       'is-valid': controlProveedor['email'].valid && controlProveedor['email'].touched,
+                       'is-invalid': controlProveedor['email'].invalid && controlProveedor['email'].touched
+                     }">
+              <div class="invalid-feedback">Ingrese un email válido</div>
+            </div>
+
+            <!-- Ciudad -->
+            <div class="col-md-6">
+              <label class="form-label-custom">Ciudad <span class="required-mark">*</span></label>
+              <select formControlName="ciudad" class="form-select form-control-modern"
+                      [ngClass]="{
+                        'is-valid': controlProveedor['ciudad'].valid && controlProveedor['ciudad'].touched,
+                        'is-invalid': controlProveedor['ciudad'].invalid && controlProveedor['ciudad'].touched
+                      }">
+                <option value="" disabled selected>Seleccione...</option>
+                <option selected value="Tarija">Tarija</option>
+                <option value="La Paz">La Paz</option>
+                <option value="Santa Cruz">Santa Cruz</option>
+                <option value="Potosí">Potosí</option>
+                <option value="Sucre">Sucre</option>
+                <option value="Oruro">Oruro</option>
+                <option value="Pando">Pando</option>
+                <option value="Beni">Beni</option>
+                <option value="Cochabamba">Cochabamba</option>
+              </select>
+              <div class="invalid-feedback">Seleccione una ciudad</div>
+            </div>
+
+            <!-- Dirección -->
+            <div class="col-md-6">
+              <label class="form-label-custom">Dirección</label>
+              <input type="text" formControlName="direccion" class="form-control form-control-modern"
+                     placeholder="Ingrese dirección">
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-custom">
+            <button type="button" class="btn-cancelar" (click)="cerrarModalProveedor()">
+              <i class="bi bi-x-circle"></i>
+              Cancelar
+            </button>
+            <button type="submit" class="btn-guardar" [disabled]="proveedorForm.invalid">
+              <i class="bi bi-check-circle"></i>
+              Guardar Proveedor
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Agregar Producto Rápido -->
+<div class="modal fade" id="modalAgregarProducto" #modalAgregarProducto tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content modal-modern">
+      <div class="modal-header modal-header-custom">
+        <div class="modal-title-wrapper">
+          <i class="bi bi-box-seam-fill"></i>
+          <h5 class="modal-title">Nuevo Producto Rápido</h5>
+        </div>
+        <button type="button" class="btn-close-custom" (click)="cerrarModalAgregarProducto()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="info-alert">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>Los campos marcados con <span class="required-mark">*</span> son obligatorios</span>
+        </div>
+
+        <form [formGroup]="productoFormCompra" (ngSubmit)="guardarProductoRapido()">
+          <div class="row g-3">
+            <!-- Nombre -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Nombre <span class="required-mark">*</span>
+              </label>
+              <input
+                type="text"
+                formControlName="nombre"
+                class="form-control form-control-modern"
+                placeholder="Ingrese el nombre del producto"
+                maxlength="40"
+                [ngClass]="{
+                  'is-valid': controlProducto['nombre'].valid && controlProducto['nombre'].touched,
+                  'is-invalid': controlProducto['nombre'].invalid && controlProducto['nombre'].touched
+                }">
+              <div class="invalid-feedback">Nombre requerido (3-40 caracteres)</div>
+            </div>
+
+            <!-- Código -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Código <span class="required-mark">*</span>
+              </label>
+              <input
+                type="text"
+                formControlName="codigo"
+                class="form-control form-control-modern"
+                placeholder="Código del producto"
+                maxlength="20"
+                [ngClass]="{
+                  'is-valid': controlProducto['codigo'].valid && controlProducto['codigo'].touched,
+                  'is-invalid': controlProducto['codigo'].invalid && controlProducto['codigo'].touched
+                }">
+              <div class="invalid-feedback">Código requerido (máx. 20 caracteres)</div>
+            </div>
+
+            <!-- Precio Compra -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Precio de Compra <span class="required-mark">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">Bs.</span>
+                <input
+                  type="number"
+                  formControlName="precio_compra"
+                  class="form-control form-control-modern"
+                  placeholder="0.00"
+                  min="0.01"
+                  step="0.01"
+                  [ngClass]="{
+                    'is-valid': controlProducto['precio_compra'].valid && controlProducto['precio_compra'].touched,
+                    'is-invalid': controlProducto['precio_compra'].invalid && controlProducto['precio_compra'].touched
+                  }">
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="controlProducto['precio_compra'].invalid && controlProducto['precio_compra'].touched">
+                Precio requerido (mayor a 0)
+              </div>
+            </div>
+
+            <!-- Precio Venta -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Precio de Venta <span class="required-mark">*</span>
+              </label>
+              <div class="input-group">
+                <span class="input-group-text">Bs.</span>
+                <input
+                  type="number"
+                  formControlName="precio_venta"
+                  class="form-control form-control-modern"
+                  placeholder="0.00"
+                  min="0.01"
+                  step="0.01"
+                  [ngClass]="{
+                    'is-valid': controlProducto['precio_venta'].valid && controlProducto['precio_venta'].touched,
+                    'is-invalid': controlProducto['precio_venta'].invalid && controlProducto['precio_venta'].touched
+                  }">
+              </div>
+              <div class="invalid-feedback d-block" *ngIf="controlProducto['precio_venta'].invalid && controlProducto['precio_venta'].touched">
+                Precio requerido (mayor a 0)
+              </div>
+            </div>
+
+            <!-- Categoría -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Categoría <span class="required-mark">*</span>
+              </label>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <select
+                    formControlName="id_categoria"
+                    class="form-select form-control-modern"
+                    (change)="onCategoriaChangeCompra($event)"
+                    [ngClass]="{
+                      'is-valid': controlProducto['id_categoria'].valid && controlProducto['id_categoria'].touched,
+                      'is-invalid': controlProducto['id_categoria'].invalid && controlProducto['id_categoria'].touched
+                    }">
+                    <option value="" disabled>Categoría</option>
+                    <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">
+                      {{cat.nombre}}
+                    </option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <select
+                    formControlName="sub_categoria"
+                    class="form-select form-control-modern"
+                    [disabled]="subCategoriasCompra.length === 0">
+                    <option value="">Subcategoría (opcional)</option>
+                    <option *ngFor="let subcat of subCategoriasCompra" [value]="subcat.id_categoria">
+                      {{subcat.nombre}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="invalid-feedback">Seleccione una categoría</div>
+            </div>
+
+            <!-- Marca -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Marca <span class="required-mark">*</span>
+              </label>
+              <div class="input-group">
+                <select
+                  formControlName="id_marca"
+                  class="form-select form-control-modern"
+                  [ngClass]="{
+                    'is-valid': controlProducto['id_marca'].valid && controlProducto['id_marca'].touched,
+                    'is-invalid': controlProducto['id_marca'].invalid && controlProducto['id_marca'].touched
+                  }">
+                  <option value="" disabled>Seleccione una marca</option>
+                  <option *ngFor="let mar of apiMarcas" [ngValue]="mar.id_marca">
+                    {{mar.nombre}}
+                  </option>
+                </select>
+                <button class="btn btn-success" type="button" (click)="abrirModalMarca()"
+                        title="Agregar nueva marca">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">Seleccione una marca</div>
+            </div>
+
+            <!-- Unidad de Medida -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Unidad de Medida <span class="required-mark">*</span>
+              </label>
+              <select
+                formControlName="id_unidad_medida"
+                class="form-select form-control-modern"
+                [ngClass]="{
+                  'is-valid': controlProducto['id_unidad_medida'].valid && controlProducto['id_unidad_medida'].touched,
+                  'is-invalid': controlProducto['id_unidad_medida'].invalid && controlProducto['id_unidad_medida'].touched
+                }">
+                <option value="" disabled>Seleccione unidad</option>
+                <option *ngFor="let um of apiUnidadesMedida" [ngValue]="um.id_unidad_medida">
+                  {{um.nombre}}
+                </option>
+              </select>
+              <div class="invalid-feedback">Seleccione una unidad de medida</div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="col-md-12">
+              <label class="form-label-custom">
+                Descripción
+              </label>
+              <textarea
+                formControlName="descripcion"
+                class="form-control form-control-modern"
+                rows="2"
+                placeholder="Descripción del producto..."
+                maxlength="50"></textarea>
+              <small class="text-muted">Opcional (máx. 50 caracteres)</small>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-custom">
+            <button
+              type="button"
+              class="btn-cancelar"
+              (click)="cerrarModalAgregarProducto()">
+              <i class="bi bi-x-circle"></i>
+              Cancelar
+            </button>
+            <button type="submit" class="btn-guardar" [disabled]="productoFormCompra.invalid">
+              <i class="bi bi-cart-plus-fill"></i>
+              Agregar a Compra
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nueva Marca -->
+<div class="modal fade" id="modalMarca" #modalMarca tabindex="-1" style="z-index: 1070;">
+  <div class="modal-dialog">
+    <div class="modal-content modal-modern">
+      <div class="modal-header modal-header-custom">
+        <div class="modal-title-wrapper">
+          <i class="bi bi-tag-fill"></i>
+          <h5 class="modal-title">Nueva Marca</h5>
+        </div>
+        <button type="button" class="btn-close-custom" (click)="cerrarModalMarca()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="marcaForm" (ngSubmit)="guardarMarca()">
+          <div class="row g-3">
+            <!-- Nombre -->
+            <div class="col-md-12">
+              <label class="form-label-custom">Nombre <span class="required-mark">*</span></label>
+              <input type="text" formControlName="nombre" class="form-control form-control-modern"
+                     placeholder="Ingrese nombre de la marca"
+                     [ngClass]="{
+                       'is-valid': controlMarca['nombre'].valid && controlMarca['nombre'].touched,
+                       'is-invalid': controlMarca['nombre'].invalid && controlMarca['nombre'].touched
+                     }">
+              <div class="invalid-feedback">Campo obligatorio (mínimo 3 caracteres)</div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="col-md-12">
+              <label class="form-label-custom">Descripción</label>
+              <textarea formControlName="descripcion" class="form-control form-control-modern" rows="3"
+                        placeholder="Ingrese descripción (opcional)"
+                        [ngClass]="{
+                          'is-valid': controlMarca['descripcion'].valid && controlMarca['descripcion'].touched
+                        }"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-custom">
+            <button type="button" class="btn-cancelar" (click)="cerrarModalMarca()">
+              <i class="bi bi-x-circle"></i>
+              Cancelar
+            </button>
+            <button type="submit" class="btn-guardar" [disabled]="marcaForm.invalid">
+              <i class="bi bi-check-circle"></i>
+              Guardar Marca
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Notificación -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 11000;">
+  <div class="toast align-items-center" [ngClass]="exito ? 'text-bg-success' : 'text-bg-danger'" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i [ngClass]="exito ? 'bi bi-check-circle-fill' : 'bi bi-exclamation-triangle-fill'"></i>
+        {{ mensajeToast }}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
   </div>
 </div>
