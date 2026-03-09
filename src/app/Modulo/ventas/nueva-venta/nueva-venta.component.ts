@@ -38,6 +38,10 @@ export class NuevaVentaComponent implements OnInit {
   mostrarDropdownCliente: boolean = false;
   clientesFiltradosList: any[] = [];
 
+  // Paginación de productos
+  paginaActual: number = 1;
+  productosPorPagina: number = 7;
+
   // Propiedades para modal de clientes
   isEditModeCliente: boolean = false;
   isViewModeCliente: boolean = false;
@@ -87,6 +91,12 @@ export class NuevaVentaComponent implements OnInit {
       this.apiClientes = data;
       console.log('clientes: ',data);
 
+      // Seleccionar cliente por defecto con id_cliente=8
+      const clienteDefault = data.find((c: any) => c.id_cliente === 8);
+      if (clienteDefault) {
+        this.seleccionarCliente(clienteDefault);
+      }
+
       this.clientesFiltradosList = [];
     });
 
@@ -108,6 +118,7 @@ export class NuevaVentaComponent implements OnInit {
   refrescarProductos() {
     this.proSer.getListaProductos().subscribe(data => {
       this.apiProductos = data;
+      this.paginaActual = 1; // Resetear paginación al refrescar
       console.log('Productos refrescados:', data);
     });
   }
@@ -115,6 +126,7 @@ export class NuevaVentaComponent implements OnInit {
   onCategoriaChange(event: any) {
     const idCategoria = event.target.value;
     this.subcategoriaSeleccionada = '';
+    this.paginaActual = 1; // Resetear paginación al cambiar categoría
 
     if (idCategoria) {
       const categoria = this.apiCategorias.find(cat => cat.id_categoria == idCategoria);
@@ -145,6 +157,26 @@ export class NuevaVentaComponent implements OnInit {
     }
 
     return productos;
+  }
+
+  get productosPaginados(): any[] {
+    const inicio = (this.paginaActual - 1) * this.productosPorPagina;
+    const fin = inicio + this.productosPorPagina;
+    return this.productosFiltrados.slice(inicio, fin);
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.productosFiltrados.length / this.productosPorPagina);
+  }
+
+  cambiarPagina(pagina: number) {
+    if (pagina >= 1 && pagina <= this.totalPaginas) {
+      this.paginaActual = pagina;
+    }
+  }
+
+  get paginasArray(): number[] {
+    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
   }
 
   agregarVenta(tipoPago: number) {
@@ -229,11 +261,19 @@ export class NuevaVentaComponent implements OnInit {
     this.subcategoriaSeleccionada = '';
     this.total = 0;
     this.tipo = 2;
-    this.clienteSeleccionado = null;
-    this.busquedaCliente = '';
+    this.paginaActual = 1;
     this.mostrarDropdownCliente = false;
     this.clientesFiltradosList = [];
     this.apiSubcategorias = [];
+
+    // Restaurar cliente por defecto (id_cliente=8)
+    const clienteDefault = this.apiClientes.find((c: any) => c.id_cliente === 8);
+    if (clienteDefault) {
+      this.seleccionarCliente(clienteDefault);
+    } else {
+      this.clienteSeleccionado = null;
+      this.busquedaCliente = '';
+    }
 
     // Resetear formulario
     this.ventaForm.reset({
@@ -304,18 +344,8 @@ export class NuevaVentaComponent implements OnInit {
   observarFactura(n: number) {
     const tipo: number = n;
     this.tipo = n;
-    if (tipo == 2) {
-      this.ventaForm.get('documento')?.disable();
-      this.ventaForm.get('ci_nit')?.disable();
-      this.ventaForm.get('nombre_cliente')?.disable();
-      this.ventaForm.get('id_cliente')?.disable();
-      this.limpiarCliente();
-    } else {
-      this.ventaForm.get('documento')?.enable();
-      this.ventaForm.get('ci_nit')?.enable();
-      this.ventaForm.get('nombre_cliente')?.enable();
-      this.ventaForm.get('id_cliente')?.enable();
-    }
+    // Ya no ocultamos ni deshabilitamos el selector de cliente
+    // El cliente siempre estará visible y habilitado
   }
 
   get clientesFiltrados() {
@@ -414,11 +444,31 @@ export class NuevaVentaComponent implements OnInit {
 
   abrirModalEditarCliente() {
     if (!this.clienteSeleccionado) return;
+
+    // Verificar si es el cliente por defecto (id_cliente=8) que no se puede editar
+    if (this.clienteSeleccionado.id_cliente === 8) {
+      alert('⚠️ No se puede editar el cliente por defecto (Público General).');
+      return;
+    }
+
     this.cargarDatosCliente(this.clienteSeleccionado);
     const modalEl = document.getElementById('modalCliente');
     if (modalEl) {
       const modal = new bootstrap.Modal(modalEl);
       modal.show();
+    }
+  }
+
+  puedeEditarCliente(): boolean {
+    if (!this.clienteSeleccionado) return false;
+    // No permitir editar el cliente con id_cliente=8
+    return this.clienteSeleccionado.id_cliente !== 8;
+  }
+
+  seleccionarTextoInput(event: any) {
+    const input = event.target as HTMLInputElement;
+    if (input && input.select) {
+      input.select();
     }
   }
 

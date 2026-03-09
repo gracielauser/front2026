@@ -287,10 +287,10 @@ export class ReportesComponent implements OnInit {
   }
 
 
- ventasPDF(){
+ ventasPDF(resumido:boolean){
   console.log('llamando pdf en ts');
 
- this.VenSer.getPDF().subscribe((pdfBlob) => {
+ this.VenSer.getPDF({},resumido).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });
 
       // Abre en una nueva pestaña
@@ -309,8 +309,8 @@ inventarioPDF(){
       window.open(url, '_blank');
     });
 }
-generarReporteCompras(){
-this.ComSer.getPDF().subscribe((pdfBlob) => {
+generarReporteCompras(resumido: boolean){
+this.ComSer.getPDF({},resumido).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });
 
       // Abre en una nueva pestaña

@@ -37,15 +37,20 @@ export class VentaService {
     responseType: 'blob' // 👈 clave para manejar PDF
   });
 }
-     getPDF(body={}): Observable<Blob> {
+     getPDF(body={},resumido:boolean): Observable<Blob> {
   //const params = new HttpParams()// Opción B: Construir parámetros en cadena
   //     .set('id_actividad', idActividad)
   // .set('id_institucion', id_institucion)
   // .set('partido', this.currentUser().partido);
 
-  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/reporteVentas`,body, {
-    // params,
-    responseType: 'blob' // 👈 clave para manejar PDF
-  });
+  if(resumido){
+    return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/reporteVentas-resumido`,body, {
+      responseType: 'blob' // 👈 clave para manejar PDF
+    });
+  } else {
+    return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/reporteVentas-detallado`,body, {
+      responseType: 'blob' // 👈 clave para manejar PDF
+    });
+  }
 }
 }

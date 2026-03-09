@@ -640,19 +640,54 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
-.tipo-badge.tipo-fisico {
+.tipo-badge.tipo-normal {
   background: linear-gradient(135deg, #dbeafe, #bfdbfe);
   color: #1e40af;
   border: 1px solid #3b82f6;
 }
 
-.tipo-badge.tipo-pedido {
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
-  color: #92400e;
-  border: 1px solid #fbbf24;
+.tipo-badge.tipo-facturado {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+/* Badges de Estado */
+.estado-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.estado-badge.estado-valido {
+  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+  color: #065f46;
+  border: 1px solid #10b981;
+}
+
+.estado-badge.estado-valido i {
+  color: #059669;
+}
+
+.estado-badge.estado-anulado {
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  color: #991b1b;
+  border: 1px solid #ef4444;
+}
+
+.estado-badge.estado-anulado i {
+  color: #dc2626;
 }
 
 .actions-group {

@@ -9,7 +9,7 @@
         </div>
         <div class="modal-title-ultra">
           <h2>Nueva Venta</h2>
-          <p>Seleccione los productos para la venta</p>
+          <!-- <p>Seleccione los productos para la venta</p> -->
         </div>
       </div>
       <button class="btn-close-ultra" (click)="Cancelar()">
@@ -18,7 +18,7 @@
     </div>
 
   <!-- Body Ultra Moderno -->
-  <div class="modal-body-ultra">
+  <div class="modal-body-ultra modal-body-scrollable">
     <form [formGroup]="ventaForm">
       <div class="ultra-grid-layout">
         <!-- Panel Izquierdo: Productos -->
@@ -38,6 +38,7 @@
                       class="ultra-input"
                       [(ngModel)]="busqueda"
                       [ngModelOptions]="{standalone: true}"
+                      (input)="paginaActual = 1"
                       placeholder="Buscar por nombre, código o marca..."
                     />
                     <i class="bi bi-arrow-clockwise ultra-input-icon" (click)="refrescarProductos()" style="cursor: pointer;"></i>
@@ -60,7 +61,7 @@
                     <i class="bi bi-tags-fill"></i>
                     <span>Subcategoría</span>
                   </label>
-                  <select class="ultra-select" [(ngModel)]="subcategoriaSeleccionada" [ngModelOptions]="{standalone: true}" [disabled]="!categoriaSeleccionada || apiSubcategorias.length === 0">
+                  <select class="ultra-select" [(ngModel)]="subcategoriaSeleccionada" [ngModelOptions]="{standalone: true}" (change)="paginaActual = 1" [disabled]="!categoriaSeleccionada || apiSubcategorias.length === 0">
                     <option value="">Todas las subcategorías</option>
                     <option *ngFor="let subcat of apiSubcategorias" [value]="subcat.id_categoria">{{ subcat.nombre }}</option>
                   </select>
@@ -100,7 +101,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let pro of productosFiltrados | productoGeneral:busqueda"
+                  <tr *ngFor="let pro of productosPaginados | productoGeneral:busqueda"
                       class="producto-ultra-row clickable-row"
                       (click)="agregarProducto(pro)"
                       [class.disabled-row]="pro.stock <= 0">
@@ -134,7 +135,7 @@
                       </div>
                     </td>
                   </tr>
-                  <tr *ngIf="(productosFiltrados | productoGeneral:busqueda).length === 0">
+                  <tr *ngIf="(productosPaginados | productoGeneral:busqueda).length === 0">
                     <td colspan="4">
                       <div class="empty-productos-ultra">
                         <i class="bi bi-search"></i>
@@ -144,6 +145,27 @@
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- Paginador -->
+            <div class="paginador-productos" *ngIf="totalPaginas > 1">
+                <button
+                  type="button"
+                  class="btn-paginador"
+                  (click)="cambiarPagina(paginaActual - 1)"
+                  [disabled]="paginaActual === 1"
+                >
+                  <i class="bi bi-chevron-left"></i>
+                </button>
+                <span class="pagina-info">{{ paginaActual }} / {{ totalPaginas }}</span>
+                <button
+                  type="button"
+                  class="btn-paginador"
+                  (click)="cambiarPagina(paginaActual + 1)"
+                  [disabled]="paginaActual === totalPaginas"
+                >
+                  <i class="bi bi-chevron-right"></i>
+                </button>
             </div>
           </div>
         </div>
@@ -159,10 +181,10 @@
               </div>
               <div class="opciones-venta-grid">
                 <div class="opcion-ultra-field facturacion-radio-group">
-                  <label class="opcion-ultra-label">
+                  <!-- <label class="opcion-ultra-label">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Facturación</span>
-                  </label>
+                  </label> -->
                   <div class="radio-group-ultra">
                     <div class="radio-option-ultra">
                       <input
@@ -196,7 +218,7 @@
                   </div>
                 </div>
 
-                <div class="opcion-ultra-field cliente-field-full" *ngIf="tipo === 1">
+                <div class="opcion-ultra-field cliente-field-full">
                   <label class="opcion-ultra-label">
                     <i class="bi bi-person-fill"></i>
                     <span>Buscar Cliente</span>
@@ -209,7 +231,7 @@
                         [(ngModel)]="busquedaCliente"
                         [ngModelOptions]="{standalone: true}"
                         (input)="filtrarClientes()"
-                        (focus)="filtrarClientes()"
+                        (focus)="filtrarClientes(); seleccionarTextoInput($event)"
                         (blur)="ocultarDropdownCliente()"
                         placeholder="🔍 Buscar cliente por nombre o CI/NIT..."
                         autocomplete="off"
@@ -228,7 +250,7 @@
                       <button type="button" class="btn-action-cliente btn-add" title="Agregar nuevo cliente" (click)="abrirModalNuevoCliente()">
                         <i class="bi bi-plus-lg"></i>
                       </button>
-                      <button type="button" class="btn-action-cliente btn-edit" title="Editar cliente" [disabled]="!clienteSeleccionado" (click)="abrirModalEditarCliente()">
+                      <button type="button" class="btn-action-cliente btn-edit" title="Editar cliente" [disabled]="!clienteSeleccionado || !puedeEditarCliente()" (click)="abrirModalEditarCliente()">
                         <i class="bi bi-pencil-fill"></i>
                       </button>
                     </div>
@@ -267,10 +289,10 @@
 
             <!-- Carrito de Productos -->
             <div class="carrito-section-ultra">
-              <div class="section-title-ultra">
+              <!-- <div class="section-title-ultra">
                 <i class="bi bi-cart-fill"></i>
                 <span>Carrito de Compras ({{ productosVender.length }} producto(s))</span>
-              </div>
+              </div> -->
               <div class="carrito-ultra-container">
                 <table class="carrito-ultra-table">
                   <thead>
@@ -291,7 +313,7 @@
                         </div>
                       </td>
                       <td>
-                        <span class="carrito-precio">{{ pro.precio_venta | currency:'BOB':'symbol':'1.2-2' }}</span>
+                        <span class="carrito-precio">{{ pro.precio_venta | currency:'bs ':'symbol':'1.2-2' }}</span>
                       </td>
                       <td class="th-center-ultra">
                         <input
@@ -305,7 +327,7 @@
                       </td>
                       <td class="th-right-ultra">
                         <span class="carrito-subtotal">
-                          {{ (pro.precio_venta * productosVentaCantidades[i]) | currency:'BOB':'symbol':'1.2-2' }}
+                          {{ (pro.precio_venta * productosVentaCantidades[i]) | currency:'bs ':'symbol':'1.2-2' }}
                         </span>
                       </td>
                       <td class="th-center-ultra">
@@ -369,7 +391,7 @@
                     <span>TOTAL A PAGAR</span>
                   </div>
                   <div class="total-ultra-amount">
-                    {{ (total - (ventaForm.get('descuento')?.value || 0)) | currency:'BOB':'symbol':'1.2-2' }}
+                    {{ (total - (ventaForm.get('descuento')?.value || 0)) | currency:'Bs ':'symbol':'1.2-2' }}
                   </div>
                   <div class="total-ultra-footer">
                     <i class="bi bi-cart-check"></i>
@@ -381,39 +403,39 @@
           </div>
         </div>
       </div>
-
-      <!-- Footer Ultra Moderno -->
-      <div class="modal-footer-ultra">
-        <button
-          type="button"
-          class="btn-ultra btn-ultra-cancel"
-          (click)="Cancelar()"
-        >
-          <i class="bi bi-x-circle"></i>
-          <span>Cancelar</span>
-        </button>
-        <button
-          type="button"
-          class="btn-ultra btn-ultra-success"
-          (click)="agregarVenta(1)"
-          [disabled]="productosVender.length === 0"
-        >
-          <i class="bi bi-cash-stack"></i>
-          <span>Efectivo</span>
-          <div class="btn-ultra-glow"></div>
-        </button>
-        <button
-          type="button"
-          class="btn-ultra btn-ultra-primary"
-          (click)="agregarVenta(2)"
-          [disabled]="productosVender.length === 0"
-        >
-          <i class="bi bi-qr-code"></i>
-          <span>QR</span>
-          <div class="btn-ultra-glow"></div>
-        </button>
-      </div>
     </form>
+  </div>
+
+  <!-- Footer Ultra Moderno -->
+  <div class="modal-footer-ultra">
+    <button
+      type="button"
+      class="btn-ultra btn-ultra-cancel"
+      (click)="Cancelar()"
+    >
+      <i class="bi bi-x-circle"></i>
+      <span>Cancelar</span>
+    </button>
+    <button
+      type="button"
+      class="btn-ultra btn-ultra-success"
+      (click)="agregarVenta(1)"
+      [disabled]="productosVender.length === 0"
+    >
+      <i class="bi bi-cash-stack"></i>
+      <span>Efectivo</span>
+      <div class="btn-ultra-glow"></div>
+    </button>
+    <button
+      type="button"
+      class="btn-ultra btn-ultra-primary"
+      (click)="agregarVenta(2)"
+      [disabled]="productosVender.length === 0"
+    >
+      <i class="bi bi-qr-code"></i>
+      <span>QR</span>
+      <div class="btn-ultra-glow"></div>
+    </button>
   </div>
   </div>
 </div>

@@ -16,12 +16,15 @@ import { CategoriaService } from '../../Servicios/categoria.service';
 import { NroVentaPipe } from '../../Filtros/nro-venta.pipe';
 import { ReportesVentaService } from '../../Servicios/reportes-venta.service';
 import { EstadoPipe } from '../../Filtros/estado.pipe';
+import { ClienteVentaPipe } from '../../Filtros/cliente-venta.pipe';
+import { FechaDesdeVentaPipe } from '../../Filtros/fecha-desde-venta.pipe';
+import { FechaHastaVentaPipe } from '../../Filtros/fecha-hasta-venta.pipe';
 
 @Component({
   selector: 'app-ventas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule,
-    FormsModule, NroVentaPipe, EstadoPipe],
+    FormsModule, NroVentaPipe, EstadoPipe, ClienteVentaPipe, FechaDesdeVentaPipe, FechaHastaVentaPipe],
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })
@@ -41,7 +44,10 @@ export class VentasComponent implements OnInit, AfterViewInit {
 
   codigo: string = ''
   nroventa:string=''
-  estado='1'
+  estado=''
+  nombreCliente: string = ''
+  fechaDesde: string = ''
+  fechaHasta: string = ''
   page:number=1
   ponerCodigo(e: any) {
     this.codigo = e.target.value.toUpperCase()

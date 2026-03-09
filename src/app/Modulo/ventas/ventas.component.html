@@ -44,7 +44,7 @@
         <div class="filters-stats">
           <div class="stat-badge stat-primary">
             <i class="bi bi-file-earmark-text"></i>
-            <span class="stat-number">{{ (apiVentas | nroVenta:nroventa | estado:estado).length }}</span>
+            <span class="stat-number">{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechaDesdeVenta:fechaDesde | fechaHastaVenta:fechaHasta).length }}</span>
             <span class="stat-label">Registros</span>
           </div>
         </div>
@@ -82,6 +82,7 @@
               <input
                 type="text"
                 class="modern-input"
+                [(ngModel)]="nombreCliente"
                 placeholder="Buscar por nombre..."
               />
               <div class="input-underline"></div>
@@ -112,7 +113,7 @@
             </label>
             <div class="input-with-icon">
               <i class="bi bi-calendar3 input-prefix-icon"></i>
-              <input type="date" class="modern-input" />
+              <input type="date" class="modern-input" [(ngModel)]="fechaDesde" />
               <div class="input-underline"></div>
             </div>
           </div>
@@ -125,7 +126,7 @@
             </label>
             <div class="input-with-icon">
               <i class="bi bi-calendar3 input-prefix-icon"></i>
-              <input type="date" class="modern-input" />
+              <input type="date" class="modern-input" [(ngModel)]="fechaHasta" />
               <div class="input-underline"></div>
             </div>
           </div>
@@ -205,6 +206,12 @@
                     <span>Tipo</span>
                   </div>
                 </th>
+                <th class="col-center">
+                  <div class="th-content">
+                    <i class="bi bi-check-circle"></i>
+                    <span>Estado</span>
+                  </div>
+                </th>
                 <th class="col-actions">
                   <div class="th-content">
                     <i class="bi bi-gear"></i>
@@ -214,7 +221,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
+              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechaDesdeVenta:fechaDesde | fechaHastaVenta:fechaHasta | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
                   class="data-row"
                   [class.row-anulada]="ven.estado == 2">
                 <td class="col-number">
@@ -236,14 +243,13 @@
                 </td>
                 <td>
                   <div class="cliente-display">
-                    <div class="cliente-avatar-mini" [class.avatar-general]="ven.cliente == null">
+                    <div class="cliente-avatar-mini" [class.avatar-general]="ven.cliente == null || ven.cliente.id_cliente==8">
                       <i class="bi"
                          [class.bi-person-fill]="ven.cliente != null"
                          [class.bi-people-fill]="ven.cliente == null"></i>
                     </div>
                     <div class="cliente-info">
-                      <span class="cliente-name">{{ (ven.cliente != null) ? ven.cliente.nombres : 'Público General' }}</span>
-                      <span class="cliente-type">{{ (ven.cliente != null) ? 'Cliente registrado' : 'Sin registro' }}</span>
+                      <span class="cliente-type">{{ (ven.cliente != null) ? ven.cliente.nombre + ' ' + (ven.cliente?.ap_paterno ? ven.cliente?.ap_paterno : '') + ' ' + (ven.cliente?.ap_materno ? ven.cliente?.ap_materno : '') : 'General' }}</span>
                     </div>
                   </div>
                 </td>
@@ -255,12 +261,23 @@
                 </td>
                 <td class="col-center">
                   <div class="tipo-badge"
-                       [class.tipo-fisico]="ven.tipo_venta == 1"
-                       [class.tipo-pedido]="ven.tipo_venta != 1">
+                       [class.tipo-normal]="ven.tipo_venta == 1"
+                       [class.tipo-facturado]="ven.tipo_venta == 2">
                     <i class="bi"
-                       [class.bi-shop]="ven.tipo_venta == 1"
-                       [class.bi-truck]="ven.tipo_venta != 1"></i>
-                    <span>{{ ven.tipo_venta == 1 ? 'Físico' : 'Pedido' }}</span>
+                       [class.bi-receipt]="ven.tipo_venta == 1"
+                       [class.bi-file-earmark-check-fill]="ven.tipo_venta == 2"></i>
+                    <span *ngIf="ven.tipo_venta == 1">Normal</span>
+                    <span *ngIf="ven.tipo_venta == 2">Facturado Fac. {{ ven.facturas && ven.facturas[0] ? ven.facturas[0].nro_factura : 'N/A' }}</span>
+                  </div>
+                </td>
+                <td class="col-center">
+                  <div class="estado-badge"
+                       [class.estado-valido]="ven.estado == 1"
+                       [class.estado-anulado]="ven.estado == 2">
+                    <i class="bi"
+                       [class.bi-check-circle-fill]="ven.estado == 1"
+                       [class.bi-x-circle-fill]="ven.estado == 2"></i>
+                    <span>{{ ven.estado == 1 ? 'Válido' : 'Anulado' }}</span>
                   </div>
                 </td>
                 <td class="col-actions">
@@ -289,8 +306,8 @@
                   </div>
                 </td>
               </tr>
-              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado).length === 0">
-                <td colspan="7">
+              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechaDesdeVenta:fechaDesde | fechaHastaVenta:fechaHasta).length === 0">
+                <td colspan="8">
                   <div class="empty-state-modern">
                     <div class="empty-icon-circle">
                       <i class="bi bi-inbox"></i>
@@ -313,7 +330,7 @@
       <div class="table-footer-section">
         <div class="footer-info">
           <i class="bi bi-info-circle-fill"></i>
-          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado).length }}</strong> venta(s)</span>
+          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechaDesdeVenta:fechaDesde | fechaHastaVenta:fechaHasta).length }}</strong> venta(s)</span>
         </div>
         <div class="pagination-modern">
           <pagination-controls (pageChange)="page = $event"></pagination-controls>
@@ -379,15 +396,16 @@
             <div class="detalle-ultra-item">
               <div class="item-icon"><i class="bi bi-receipt"></i></div>
               <div class="item-content">
-                <span class="item-label">Facturación</span>
-                <span class="item-value">{{ DetVenta?.confactura == 1 ? 'Con factura' : 'Sin factura' }}</span>
-              </div>
-            </div>
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-cart"></i></div>
-              <div class="item-content">
                 <span class="item-label">Tipo de Venta</span>
-                <span class="item-value">{{ DetVenta?.tipo_venta == 1 ? 'Presencial' : 'A pedido' }}</span>
+                <span class="item-value">
+                  <ng-container *ngIf="DetVenta?.tipo_venta == 1">Normal (Sin factura)</ng-container>
+                  <ng-container *ngIf="DetVenta?.tipo_venta == 2">
+                    Facturado
+                    <span *ngIf="DetVenta?.facturas && DetVenta?.facturas[0]">
+                      - Fac. {{ DetVenta?.facturas[0].nro_factura }}
+                    </span>
+                  </ng-container>
+                </span>
               </div>
             </div>
             <div class="detalle-ultra-item">
@@ -395,6 +413,13 @@
               <div class="item-content">
                 <span class="item-label">Tipo de Pago</span>
                 <span class="item-value">{{ DetVenta?.tipo_pago == 1 ? 'Efectivo' : 'QR' }}</span>
+              </div>
+            </div>
+            <div class="detalle-ultra-item">
+              <div class="item-icon"><i class="bi bi-check-circle"></i></div>
+              <div class="item-content">
+                <span class="item-label">Estado</span>
+                <span class="item-value">{{ DetVenta?.estado == 1 ? 'Válido' : 'Anulado' }}</span>
               </div>
             </div>
             <div class="detalle-ultra-item">
