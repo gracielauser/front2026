@@ -392,7 +392,7 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   // ========== Métodos del Modal de Clientes ==========
-  
+
   mostrarAlerta(exito: boolean, mensaje: string) {
     this.exito = exito;
     this.mensajeExito = mensaje;
@@ -437,7 +437,7 @@ export class NuevaVentaComponent implements OnInit {
         next: (data: any) => {
           console.log('✅ Cliente agregado:', data);
           this.mostrarAlerta(true, data.mensaje || '✅ Cliente agregado exitosamente');
-          
+
           // Agregar el nuevo cliente a la lista
           if (data.cliente) {
             this.apiClientes.push(data.cliente);
@@ -453,7 +453,7 @@ export class NuevaVentaComponent implements OnInit {
               }
             });
           }
-          
+
           this.cerrarModalCliente();
           this.limpiarModalCliente();
         },
@@ -503,7 +503,7 @@ export class NuevaVentaComponent implements OnInit {
       next: (data: any) => {
         console.log('✅ Cliente modificado:', data);
         this.mostrarAlerta(true, data.mensaje || '✅ Cliente modificado exitosamente');
-        
+
         // Actualizar el cliente en la lista
         const index = this.apiClientes.findIndex(c => c.id_cliente === this.idClienteEditar);
         if (index !== -1) {
@@ -527,7 +527,7 @@ export class NuevaVentaComponent implements OnInit {
             }
           });
         }
-        
+
         this.cerrarModalCliente();
         this.limpiarModalCliente();
       },

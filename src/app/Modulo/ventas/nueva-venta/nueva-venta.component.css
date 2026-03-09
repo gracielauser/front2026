@@ -2422,3 +2422,184 @@
 .modal-body-ultra::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #0583C7, #0468A0);
 }
+
+/* ========================================
+   ESTILOS DEL MODAL DE CLIENTES
+   ======================================== */
+
+/* Variables de tema para clientes */
+:host {
+  --clientes-primary: #2563eb;
+  --clientes-primary-hover: #1e40af;
+  --clientes-secondary: #1e3a8a;
+  --clientes-success: #10b981;
+  --clientes-success-hover: #059669;
+  --clientes-danger: #ef4444;
+  --clientes-danger-hover: #dc2626;
+  --clientes-warning: #f59e0b;
+  --clientes-info: #3b82f6;
+  --clientes-light: #f8fafc;
+  --clientes-dark: #1e293b;
+  --clientes-border: #e2e8f0;
+}
+
+/* Modal header personalizado para clientes */
+.modal-header-clientes {
+  background: linear-gradient(135deg, var(--clientes-primary) 0%, var(--clientes-primary-hover) 100%);
+  color: white;
+  border: none;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px 16px 0 0;
+}
+
+.modal-header-clientes h5 {
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.modal-header-clientes i {
+  font-size: 1.5rem;
+}
+
+.modal-header-clientes .btn-close-white {
+  filter: brightness(0) invert(1);
+}
+
+/* Estilos del modal para clientes */
+::ng-deep #modalCliente .modal-content {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+::ng-deep #modalCliente .modal-body {
+  padding: 1.5rem;
+}
+
+::ng-deep #modalCliente .modal-footer {
+  border-top: 2px solid var(--clientes-border);
+  padding: 1rem 1.5rem;
+  background: var(--clientes-light);
+}
+
+/* Botones del modal de clientes */
+.btn-clientes-primary {
+  background: linear-gradient(135deg, var(--clientes-primary) 0%, var(--clientes-primary-hover) 100%);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
+}
+
+.btn-clientes-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px -2px rgba(37, 99, 235, 0.4);
+  background: linear-gradient(135deg, var(--clientes-primary-hover) 0%, var(--clientes-secondary) 100%);
+}
+
+.btn-clientes-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-clientes-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Formularios en el modal de clientes */
+::ng-deep #modalCliente .form-label {
+  color: var(--clientes-dark);
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+::ng-deep #modalCliente .form-control,
+::ng-deep #modalCliente .form-select {
+  border: 2px solid var(--clientes-border);
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+}
+
+::ng-deep #modalCliente .form-control:focus,
+::ng-deep #modalCliente .form-select:focus {
+  border-color: var(--clientes-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+::ng-deep #modalCliente .form-control.is-valid {
+  border-color: var(--clientes-success);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+}
+
+::ng-deep #modalCliente .form-control.is-invalid {
+  border-color: var(--clientes-danger);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ef4444' stroke='none'/%3e%3c/svg%3e");
+}
+
+::ng-deep #modalCliente .valid-feedback {
+  color: var(--clientes-success);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+::ng-deep #modalCliente .invalid-feedback {
+  color: var(--clientes-danger);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+::ng-deep #modalCliente .alert-info {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%);
+  border: 2px solid rgba(59, 130, 246, 0.3);
+  border-radius: 10px;
+  color: var(--clientes-primary);
+  font-weight: 500;
+}
+
+::ng-deep #modalCliente .alert-info i {
+  color: var(--clientes-info);
+}
+
+/* Toast notifications para clientes */
+.toast-custom-green {
+  background: linear-gradient(135deg, var(--clientes-success) 0%, var(--clientes-success-hover) 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px rgba(16, 185, 129, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.toast-custom-red {
+  background: linear-gradient(135deg, var(--clientes-danger) 0%, var(--clientes-danger-hover) 100%);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px rgba(239, 68, 68, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.toast-custom-green .toast-body,
+.toast-custom-red .toast-body {
+  padding: 1rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.toast-custom-green .toast-body i,
+.toast-custom-red .toast-body i {
+  font-size: 1.2rem;
+}
