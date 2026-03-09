@@ -27,12 +27,12 @@ export class VentaService {
       let url = this.baseUrl+"/anular/"+id_venta;
       return this.xhttp.put(url, null)
      }
-       notaVenta(idVenta:number): Observable<Blob> {
+       notaVenta(idVenta:number,nota:boolean=true): Observable<Blob> {
   // const params = new HttpParams()// Opción B: Construir parámetros en cadena
   //     .set('idVenta', idVenta)
   // .set('partido', this.currentUser().partido);
 
-  return this.xhttp.get(`${environment.apiUrl}/api/reporte-venta/notaVenta/`+idVenta, {
+  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/notaVenta/`+idVenta, {nota: nota}, {
     // params,
     responseType: 'blob' // 👈 clave para manejar PDF
   });

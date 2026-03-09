@@ -190,8 +190,8 @@ export class VentasComponent implements OnInit, AfterViewInit {
     window.open('/nueva-venta', '_blank');
   }
 
-  generarPdf(){
-    this.reportesSer.getReporteVenta(this.DetVenta.id_venta).subscribe((pdfBlob) => {
+  generarPdf(nota: boolean){
+    this.ventaSer.notaVenta(this.DetVenta.id_venta,nota).subscribe((pdfBlob) => {
         const blob = new Blob([pdfBlob], { type: 'application/pdf' });
         // Abre en una nueva pestaña
         const url = URL.createObjectURL(blob);

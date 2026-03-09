@@ -493,7 +493,7 @@
             <div class="total-detalle-row total-final-row">
               <span class="total-final-label">Total General</span>
               <span class="total-final-value">
-                {{ ((DetVenta?.monto_total || 0) - (DetVenta?.descuento || 0)) | currency:'BOB':'symbol':'1.2-2' }}
+                {{ ((DetVenta?.monto_total || 0) - (DetVenta?.descuento || 0)) | currency:'Bs ':'symbol':'1.2-2' }}
               </span>
             </div>
           </div>
@@ -501,9 +501,13 @@
 
         <!-- Acciones -->
         <div class="actions-detalle-ultra">
-          <button class="btn-action-ultra btn-pdf" (click)="generarPdf()">
+          <button class="btn-action-ultra btn-pdf" (click)="generarPdf(true)">
             <i class="bi bi-file-earmark-pdf-fill"></i>
-            <span>Descargar PDF</span>
+            <span>Nota de venta</span>
+          </button>
+          <button *ngIf="DetVenta?.tipo_venta==2" class="btn-action-ultra btn-pdf" (click)="generarPdf(false)">
+            <i class="bi bi-file-earmark-pdf-fill"></i>
+            <span>Factura</span>
           </button>
         </div>
       </div>
