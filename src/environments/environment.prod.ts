@@ -2,5 +2,5 @@
 export const environment = {
   production: true,
   // apiUrl: 'https://backend2026-jqwt.onrender.com'  // tu backend real
-  apiUrl: 'https://b47blm-ip-181-115-161-172.tunnelmole.net'
+  apiUrl: process.env['apiURL'] || 'http://localhost:8080' // Usa la variable de entorno o localhost como fallback
 };
