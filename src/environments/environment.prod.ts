@@ -2,5 +2,5 @@
 export const environment = {
   production: true,
   // apiUrl: 'https://backend2026-jqwt.onrender.com'  // tu backend real
-  apiUrl: 'https://qhapcc-ip-190-129-17-26.tunnelmole.net'
+  apiUrl: 'https://dkzovx-ip-190-129-17-28.tunnelmole.net'
 };

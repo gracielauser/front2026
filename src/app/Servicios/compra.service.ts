@@ -32,4 +32,9 @@ private baseUrl= environment.apiUrl+'/api/compra'
      recibirCompra(modif: any):Observable<any>{
 return this.xhttp.put(this.baseUrl + '/recibir', modif);
      }
+      getPDF(body={}): Observable<Blob> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte-compra/compras`,body, {
+         responseType: 'blob' // 👈 clave para manejar PDF
+       });
+     }
 }

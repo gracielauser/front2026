@@ -14,6 +14,7 @@ import { Categoria } from '../../Modelos/categoria';
 import { CategoriaService } from '../../Servicios/categoria.service';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { CompraService } from '../../Servicios/compra.service';
 
 //(pdfMake as any).vfs = (pdfFonts as any).pdfMake.vfs;
 
@@ -39,7 +40,8 @@ export class ReportesComponent implements OnInit {
     private DetvSer: DetalleventaService,
     private http: HttpClient,
     private ProSer: ProductoService,
-    private CatSer:CategoriaService
+    private CatSer:CategoriaService,
+    private ComSer: CompraService
   ) { }
   //para los filtros
 
@@ -307,6 +309,13 @@ inventarioPDF(){
       window.open(url, '_blank');
     });
 }
+generarReporteCompras(){
+this.ComSer.getPDF().subscribe((pdfBlob) => {
+      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
 
-
+      // Abre en una nueva pestaña
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+}
 }
