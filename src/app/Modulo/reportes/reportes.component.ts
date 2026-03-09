@@ -296,6 +296,17 @@ export class ReportesComponent implements OnInit {
       window.open(url, '_blank');
     });
 }
+inventarioPDF(){
+  console.log('llamando pdf en ts');
+
+ this.ProSer.getPDF().subscribe((pdfBlob) => {
+      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+
+      // Abre en una nueva pestaña
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+}
 
 
 }

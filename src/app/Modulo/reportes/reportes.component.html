@@ -524,14 +524,14 @@
                     </select>
                   </div>
 
-                  <div class="col-md-3">
+                  <!-- <div class="col-md-3">
                     <label for="origen" class="form-label">Origen del movimiento</label>
                     <select id="origen" class="form-select">
                       <option selected>Todos</option>
                       <option>Sistema Web</option>
                       <option>App Móvil</option>
                     </select>
-                  </div>
+                  </div> -->
 
                   <div class="col-md-3">
                     <label for="estadoStock" class="form-label">Estado del stock</label>
@@ -554,7 +554,7 @@
                   </div>
 
                   <div class="col-md-3 d-flex align-items-end">
-                    <button type="button" class="btn btn-primary w-100"><i class="bi bi-search"></i> Generar
+                    <button type="button" (click)="inventarioPDF()" class="btn btn-primary w-100"><i class="bi bi-search"></i> Generar
                       reporte</button>
                   </div>
 

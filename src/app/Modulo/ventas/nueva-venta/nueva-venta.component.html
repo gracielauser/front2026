@@ -196,25 +196,70 @@
                   </div>
                 </div>
 
-                <div class="opcion-ultra-field" *ngIf="tipo === 1">
+                <div class="opcion-ultra-field cliente-field-full" *ngIf="tipo === 1">
                   <label class="opcion-ultra-label">
                     <i class="bi bi-person-fill"></i>
                     <span>Buscar Cliente</span>
                   </label>
-                  <div class="cliente-search-wrapper">
-                    <input
-                      type="text"
-                      class="ultra-input"
-                      [(ngModel)]="busquedaCliente"
-                      [ngModelOptions]="{standalone: true}"
-                      placeholder="Buscar por nombre o CI..."
-                    />
-                    <select class="ultra-select" formControlName="id_cliente" (change)="onClienteChange($event)">
-                      <option value="">Seleccione un cliente</option>
-                      <option *ngFor="let cli of clientesFiltrados" [value]="cli.id_cliente">
-                        {{ cli.persona?.nombre }} {{ cli.persona?.apellido_paterno }} - CI: {{ cli.persona?.ci }}
-                      </option>
-                    </select>
+                  <div class="cliente-search-custom">
+                    <div class="search-input-wrapper">
+                      <input
+                        type="text"
+                        class="ultra-input cliente-input"
+                        [(ngModel)]="busquedaCliente"
+                        [ngModelOptions]="{standalone: true}"
+                        (input)="filtrarClientes()"
+                        (focus)="filtrarClientes()"
+                        (blur)="ocultarDropdownCliente()"
+                        placeholder="🔍 Buscar cliente por nombre o CI/NIT..."
+                        autocomplete="off"
+                        [class.input-valid]="clienteSeleccionado"
+                      />
+                      <button
+                        type="button"
+                        class="btn-clear-cliente"
+                        *ngIf="clienteSeleccionado"
+                        (click)="limpiarCliente()"
+                      >
+                        <i class="bi bi-x-circle-fill"></i>
+                      </button>
+                    </div>
+                    <div class="cliente-actions">
+                      <button type="button" class="btn-action-cliente btn-add" title="Agregar nuevo cliente" (click)="abrirModalNuevoCliente()">
+                        <i class="bi bi-plus-lg"></i>
+                      </button>
+                      <button type="button" class="btn-action-cliente btn-edit" title="Editar cliente" [disabled]="!clienteSeleccionado" (click)="abrirModalEditarCliente()">
+                        <i class="bi bi-pencil-fill"></i>
+                      </button>
+                    </div>
+
+                    <!-- Dropdown de resultados -->
+                    <div class="cliente-dropdown" *ngIf="mostrarDropdownCliente && clientesFiltradosList.length > 0">
+                      <div
+                        class="cliente-dropdown-item"
+                        *ngFor="let cli of clientesFiltradosList"
+                        (mousedown)="seleccionarCliente(cli)"
+                      >
+                        <div class="cliente-item-icon">
+                          <i class="bi bi-person-circle"></i>
+                        </div>
+                        <div class="cliente-item-info">
+                          <span class="cliente-item-nombre">
+                            {{ cli?.nombre }} {{ cli?.ap_paterno }} {{ cli?.ap_materno }}
+                          </span>
+                          <span class="cliente-item-doc">
+                            {{ cli?.tipo_documento == 1 ? 'CI: ' : 'NIT: ' }}{{ cli?.ci_nit }}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="cliente-dropdown empty" *ngIf="mostrarDropdownCliente && clientesFiltradosList.length === 0 && busquedaCliente">
+                      <div class="empty-result">
+                        <i class="bi bi-search"></i>
+                        <p>No se encontraron clientes</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -370,5 +415,157 @@
       </div>
     </form>
   </div>
+  </div>
+</div>
+
+<!-- MODAL DE CLIENTES -->
+<div class="modal fade" id="modalCliente" tabindex="-1" aria-labelledby="modalClienteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header-clientes">
+        <div class="d-flex align-items-center">
+          <i class="bi me-2" [ngClass]="isEditModeCliente ? 'bi-pencil-square' : 'bi-person-plus-fill'"></i>
+          <h5 class="modal-title mb-0">{{modalTitleCliente}}</h5>
+        </div>
+        <button (click)="limpiarModalCliente()" type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- ALERTA AZUL -->
+        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
+          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
+          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        </div>
+        <form class="row g-3" [formGroup]="clienteForm" (ngSubmit)="AgregarCliente()">
+          <!-- TIPO DOCUMENTO -->
+          <div class="col-md-3">
+            <label class="form-label">Tipo Documento</label>
+            <select formControlName="tipo_documento" class="form-select">
+              <option value="1">CI</option>
+              <option value="2">NIT</option>
+            </select>
+          </div>
+          <!-- CI/NIT -->
+          <div class="col-md-5">
+            <label class="form-label">CI/NIT</label>
+            <input type="text" formControlName="ci_nit" class="form-control" placeholder="Ingrese CI o NIT"
+              maxlength="15"
+              [ngClass]="{
+                'is-valid': controlCliente['ci_nit'].valid && (controlCliente['ci_nit'].dirty||controlCliente['ci_nit'].touched),
+                'is-invalid': controlCliente['ci_nit'].invalid && (controlCliente['ci_nit'].dirty||controlCliente['ci_nit'].touched)
+              }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Mínimo 5 caracteres, máximo 15.</div>
+          </div>
+          <!-- NOMBRE -->
+          <div class="col-md-4">
+            <label class="form-label">Nombre <span class="text-danger">*</span></label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
+              maxlength="40"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              [ngClass]="{
+                'is-valid': controlCliente['nombre'].valid && (controlCliente['nombre'].dirty||controlCliente['nombre'].touched),
+                'is-invalid': controlCliente['nombre'].invalid && (controlCliente['nombre'].dirty||controlCliente['nombre'].touched)
+              }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Solo letras, mínimo 3, máximo 40 caracteres.</div>
+          </div>
+          <!-- APELLIDO PATERNO -->
+          <div class="col-md-4">
+            <label class="form-label">Apellido Paterno <span class="text-danger">*</span></label>
+            <input type="text" formControlName="ap_paterno" class="form-control" placeholder="Apellido paterno"
+              maxlength="40"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              [ngClass]="{
+                'is-valid': controlCliente['ap_paterno'].valid && (controlCliente['ap_paterno'].dirty||controlCliente['ap_paterno'].touched),
+                'is-invalid': controlCliente['ap_paterno'].invalid && (controlCliente['ap_paterno'].dirty||controlCliente['ap_paterno'].touched)
+              }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Solo letras, mínimo 3, máximo 40 caracteres.</div>
+          </div>
+          <!-- APELLIDO MATERNO -->
+          <div class="col-md-4">
+            <label class="form-label">Apellido Materno</label>
+            <input type="text" formControlName="ap_materno" class="form-control" placeholder="Apellido materno"
+              maxlength="40"
+              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              [ngClass]="{
+                'is-valid': controlCliente['ap_materno'].valid && (controlCliente['ap_materno'].dirty||controlCliente['ap_materno'].touched),
+                'is-invalid': controlCliente['ap_materno'].invalid && (controlCliente['ap_materno'].dirty||controlCliente['ap_materno'].touched)
+              }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Solo letras, mínimo 3, máximo 40 caracteres.</div>
+          </div>
+          <!-- CELULAR -->
+          <div class="col-md-4">
+            <label class="form-label">Celular <span class="text-danger">*</span></label>
+            <input type="text" formControlName="celular" class="form-control" placeholder="Número de celular"
+              maxlength="15"
+              pattern="^[0-9]+$"
+              [ngClass]="{
+                'is-valid': controlCliente['celular'].valid && (controlCliente['celular'].dirty||controlCliente['celular'].touched),
+                'is-invalid': controlCliente['celular'].invalid && (controlCliente['celular'].dirty||controlCliente['celular'].touched)
+              }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Solo números, mínimo 8, máximo 15 dígitos.</div>
+          </div>
+          <!-- EMAIL -->
+          <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input type="email" formControlName="email" class="form-control" placeholder="correo@ejemplo.com"
+              maxlength="40"
+              [ngClass]="{
+                'is-valid': controlCliente['email'].valid && (controlCliente['email'].dirty||controlCliente['email'].touched),
+                'is-invalid': controlCliente['email'].invalid && (controlCliente['email'].dirty||controlCliente['email'].touched)
+              }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Email válido, mínimo 5, máximo 40 caracteres.</div>
+          </div>
+          <!-- CIUDAD -->
+          <div class="col-md-6">
+            <label class="form-label">Ciudad</label>
+            <select formControlName="ciudad" class="form-select">
+              <option *ngFor="let c of ciudades" [value]="c">{{c}}</option>
+            </select>
+          </div>
+          <!-- DIRECCION -->
+          <div class="col-md-12">
+            <label class="form-label">Dirección</label>
+            <input type="text" formControlName="direccion" class="form-control" placeholder="Ingrese la dirección"
+              maxlength="40"
+              [ngClass]="{
+                'is-valid': controlCliente['direccion'].valid && (controlCliente['direccion'].dirty||controlCliente['direccion'].touched),
+                'is-invalid': controlCliente['direccion'].invalid && (controlCliente['direccion'].dirty||controlCliente['direccion'].touched)
+              }">
+            <div class="valid-feedback">Correcto.</div>
+            <div class="invalid-feedback">Mínimo 5, máximo 40 caracteres.</div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-clientes-primary" [disabled]="clienteForm.invalid">
+              <i class="bi me-1" [ngClass]="isEditModeCliente ? 'bi-check-circle' : 'bi-save'"></i>
+              {{isEditModeCliente ? 'Actualizar' : 'Guardar'}}
+            </button>
+            <button (click)="limpiarModalCliente()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-1"></i>Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST DE NOTIFICACIÓN PARA CLIENTES -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="toastExitoCliente" class="toast align-items-center border-0"
+       [ngClass]="exito ? 'toast-custom-green' : 'toast-custom-red'"
+       role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body text-white">
+        <i class="bi me-2" [ngClass]="exito ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+        {{mensajeExito}}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
   </div>
 </div>

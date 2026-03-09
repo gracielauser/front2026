@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import * as bootstrap from 'bootstrap';
 import { Cliente } from '../../../Modelos/cliente';
 import { Producto } from '../../../Modelos/producto';
 import { Usuario } from '../../../Modelos/usuario';
@@ -32,8 +33,37 @@ export class NuevaVentaComponent implements OnInit {
   subcategoriaSeleccionada: string = '';
   total: number = 0;
   tipo: number = 2;
-  clienteSeleccionado: any = '';
+  clienteSeleccionado: any = null;
   busquedaCliente: string = '';
+  mostrarDropdownCliente: boolean = false;
+  clientesFiltradosList: any[] = [];
+
+  // Propiedades para modal de clientes
+  isEditModeCliente: boolean = false;
+  isViewModeCliente: boolean = false;
+  modalTitleCliente: string = 'Adicionar Cliente';
+  idClienteEditar: number = 0;
+  mensajeExito: string = '';
+  exito: boolean = false;
+  ciudades: string[] = ['Tarija', 'La Paz', 'Pando', 'Cochabamba', 'Chuquisaca', 'Santa Cruz', 'Potosi', 'Beni', 'Oruro'];
+
+  clienteForm = new UntypedFormGroup({
+    nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
+    ap_paterno: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
+    ap_materno: new FormControl('', [Validators.minLength(3), Validators.maxLength(40)]),
+    direccion: new FormControl('', [Validators.minLength(5), Validators.maxLength(40)]),
+    ci_nit: new FormControl('', [Validators.minLength(5), Validators.maxLength(15)]),
+    estado: new FormControl('1'),
+    celular: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]),
+    email: new FormControl('', [Validators.email, Validators.minLength(5), Validators.maxLength(40)]),
+    ciudad: new FormControl('Tarija'),
+    tipo_documento: new FormControl('1'),
+    fecha_registro: new FormControl(this.obtenerFechaHoraActual()),
+  });
+
+  get controlCliente() {
+    return this.clienteForm.controls;
+  }
 
   ventaForm = new UntypedFormGroup({
     tipov: new FormControl('2'),
@@ -55,6 +85,9 @@ export class NuevaVentaComponent implements OnInit {
   ngOnInit(): void {
     this.cliSer.getListaClientes().subscribe(data => {
       this.apiClientes = data;
+      console.log('clientes: ',data);
+
+      this.clientesFiltradosList = [];
     });
 
     this.CatSer.getListaCategoria().subscribe((lista) => {
@@ -196,8 +229,10 @@ export class NuevaVentaComponent implements OnInit {
     this.subcategoriaSeleccionada = '';
     this.total = 0;
     this.tipo = 2;
-    this.clienteSeleccionado = '';
+    this.clienteSeleccionado = null;
     this.busquedaCliente = '';
+    this.mostrarDropdownCliente = false;
+    this.clientesFiltradosList = [];
     this.apiSubcategorias = [];
 
     // Resetear formulario
@@ -274,7 +309,7 @@ export class NuevaVentaComponent implements OnInit {
       this.ventaForm.get('ci_nit')?.disable();
       this.ventaForm.get('nombre_cliente')?.disable();
       this.ventaForm.get('id_cliente')?.disable();
-      this.clienteSeleccionado = '';
+      this.limpiarCliente();
     } else {
       this.ventaForm.get('documento')?.enable();
       this.ventaForm.get('ci_nit')?.enable();
@@ -283,32 +318,58 @@ export class NuevaVentaComponent implements OnInit {
     }
   }
 
-  onClienteChange(event: any) {
-    const idCliente = event.target.value;
-    if (idCliente) {
-      const cliente = this.apiClientes.find(c => c.id_cliente == idCliente);
-      if (cliente && cliente.persona) {
-        this.ventaForm.patchValue({
-          ci_nit: cliente.persona.ci,
-          nombre_cliente: `${cliente.persona.nombre} ${cliente.persona.apellido_paterno}`
-        });
-      }
-    } else {
-      this.ventaForm.patchValue({
-        ci_nit: '',
-        nombre_cliente: ''
-      });
-    }
-  }
-
   get clientesFiltrados() {
     if (!this.busquedaCliente) return this.apiClientes;
     const termino = this.busquedaCliente.toLowerCase();
     return this.apiClientes.filter(c =>
-      c.persona?.nombre?.toLowerCase().includes(termino) ||
-      c.persona?.apellido_paterno?.toLowerCase().includes(termino) ||
-      c.persona?.ci?.toLowerCase().includes(termino)
+      c.nombre?.toLowerCase().includes(termino) ||
+      c.ap_paterno?.toLowerCase().includes(termino) ||
+      c.ap_materno?.toLowerCase().includes(termino) ||
+      c.ci_nit?.toString().includes(termino)
     );
+  }
+
+  filtrarClientes() {
+    this.mostrarDropdownCliente = true;
+    this.clientesFiltradosList = this.clientesFiltrados;
+  }
+
+  seleccionarCliente(cliente: any) {
+    this.clienteSeleccionado = cliente;
+    this.busquedaCliente = `${cliente.nombre || ''} ${cliente.ap_paterno || ''} ${cliente.ap_materno || ''}`.trim();
+    this.ventaForm.patchValue({
+      id_cliente: cliente.id_cliente,
+      ci_nit: cliente.ci_nit,
+      nombre_cliente: `${cliente.nombre || ''} ${cliente.ap_paterno || ''}`.trim(),
+      documento: cliente.tipo_documento
+    });
+    this.mostrarDropdownCliente = false;
+  }
+
+  ocultarDropdownCliente() {
+    setTimeout(() => {
+      this.mostrarDropdownCliente = false;
+    }, 200);
+  }
+
+  limpiarCliente() {
+    this.clienteSeleccionado = null;
+    this.busquedaCliente = '';
+    this.ventaForm.patchValue({
+      id_cliente: '',
+      ci_nit: '',
+      nombre_cliente: '',
+      documento: ''
+    });
+  }
+
+  formatearCliente(cliente: any): string {
+    const nombre = cliente.nombre || '';
+    const apPaterno = cliente.ap_paterno || '';
+    const apMaterno = cliente.ap_materno || '';
+    const tipoDoc = cliente.tipo_documento == 1 ? 'CI: ' : 'NIT: ';
+    const ciNit = cliente.ci_nit || '';
+    return `${nombre} ${apPaterno} ${apMaterno} | ${tipoDoc}${ciNit}`.trim();
   }
 
   obtenerFechaActual(): string {
@@ -320,6 +381,196 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   obtenerFechaActualConHora(): string {
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const month = String(hoy.getMonth() + 1).padStart(2, '0');
+    const day = String(hoy.getDate()).padStart(2, '0');
+    const hours = String(hoy.getHours()).padStart(2, '0');
+    const minutes = String(hoy.getMinutes()).padStart(2, '0');
+    const seconds = String(hoy.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  // ========== Métodos del Modal de Clientes ==========
+  
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    this.exito = exito;
+    this.mensajeExito = mensaje;
+    const toastEl = document.getElementById('toastExitoCliente');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  }
+
+  abrirModalNuevoCliente() {
+    this.limpiarModalCliente();
+    const modalEl = document.getElementById('modalCliente');
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    }
+  }
+
+  abrirModalEditarCliente() {
+    if (!this.clienteSeleccionado) return;
+    this.cargarDatosCliente(this.clienteSeleccionado);
+    const modalEl = document.getElementById('modalCliente');
+    if (modalEl) {
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+    }
+  }
+
+  AgregarCliente() {
+    if (this.clienteForm.invalid) {
+      this.clienteForm.markAllAsTouched();
+      this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
+      return;
+    }
+
+    if (this.isEditModeCliente) {
+      this.guardarModificacionCliente();
+    } else {
+      const cliente = this.clienteForm.value;
+      this.cliSer.saveCliente(cliente).subscribe({
+        next: (data: any) => {
+          console.log('✅ Cliente agregado:', data);
+          this.mostrarAlerta(true, data.mensaje || '✅ Cliente agregado exitosamente');
+          
+          // Agregar el nuevo cliente a la lista
+          if (data.cliente) {
+            this.apiClientes.push(data.cliente);
+            // Seleccionar automáticamente el nuevo cliente
+            this.seleccionarCliente(data.cliente);
+          } else {
+            // Si no viene el cliente en la respuesta, recargar lista
+            this.cliSer.getListaClientes().subscribe(lista => {
+              this.apiClientes = lista;
+              // Seleccionar el último cliente agregado
+              if (lista.length > 0) {
+                this.seleccionarCliente(lista[lista.length - 1]);
+              }
+            });
+          }
+          
+          this.cerrarModalCliente();
+          this.limpiarModalCliente();
+        },
+        error: (error) => {
+          console.error('❌ Error al agregar cliente:', error);
+          this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al agregar cliente');
+        }
+      });
+    }
+  }
+
+  cargarDatosCliente(cliente: any) {
+    this.isEditModeCliente = true;
+    this.isViewModeCliente = false;
+    this.modalTitleCliente = 'Modificar Cliente';
+    this.idClienteEditar = cliente.id_cliente;
+
+    this.clienteForm.patchValue({
+      nombre: cliente.nombre,
+      ap_paterno: cliente.ap_paterno,
+      ap_materno: cliente.ap_materno,
+      direccion: cliente.direccion,
+      ci_nit: cliente.ci_nit,
+      estado: cliente.estado,
+      celular: cliente.celular,
+      email: cliente.email,
+      ciudad: cliente.ciudad,
+      tipo_documento: cliente.tipo_documento,
+      fecha_registro: cliente.fecha_registro
+    });
+    this.clienteForm.enable();
+  }
+
+  guardarModificacionCliente() {
+    if (this.clienteForm.invalid) {
+      this.clienteForm.markAllAsTouched();
+      this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
+      return;
+    }
+
+    const cliente = {
+      id_cliente: this.idClienteEditar,
+      ...this.clienteForm.value
+    };
+
+    this.cliSer.modificarCliente(cliente).subscribe({
+      next: (data: any) => {
+        console.log('✅ Cliente modificado:', data);
+        this.mostrarAlerta(true, data.mensaje || '✅ Cliente modificado exitosamente');
+        
+        // Actualizar el cliente en la lista
+        const index = this.apiClientes.findIndex(c => c.id_cliente === this.idClienteEditar);
+        if (index !== -1) {
+          if (data.cliente) {
+            this.apiClientes.splice(index, 1);
+            this.apiClientes.push(data.cliente);
+            // Actualizar el cliente seleccionado
+            this.seleccionarCliente(data.cliente);
+          } else {
+            // Si no viene el cliente en la respuesta, actualizar manualmente
+            this.apiClientes[index] = { ...this.apiClientes[index], ...cliente };
+            this.seleccionarCliente(this.apiClientes[index]);
+          }
+        } else {
+          // Si no se encuentra, recargar lista
+          this.cliSer.getListaClientes().subscribe(lista => {
+            this.apiClientes = lista;
+            const clienteActualizado = lista.find(c => c.id_cliente === this.idClienteEditar);
+            if (clienteActualizado) {
+              this.seleccionarCliente(clienteActualizado);
+            }
+          });
+        }
+        
+        this.cerrarModalCliente();
+        this.limpiarModalCliente();
+      },
+      error: (error) => {
+        console.error('❌ Error al modificar cliente:', error);
+        this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al modificar cliente');
+      }
+    });
+  }
+
+  limpiarModalCliente() {
+    this.clienteForm.reset();
+    this.clienteForm.patchValue({
+      estado: '1',
+      ciudad: 'Tarija',
+      tipo_documento: '1',
+      fecha_registro: this.obtenerFechaHoraActual()
+    });
+    this.isEditModeCliente = false;
+    this.isViewModeCliente = false;
+    this.modalTitleCliente = 'Adicionar Cliente';
+    this.idClienteEditar = 0;
+    this.clienteForm.enable();
+  }
+
+  cerrarModalCliente() {
+    const modalEl = document.getElementById('modalCliente');
+    if (modalEl) {
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) {
+        modal.hide();
+      }
+    }
+    // Limpiar backdrop
+    setTimeout(() => {
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      document.body.classList.remove('modal-open');
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    }, 300);
+  }
+
+  obtenerFechaHoraActual(): string {
     const hoy = new Date();
     const year = hoy.getFullYear();
     const month = String(hoy.getMonth() + 1).padStart(2, '0');

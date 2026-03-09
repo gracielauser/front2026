@@ -31,4 +31,9 @@ private baseUrl=environment.apiUrl+'/api/producto'
       let url = this.baseUrl+"/modificar";
       return this.xhttp.put(url,producto)
      }
+      getPDF(body={}): Observable<Blob> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte-producto/inventario`,body, {
+         responseType: 'blob' // 👈 clave para manejar PDF
+       });
+     }
 }
