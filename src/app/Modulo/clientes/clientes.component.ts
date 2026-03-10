@@ -56,7 +56,7 @@ export class ClientesComponent implements OnInit {
 
   clienteForm = new UntypedFormGroup({
     nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
-    ap_paterno: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
+    ap_paterno: new FormControl('', [ Validators.minLength(3), Validators.maxLength(40)]),
     ap_materno: new FormControl('', [Validators.minLength(3), Validators.maxLength(40)]),
     direccion: new FormControl('', [Validators.minLength(5), Validators.maxLength(40)]),
     ci_nit: new FormControl('', [Validators.minLength(5), Validators.maxLength(15)]),

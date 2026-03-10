@@ -13,7 +13,7 @@
         </div>
       </div>
       <button class="btn-report" (click)="facturas()">
-        <i class="bi bi-file-earmark"></i>
+        <img src="assets/sin.png" alt="Reporte" style="width: 20px; height: 20px;">
         Reporte ventas
       </button>
       <button class="btn-close-ultra" (click)="Cancelar()">
@@ -197,7 +197,7 @@
                         name="tipov"
                         value="2"
                         formControlName="tipov"
-                        (change)="observarFactura(2)"
+                        (change)="observarFactura(1)"
                         checked
                       />
                       <label for="sin-factura" class="radio-label-ultra">
@@ -212,7 +212,7 @@
                         name="tipov"
                         value="1"
                         formControlName="tipov"
-                        (change)="observarFactura(1)"
+                        (change)="observarFactura(2)"
                       />
                       <label for="con-factura" class="radio-label-ultra">
                         <i class="bi bi-file-earmark-check"></i>
@@ -317,7 +317,9 @@
                         </div>
                       </td>
                       <td>
-                        <span class="carrito-precio">{{ pro.precio_venta | currency:'bs ':'symbol':'1.2-2' }}</span>
+                        <div class="carrito-precio">
+                          {{ pro.precio_venta | currency:'Bs ':'symbol':'1.2-2' }}
+                        </div>
                       </td>
                       <td class="th-center-ultra">
                         <input
@@ -330,9 +332,18 @@
                         />
                       </td>
                       <td class="th-right-ultra">
-                        <span class="carrito-subtotal">
-                          {{ (pro.precio_venta * productosVentaCantidades[i]) | currency:'bs ':'symbol':'1.2-2' }}
-                        </span>
+                        <input
+                          type="number"
+                          class="subtotal-ultra-input"
+                          [value]="productosVentaSubtotales[i]"
+                          (input)="nuevoSubtotal(i, $event)"
+                          (blur)="validarSubtotal(i, $event)"
+                          (click)="seleccionarTextoInput($event)"
+                          (focus)="seleccionarTextoInput($event)"
+                          (keydown)="bloquearTeclasInvalidasPrecio($event)"
+                          min="0.01"
+                          step="0.01"
+                        />
                       </td>
                       <td class="th-center-ultra">
                         <button
@@ -384,8 +395,13 @@
                     class="descuento-ultra-input"
                     formControlName="descuento"
                     (input)="descontar($event)"
+                    (blur)="validarDescuento($event)"
+                    (click)="seleccionarTextoInput($event)"
+                    (focus)="seleccionarTextoInput($event)"
+                    (keydown)="bloquearTeclasInvalidasDescuento($event)"
                     placeholder="0.00"
                     min="0"
+                    step="0.01"
                   />
                 </div>
 
@@ -497,7 +513,7 @@
           </div>
           <!-- APELLIDO PATERNO -->
           <div class="col-md-4">
-            <label class="form-label">Apellido Paterno <span class="text-danger">*</span></label>
+            <label class="form-label">Apellido Paterno </label>
             <input type="text" formControlName="ap_paterno" class="form-control" placeholder="Apellido paterno"
               maxlength="40"
               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
@@ -567,13 +583,14 @@
           </div>
 
           <div class="modal-footer">
+            <button (click)="limpiarModalCliente()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-1"></i>Cancelar
+            </button>
             <button type="submit" class="btn btn-clientes-primary" [disabled]="clienteForm.invalid">
               <i class="bi me-1" [ngClass]="isEditModeCliente ? 'bi-check-circle' : 'bi-save'"></i>
               {{isEditModeCliente ? 'Actualizar' : 'Guardar'}}
             </button>
-            <button (click)="limpiarModalCliente()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-x-circle me-1"></i>Cancelar
-            </button>
+            
           </div>
         </form>
       </div>

@@ -28,11 +28,13 @@ export class NuevaVentaComponent implements OnInit {
   apiSubcategorias: any[] = [];
   productosVender: any[] = [];
   productosVentaCantidades: number[] = [];
+  productosVentaPrecios: number[] = [];
+  productosVentaSubtotales: number[] = [];
   busqueda: string = '';
   categoriaSeleccionada: any = '';
   subcategoriaSeleccionada: string = '';
   total: number = 0;
-  tipo: number = 2;
+  tipo: number = 1;
   clienteSeleccionado: any = null;
   busquedaCliente: string = '';
   mostrarDropdownCliente: boolean = false;
@@ -53,7 +55,7 @@ export class NuevaVentaComponent implements OnInit {
 
   clienteForm = new UntypedFormGroup({
     nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
-    ap_paterno: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
+    ap_paterno: new FormControl('', [ Validators.minLength(3), Validators.maxLength(40)]),
     ap_materno: new FormControl('', [Validators.minLength(3), Validators.maxLength(40)]),
     direccion: new FormControl('', [Validators.minLength(5), Validators.maxLength(40)]),
     ci_nit: new FormControl('', [Validators.minLength(5), Validators.maxLength(15)]),
@@ -106,7 +108,6 @@ export class NuevaVentaComponent implements OnInit {
 
     this.proSer.getListaProductos().subscribe(data => {
       this.apiProductos = data;
-      console.log('productos: ', data);
     });
 
     this.ventaForm.get('documento')?.disable();
@@ -180,10 +181,35 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   agregarVenta(tipoPago: number) {
-    const idCliente = this.tipo === 1 ? (this.ventaForm.get('id_cliente')?.value || 8) : 8;
-    const tipoVenta = this.tipo === 1 ? 2 : 1; // 1 = normal (sin factura), 2 = facturado (con factura)
+    const idCliente = (this.ventaForm.get('id_cliente')?.value || 8);
+    const tipoVenta = this.tipo; // 1 = normal (sin factura), 2 = facturado (con factura)
     const montoTotal = this.total;
     const descuento = Number(this.ventaForm.get('descuento')?.value) || 0;
+
+    // Validaciones del cliente SOLO para ventas con factura (tipo === 2)
+    if (this.tipo === 2) {
+      // Si es tipo 2 (facturado), aplicar todas las restricciones
+      if (idCliente === 8) {
+        this.mostrarAlerta(false, '⚠️ No se puede realizar una venta con factura con el cliente por defecto (Público General). Por favor seleccione un cliente válido.');
+        return;
+      }
+
+      if (!this.clienteSeleccionado) {
+        this.mostrarAlerta(false, '⚠️ Debe seleccionar un cliente válido para realizar una venta con factura.');
+        return;
+      }
+
+      if (!this.clienteSeleccionado.nombre || this.clienteSeleccionado.nombre.trim() === '') {
+        this.mostrarAlerta(false, '⚠️ El cliente seleccionado no tiene nombre. Por favor complete los datos del cliente.');
+        return;
+      }
+
+      if (!this.clienteSeleccionado.ci_nit || this.clienteSeleccionado.ci_nit.toString().trim() === '') {
+        this.mostrarAlerta(false, '⚠️ El cliente seleccionado no tiene CI/NIT. Por favor complete los datos del cliente.');
+        return;
+      }
+    }
+    // Si es tipo 1 (sin factura), no hay restricciones de cliente
 
     const venta: any = {
       id_venta: null,
@@ -191,7 +217,7 @@ export class NuevaVentaComponent implements OnInit {
       monto_total: montoTotal,
       tipo_pago: tipoPago, // 1 = efectivo, 2 = QR
       tipo_venta: tipoVenta, // 1 = normal, 2 = facturado
-      descripcion: this.ventaForm.get('descripcion')?.value || `Venta ${tipoPago === 1 ? 'en Efectivo' : 'por QR'}`,
+      descripcion: this.ventaForm.get('descripcion')?.value || '',
       estado: 1, // 1 = válida, 2 = anulada
       descuento: descuento,
       id_usuario: this.usu.id_usuario,
@@ -203,21 +229,19 @@ export class NuevaVentaComponent implements OnInit {
     for (let i = 0; i < this.productosVender.length; i++) {
       const detalle = {
         cantidad: this.productosVentaCantidades[i],
-        sub_total: this.productosVentaCantidades[i] * this.productosVender[i].precio_venta,
-        precio_unitario: this.productosVender[i].precio_venta,
+        sub_total: this.productosVentaSubtotales[i],
+        precio_unitario: this.productosVentaSubtotales[i] / this.productosVentaCantidades[i],
         id_venta: 0,
         id_producto: this.productosVender[i].id_producto
       };
       venta.detallesVenta.push(detalle);
     }
-
     this.ventaSer.saveVenta(venta).subscribe( {
       next: (data) => {
       console.log('Venta guardada exitosamente:', data);
       const nota:boolean = Number(data.tipo_venta)==1
       this.ventaSer.notaVenta(Number(data.id_venta),nota).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });
-
       // Abre en una nueva pestaña
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
@@ -239,12 +263,22 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   agregarProducto(pro: Producto) {
+    // Validar stock
+    if (pro.stock === 0) {
+      this.mostrarAlerta(false, `⚠️ El producto "${pro.nombre}" no tiene stock disponible.`);
+      return;
+    }
+
     if (this.productosVender.includes(pro)) {
       const index = this.productosVender.indexOf(pro);
       this.productosVentaCantidades[index] += 1;
+      // Recalcular subtotal basado en precio original
+      this.productosVentaSubtotales[index] = pro.precio_venta * this.productosVentaCantidades[index];
     } else {
       this.productosVender.push(pro);
       this.agregarCantidad(1);
+      this.productosVentaPrecios.push(pro.precio_venta);
+      this.productosVentaSubtotales.push(pro.precio_venta * 1);
     }
     this.calcularTotal();
   }
@@ -263,13 +297,15 @@ export class NuevaVentaComponent implements OnInit {
     // Limpiar arrays
     this.productosVender = [];
     this.productosVentaCantidades = [];
+    this.productosVentaPrecios = [];
+    this.productosVentaSubtotales = [];
 
     // Resetear variables
     this.busqueda = '';
     this.categoriaSeleccionada = '';
     this.subcategoriaSeleccionada = '';
     this.total = 0;
-    this.tipo = 2;
+    this.tipo = 1;
     this.paginaActual = 1;
     this.mostrarDropdownCliente = false;
     this.clientesFiltradosList = [];
@@ -300,6 +336,10 @@ export class NuevaVentaComponent implements OnInit {
     this.ventaForm.get('ci_nit')?.disable();
     this.ventaForm.get('nombre_cliente')?.disable();
     this.ventaForm.get('id_cliente')?.disable();
+
+    this.proSer.getListaProductos().subscribe(data => {
+      this.apiProductos = data;
+    });
   }
 
   agregarCantidad(cantidad: number) {
@@ -315,6 +355,9 @@ export class NuevaVentaComponent implements OnInit {
     } else {
       this.productosVentaCantidades[i] = valor;
     }
+    // Recalcular subtotal basado en precio original del producto
+    const precioOriginal = this.productosVender[i].precio_venta;
+    this.productosVentaSubtotales[i] = precioOriginal * this.productosVentaCantidades[i];
     this.calcularTotal();
   }
 
@@ -325,33 +368,134 @@ export class NuevaVentaComponent implements OnInit {
     }
   }
 
+  bloquearTeclasInvalidasPrecio(event: KeyboardEvent) {
+    const teclasBloqueadas = ['-', 'e', 'E', '+'];
+    if (teclasBloqueadas.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  bloquearTeclasInvalidasDescuento(event: KeyboardEvent) {
+    const teclasBloqueadas = ['-', 'e', 'E', '+'];
+    if (teclasBloqueadas.includes(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  nuevoSubtotal(i: number, event: any) {
+    const valor = Number(event.target.value);
+    this.productosVentaSubtotales[i] = valor > 0 ? valor : 0.01;
+    this.calcularTotal();
+  }
+
+  validarSubtotal(i: number, event: any) {
+    const valor = Number(event.target.value);
+    
+    // Actualizar el subtotal temporalmente para calcular el total
+    const subtotalAnterior = this.productosVentaSubtotales[i];
+    this.productosVentaSubtotales[i] = valor;
+    
+    // Calcular el total original (precio_venta × cantidad para todos los productos)
+    let totalOriginal = 0;
+    for (let j = 0; j < this.productosVender.length; j++) {
+      totalOriginal += this.productosVender[j].precio_venta * this.productosVentaCantidades[j];
+    }
+    
+    // Calcular total con descuentos (suma de subtotales - descuento)
+    let totalConDescuentos = 0;
+    for (let j = 0; j < this.productosVentaSubtotales.length; j++) {
+      totalConDescuentos += this.productosVentaSubtotales[j];
+    }
+    const descuento = Number(this.ventaForm.get('descuento')?.value) || 0;
+    const totalFinal = totalConDescuentos - descuento;
+    
+    // El total final no puede ser menor a la mitad del total original
+    const minimoPermitido = totalOriginal / 2;
+    
+    if (totalFinal < minimoPermitido) {
+      // Calcular el subtotal mínimo permitido para este item
+      // minimoPermitido = totalConDescuentos - descuento
+      // minimoPermitido = (suma de otros subtotales + este subtotal) - descuento
+      // este subtotal mínimo = minimoPermitido + descuento - suma de otros subtotales
+      let sumaOtrosSubtotales = 0;
+      for (let j = 0; j < this.productosVentaSubtotales.length; j++) {
+        if (j !== i) {
+          sumaOtrosSubtotales += this.productosVentaSubtotales[j];
+        }
+      }
+      const subtotalMinimo = minimoPermitido + descuento - sumaOtrosSubtotales;
+      
+      this.mostrarAlerta(false, `⚠️ El subtotal ingresado hace que el total a pagar sea menor a la mitad del total original (Bs ${minimoPermitido.toFixed(2)}). Se ajustó al mínimo permitido.`);
+      // Poner en el mínimo permitido
+      this.productosVentaSubtotales[i] = subtotalMinimo > 0 ? subtotalMinimo : 0.01;
+      event.target.value = this.productosVentaSubtotales[i].toFixed(2);
+    }
+    
+    this.calcularTotal();
+  }
+
   calcularTotal() {
     let sumaSubTotales = 0;
     for (let i = 0; i < this.productosVentaCantidades.length; i++) {
-      sumaSubTotales = sumaSubTotales + Number(this.productosVentaCantidades[i]) * Number(this.productosVender[i].precio_venta);
+      sumaSubTotales = sumaSubTotales + Number(this.productosVentaSubtotales[i]);
     }
     this.total = sumaSubTotales;
   }
 
   descontar(e: any) {
     this.calcularTotal();
-    if (e.target.value != null && !isNaN(e.target.value)) {
+  }
+
+  validarDescuento(e: any) {
+    const descuentoIngresado = Number(e.target.value) || 0;
+    
+    // Validar que no sea negativo
+    if (descuentoIngresado < 0) {
+      this.mostrarAlerta(false, `⚠️ El descuento no puede ser negativo.`);
+      e.target.value = '0';
       this.ventaForm.patchValue({
-        total: this.total - e.target.value
+        descuento: 0
       });
-    } else {
-      this.calcularTotal();
+      return;
+    }
+    
+    // Calcular el total original (precio_venta × cantidad)
+    let totalOriginal = 0;
+    for (let i = 0; i < this.productosVender.length; i++) {
+      totalOriginal += this.productosVender[i].precio_venta * this.productosVentaCantidades[i];
+    }
+
+    // Calcular la suma de subtotales actuales
+    let sumaSubtotales = 0;
+    for (let i = 0; i < this.productosVentaSubtotales.length; i++) {
+      sumaSubtotales += this.productosVentaSubtotales[i];
+    }
+
+    // El total final no puede ser menor a la mitad del total original
+    const totalFinal = sumaSubtotales - descuentoIngresado;
+    const minimoPermitido = totalOriginal / 2;
+    
+    if (totalFinal < minimoPermitido) {
+      this.mostrarAlerta(false, `⚠️ El descuento aplicado hace que el total a pagar sea menor a la mitad del total original (Bs ${minimoPermitido.toFixed(2)}). El descuento se restableció a 0.`);
+      e.target.value = '0';
+      this.ventaForm.patchValue({
+        descuento: 0
+      });
     }
   }
 
   quitarProducto(i: number) {
     this.productosVender.splice(i, 1);
     this.productosVentaCantidades.splice(i, 1);
+    this.productosVentaPrecios.splice(i, 1);
+    this.productosVentaSubtotales.splice(i, 1);
     this.calcularTotal();
   }
 
   observarFactura(n: number) {
     const tipo: number = n;
+      console.log('NUevo tipo factura o no:', n);
+
     this.tipo = n;
     // Ya no ocultamos ni deshabilitamos el selector de cliente
     // El cliente siempre estará visible y habilitado

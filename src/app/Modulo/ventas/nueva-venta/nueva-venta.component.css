@@ -508,7 +508,7 @@
 }
 
 .modern-table tbody td {
-  padding: 1rem;
+  padding: 0.5rem;
   vertical-align: middle;
 }
 
@@ -948,7 +948,7 @@
 
 /* Tabla de Productos Ultra */
 .productos-ultra-table-container {
-  max-height: 450px;
+  max-height: 700px;
   overflow-y: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--ventas-gray-200);
@@ -1464,7 +1464,7 @@
 
 /* Carrito */
 .carrito-ultra-container {
-  max-height: 300px;
+  max-height: 450px;
   overflow-y: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--ventas-gray-200);
@@ -1533,6 +1533,7 @@
   font-weight: 600;
   transition: all 0.3s ease;
 }
+
 .btn-report{
   background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   color: var(--ventas-white);
@@ -1551,6 +1552,32 @@
   outline: none;
   border-color: var(--ventas-primary);
   box-shadow: 0 0 0 3px rgba(4, 104, 160, 0.1);
+}
+
+.carrito-precio {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ventas-gray-700);
+  text-align: center;
+  padding: 0.5rem;
+}
+
+.subtotal-ultra-input {
+  width: 120px;
+  padding: 0.5rem;
+  border: 2px solid var(--ventas-gray-200);
+  border-radius: var(--radius-sm);
+  text-align: right;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--ventas-success);
+  transition: all 0.3s ease;
+}
+
+.subtotal-ultra-input:focus {
+  outline: none;
+  border-color: var(--ventas-warning);
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
 .carrito-subtotal {
@@ -2459,7 +2486,7 @@
 
 /* Modal header personalizado para clientes */
 .modal-header-clientes {
-  background: linear-gradient(135deg, var(--clientes-primary) 0%, var(--clientes-primary-hover) 100%);
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
   border: none;
   padding: 1.25rem 1.5rem;
@@ -2652,11 +2679,11 @@
 /* 3. Compactar sección "Configuración de la Venta" */
 .opciones-venta-section-ultra {
   padding: 1rem !important; /* Reducido de 1.5rem */
-  margin-bottom: 1rem !important; /* Reducido */
+  margin-bottom: 0 !important; /* Reducido */
 }
 
 .section-title-ultra {
-  margin-bottom: 0.75rem !important; /* Reducido de 1rem o más */
+  margin-bottom: 0 !important; /* Reducido de 1rem o más */
   font-size: 0.9375rem !important; /* Ligeramente más pequeño */
 }
 

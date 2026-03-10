@@ -26,4 +26,9 @@ export class ClienteService {
       let url = this.baseUrl+"/modificar";
       return this.xhttp.put(url,cliente)
      }
+     getPDF(body={}): Observable<Blob> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte/clientes`,body, {
+         responseType: 'blob' // 👈 clave para manejar PDF
+       });
+     }
 }

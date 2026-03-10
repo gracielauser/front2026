@@ -70,7 +70,7 @@
 .icon-wrapper {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, var(--gastos-primary), var(--gastos-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -94,7 +94,7 @@
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--gastos-primary), var(--gastos-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -227,7 +227,7 @@
 }
 
 .gastos-table thead {
-  background: linear-gradient(135deg, var(--gastos-primary), var(--gastos-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
 }
 
@@ -386,7 +386,7 @@
 }
 
 .modal-header {
-  background: linear-gradient(135deg, var(--gastos-primary), var(--gastos-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
   border: none;
   padding: 1.25rem 1.5rem;
