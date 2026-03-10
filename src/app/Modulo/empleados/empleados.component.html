@@ -1,79 +1,80 @@
-<div class="container-fluid empleados-container">
-  <div class="card empleados-card">
-    <div class="card-header empleados-header">
-      <div class="header-content">
-        <div class="title-section">
-          <i class="bi bi-people-fill header-icon"></i>
-          <h5 class="header-title">Gestionar Empleados</h5>
+<div class="empleados-container">
+  <div class="empleados-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div>
+        <h1 class="header-title">Gestión de Empleados</h1>
+        <p class="header-subtitle">Administra el personal de tu empresa</p>
+      </div>
+      <div class="filter-item align-self-end ms-auto">
+        <button class="btn-nuevo" (click)="openModalAdd()" data-bs-toggle="modal" data-bs-target="#empleadoModal">
+          <i class="bi bi-person-plus-fill"></i>
+          Nuevo Empleado
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="empleados-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-search"></i>
+            Buscar empleado
+          </label>
+          <input type="text" [(ngModel)]="nombre" class="form-control filter-input"
+                 placeholder="Nombre o CI">
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-toggle-on"></i>
+            Estado
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="estado">
+            <option value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-gender-ambiguous"></i>
+            Género
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="genero">
+            <option value="">Todos</option>
+            <option value="1">Masculino</option>
+            <option value="2">Femenino</option>
+            <option value="3">Otro</option>
+          </select>
         </div>
       </div>
     </div>
-    <div class="card-body">
-      <!-- Filtros y búsqueda -->
-      <div class="row mb-4 filters-row">
-        <div class="col-md-3">
-          <div class="filter-group">
-            <label class="filter-label">
-              <i class="bi bi-search"></i>
-              Buscar empleado
-            </label>
-            <input type="text" [(ngModel)]="nombre" class="form-control filter-input"
-                   placeholder="Nombre o CI">
-          </div>
-        </div>
 
-        <div class="col-md-2">
-          <div class="filter-group">
-            <label class="filter-label">
-              <i class="bi bi-toggle-on"></i>
-              Estado
-            </label>
-            <select class="form-select filter-select" [(ngModel)]="estado">
-              <option selected value="1">Activos</option>
-              <option value="2">Inactivos</option>
-              <option value="">Todos</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="col-md-2">
-          <div class="filter-group">
-            <label class="filter-label">
-              <i class="bi bi-gender-ambiguous"></i>
-              Género
-            </label>
-            <select class="form-select filter-select" [(ngModel)]="genero">
-              <option selected value="">Todos</option>
-              <option value="1">Masculino</option>
-              <option value="2">Femenino</option>
-              <option value="3">Otro</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="col-md-3 ms-auto">
-          <button class="btn btn-add-employee" (click)="openModalAdd()" data-bs-toggle="modal" data-bs-target="#empleadoModal">
-            <i class="bi bi-person-plus-fill"></i>
-            Nuevo Empleado
-          </button>
-        </div>
-      </div>
-
-      <!-- Tabla de empleados -->
-      <div class="table-responsive table-container">
-        <table class="table empleados-table">
+    <!-- Tabla de empleados -->
+    <div class="table-section">
+    <!-- Tabla de empleados -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="empleados-table">
           <thead>
             <tr>
-              <th scope="col"><i class="bi bi-hash"></i> Nro</th>
-              <th scope="col"><i class="bi bi-image"></i> Foto</th>
-              <th scope="col"><i class="bi bi-card-text"></i> CI</th>
-              <th scope="col"><i class="bi bi-person"></i> Nombres</th>
-              <th scope="col"><i class="bi bi-people"></i> Apellidos</th>
-              <th scope="col"><i class="bi bi-phone"></i> Celular</th>
-              <th scope="col"><i class="bi bi-gender-ambiguous"></i> Género</th>
-              <th scope="col"><i class="bi bi-wallet2"></i> Salario</th>
-              <th scope="col"><i class="bi bi-toggle-on"></i> Estado</th>
-              <th scope="col"><i class="bi bi-tools"></i> Acciones</th>
+              <th>Nro</th>
+              <th>Foto</th>
+              <th>CI</th>
+              <th>Nombres</th>
+              <th>Apellidos</th>
+              <th>Celular</th>
+              <th>Género</th>
+              <th>Salario</th>
+              <th>Estado</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -139,8 +140,7 @@
         </table>
       </div>
 
-      <!-- Paginación mejorada -->
-      <div class="pagination-container">
+      <div class="pagination-wrapper">
         <pagination-controls (pageChange)="page = $event"
                             previousLabel="Anterior"
                             nextLabel="Siguiente">

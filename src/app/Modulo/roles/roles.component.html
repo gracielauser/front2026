@@ -1,69 +1,84 @@
-<div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h5>
+<div class="roles-container">
+  <div class="roles-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
         <i class="bi bi-shield-check"></i>
-        Gestionar Roles
-      </h5>
+      </div>
+      <div>
+        <h1 class="header-title">Gestión de Roles</h1>
+        <p class="header-subtitle">Administra los roles y permisos del sistema</p>
+      </div>
+      <div class="filter-item align-self-end ms-auto">
+        <button class="btn-nuevo" data-bs-toggle="modal" data-bs-target="#addrol" (click)="limpiar()">
+          <i class="bi bi-plus-circle"></i>
+          Nuevo Rol
+        </button>
+      </div>
     </div>
-    <div class="card-body">
-      <!-- Filtros y búsqueda -->
-      <div class="row">
-        <div class="col-md-3">
-          <input type="text" class="form-control" placeholder="🔍 Buscar por nombre"
-            [(ngModel)]="nombre" aria-label="Buscar por nombre">
+  </div>
+
+  <div class="roles-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-search"></i>
+            Nombre del rol
+          </label>
+          <input type="text" class="form-control filter-input" placeholder="Buscar por nombre"
+                 [(ngModel)]="nombre" aria-label="Buscar por nombre">
         </div>
-        <div class="col-md-3">
-          <select class="form-select" [(ngModel)]="estado">
-            <option selected value="1">✅ Activos</option>
-            <option value="2">❌ Inactivos</option>
-            <option value="">📋 Todos</option>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-toggle-on"></i>
+            Estado
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="estado">
+            <option value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
           </select>
         </div>
-        <div class="col-md-4"></div>
-        <div class="col-md-2">
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addrol" (click)="limpiar()">
-            <i class="bi bi-plus-circle"></i>
-            Nuevo Rol
-          </button>
-        </div>
       </div>
+    </div>
 
-      <!-- Tabla de roles -->
-      <div class="table-responsive tamaño mt-3">
-        <table class="table table-hover">
+    <!-- Tabla de roles -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="roles-table">
           <thead>
             <tr>
               <th scope="col">Nro</th>
-              <th scope="col"><i class="bi bi-tag me-1"></i>Nombre</th>
-              <th scope="col"><i class="bi bi-file-text me-1"></i>Descripción</th>
-              <th scope="col"><i class="bi bi-toggle-on me-1"></i>Estado</th>
-              <th scope="col"><i class="bi bi-gear me-1"></i>Acciones</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Descripción</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let rol of apiRoles | nombre:nombre | estado:estado | paginate: { itemsPerPage: 6, currentPage: page }; let i=index">
-              <td>{{i+1}}</td>
-              <td><strong>{{rol.nombre}}</strong></td>
-              <td>{{rol.descripcion}}</td>
-              <!--Estado-->
               <td>
-                <div class="form-check form-switch">
+                <span class="badge-number">{{i+1}}</span>
+              </td>
+              <td>
+                <strong class="role-name">{{rol.nombre}}</strong>
+              </td>
+              <td>
+                <span class="role-description">{{rol.descripcion}}</span>
+              </td>
+              <td>
+                <div class="switch-custom">
                   <input class="form-check-input" type="checkbox" [checked]="rol.estado==1"
                     (change)="showModal($event, rol)">
                 </div>
               </td>
-              <!--Acciones-->
               <td>
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
+                <button class="btn-edit" data-bs-toggle="modal"
                   data-bs-target="#addrol" (click)="cargarDatosRol(rol)">
                   <i class="bi bi-pencil"></i>
-                  <span>Editar</span>
-                </button>
-                <button *ngIf="false" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal"
-                  data-bs-target="#detrol">
-                  <i class="bi bi-card-list"></i>
-                  <span>Detalle</span>
+                  Editar
                 </button>
               </td>
             </tr>
@@ -71,7 +86,6 @@
         </table>
       </div>
 
-      <!-- Paginación -->
       <div class="pagination-wrapper">
         <pagination-controls (pageChange)="page = $event"
                             previousLabel="Anterior"
@@ -81,6 +95,7 @@
     </div>
   </div>
 </div>
+
 <!-- MODAL AGREGAR/EDITAR ROL -->
 <div class="modal fade" id="addrol" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">

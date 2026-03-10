@@ -1,68 +1,95 @@
-<div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h5>Gestionar Marcas</h5>
-      <p class="mb-0">Administra la información de las marcas</p>
+<div class="marcas-container">
+  <div class="marcas-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="bi bi-award"></i>
+      </div>
+      <div>
+        <h1 class="header-title">Gestión de Marcas</h1>
+        <p class="header-subtitle">Administra la información de las marcas</p>
+      </div>
+      <div class="filter-item align-self-end ms-auto">
+        <button class="btn-nuevo" data-bs-toggle="modal" data-bs-target="#addcate">
+          <i class="bi bi-plus-circle"></i>
+          Nueva Marca
+        </button>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="row mb-3">
-        <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="Buscar por nombre"
+  </div>
+
+  <div class="marcas-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-search"></i>
+            Nombre
+          </label>
+          <input type="text" class="form-control filter-input" placeholder="Buscar por nombre"
                  [(ngModel)]="nombre">
         </div>
-        <div class="col-md-3">
 
-        </div>
-        <div class="col-md-3">
-          <select class="form-select" [(ngModel)]="estado">
-            <option selected value="1">Activos</option>
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-toggle-on"></i>
+            Estado
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="estado">
+            <option value="1" selected>Activos</option>
             <option value="2">Inactivos</option>
             <option value="">Todos</option>
           </select>
         </div>
-        <div class="col-md-2">
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addcate">
-            <i class="bi bi-plus-circle"></i>
-            Nueva Marca
-          </button>
-        </div>
       </div>
-      <div class="table-responsive tamaño">
-        <table class="table table-striped">
+    </div>
+
+    <!-- Tabla de marcas -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="marcas-table">
           <thead>
             <tr>
               <th scope="col">Nro</th>
               <th scope="col">Nombre</th>
-              <th scope="col">Descripcion</th>
+              <th scope="col">Descripción</th>
               <th scope="col">Estado</th>
               <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let i=index; let mar of apiMarca |nombre:nombre|estado:estado|paginate: { itemsPerPage: 6, currentPage: page }">
-              <td>{{i+1}}</td>
-              <td>{{mar.nombre}}</td>
-              <td>{{mar.descripcion}}</td>
-              <!--Estado "-->
               <td>
-                <div class="form-check form-switch">
+                <span class="badge-number">{{i+1}}</span>
+              </td>
+              <td>
+                <strong class="marca-name">{{mar.nombre}}</strong>
+              </td>
+              <td>
+                <span class="marca-description">{{mar.descripcion}}</span>
+              </td>
+              <td>
+                <div class="switch-custom">
                   <input class="form-check-input" type="checkbox" [checked]="mar.estado==1"
                     (change)="showModal($event, mar)">
                 </div>
               </td>
-              <!--Modificar-->
               <td>
-                <button (click)="ModificarMarca(mar)" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modcate">
-                  <i class="bi bi-pencil"></i> Editar
+                <button (click)="ModificarMarca(mar)" class="btn-edit" data-bs-toggle="modal" data-bs-target="#modcate">
+                  <i class="bi bi-pencil"></i>
+                  Editar
                 </button>
               </td>
             </tr>
-            <!-- Repite las filas según sea necesario -->
           </tbody>
         </table>
       </div>
+
       <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+        <pagination-controls (pageChange)="page = $event"
+                            previousLabel="Anterior"
+                            nextLabel="Siguiente">
+        </pagination-controls>
       </div>
     </div>
   </div>

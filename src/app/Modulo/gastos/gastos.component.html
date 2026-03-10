@@ -1,23 +1,49 @@
-<div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h5>Gestionar Gastos</h5>
-      <p class="mb-0">Administra la información de los gastos</p>
+<div class="gastos-container">
+  <div class="gastos-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="bi bi-cash-coin"></i>
+      </div>
+      <div>
+        <h1 class="header-title">Gestión de Gastos</h1>
+        <p class="header-subtitle">Administra la información de los gastos</p>
+      </div>
+      <div class="filter-item align-self-end ms-auto">
+        <button class="btn-nuevo" data-bs-toggle="modal" data-bs-target="#addcate">
+          <i class="bi bi-plus-circle"></i>
+          Nuevo Gasto
+        </button>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="row ">
-        <div class="col-md-4">
-          <label for="f1">Desde::</label>
-          <input type="date" id="f1" class="form-control">
+  </div>
+
+  <div class="gastos-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-calendar-event"></i>
+            Desde
+          </label>
+          <input type="date" id="f1" class="form-control filter-input">
         </div>
-        <div class="col-md-3">
-          <label for="f1">Hasta::</label>
-          <input type="date" id="f1" class="form-control">
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-calendar-check"></i>
+            Hasta
+          </label>
+          <input type="date" id="f2" class="form-control filter-input">
         </div>
-        <div class="col-md-3">
-          <label for="cate">Categoria:</label>
-          <select class="form-select" [(ngModel)]="categoria">
-            <option value="" selected>Todos</option>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-tag"></i>
+            Categoría
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="categoria">
+            <option value="">Todos</option>
             <option value="1">Servicios básicos</option>
             <option value="2">Alquiler</option>
             <option value="3">Alimentos</option>
@@ -25,46 +51,55 @@
             <option value="5">Sueldos</option>
             <option value="6">Limpieza</option>
             <option value="7">Internet</option>
-            <option>Otros</option>
+            <option value="8">Otros</option>
           </select>
         </div>
-        <div class="col-md-2">
-          <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addcate">
-            <i class="bi bi-plus-circle" style="font-size: 1.2rem;"></i>
-            Nuevo Gasto</button>
-        </div>
       </div>
-      <div class="table-responsive tamaño">
-        <table class="table table-striped">
+    </div>
+
+    <!-- Tabla de gastos -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="gastos-table">
           <thead>
             <tr>
-              <th scope="col">Nro</th>
-              <th scope="col">Fecha</th>
-              <th scope="col">Monto</th>
-              <th scope="col">Categoria</th>
-              <th scope="col">Descripcion</th>
-              <th scope="col">Acciones</th>
+              <th>Nro</th>
+              <th>Fecha</th>
+              <th>Monto</th>
+              <th>Categoría</th>
+              <th>Descripción</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let i=index; let gasto of apiGasto|paginate: { itemsPerPage: 6, currentPage: page }|categoriag:categoria">
-              <td>{{i+1}}</td>
-              <td>{{gasto.fecha}}</td>
-              <td>{{gasto.monto}}</td>
-              <td>{{gasto.categoria==1? 'Servicios básicos' :
-                gasto.categoria==2? 'Alquiler' :
-                gasto.categoria==3? 'Alimentos' :
-                gasto.categoria==4? 'Transporte' :
-                gasto.categoria==5? 'Sueldos' :
-                gasto.categoria==6? 'Limpieza' :
-                gasto.categoria==7? 'Internet' :
-                (gasto.categoria==8? 'Articulos para operacion de tienda' :
-                'Otros')}}</td>
-              <td>{{gasto.descripcion}}</td>
-              <!--Eliminar-->
               <td>
-                <button  class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#anular"  
-                                        (click)="showModal(gasto)">
+                <span class="badge-number">{{i+1}}</span>
+              </td>
+              <td>
+                <i class="bi bi-calendar3 me-1" style="color: var(--gastos-primary);"></i>
+                {{gasto.fecha}}
+              </td>
+              <td>
+                <span class="monto-badge">{{gasto.monto}} Bs.</span>
+              </td>
+              <td>
+                <span class="categoria-badge">{{gasto.categoria==1? 'Servicios básicos' :
+                  gasto.categoria==2? 'Alquiler' :
+                  gasto.categoria==3? 'Alimentos' :
+                  gasto.categoria==4? 'Transporte' :
+                  gasto.categoria==5? 'Sueldos' :
+                  gasto.categoria==6? 'Limpieza' :
+                  gasto.categoria==7? 'Internet' :
+                  (gasto.categoria==8? 'Articulos para operacion de tienda' :
+                  'Otros')}}</span>
+              </td>
+              <td>
+                <span class="descripcion-text">{{gasto.descripcion}}</span>
+              </td>
+              <td>
+                <button class="btn-anular" data-bs-toggle="modal" data-bs-target="#anular" 
+                        (click)="showModal(gasto)">
                   <i class="bi bi-trash"></i> Anular
                 </button>
               </td>
@@ -72,8 +107,12 @@
           </tbody>
         </table>
       </div>
-       <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event"
+          previousLabel="Anterior"
+          nextLabel="Siguiente">
+        </pagination-controls>
       </div>
     </div>
   </div>

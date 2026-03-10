@@ -229,6 +229,14 @@ export class NuevaVentaComponent implements OnInit {
     }}
   );
   }
+  facturas(){
+    this.ventaSer.facturas().subscribe((pdfBlob) => {
+      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+      // Abre en una nueva pestaña
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    });
+  }
 
   agregarProducto(pro: Producto) {
     if (this.productosVender.includes(pro)) {

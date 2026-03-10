@@ -1,57 +1,76 @@
-<div class="container-fluid ">
-  <div class="card">
-    <div class="card-header">
-      <h5>Resumen de movimientos</h5>
-      <p class="mb-0">Administra la información de los movimientos de inventario</p>
+<div class="kardex-container">
+  <div class="kardex-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="bi bi-clipboard-data"></i>
+      </div>
+      <div>
+        <h1 class="header-title">Resumen de Movimientos</h1>
+        <p class="header-subtitle">Administra la información de los movimientos de inventario</p>
+      </div>
+      <div class="filter-item align-self-end ms-auto d-flex gap-2">
+        <button class="btn-entrada" data-bs-toggle="modal" data-bs-target="#entrada">
+          <i class="bi bi-box-arrow-right"></i>
+          Registrar Entrada
+        </button>
+        <button class="btn-salida" data-bs-toggle="modal" data-bs-target="#salida">
+          <i class="bi bi-box-arrow-left"></i>
+          Registrar Salida
+        </button>
+      </div>
     </div>
-    <div class="card-body">
-      <!-- Filtros y Búsqueda Avanzada -->
-      <div class="row mb-3">
-        <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="Buscar por producto...">
-        </div>
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#entrada">
-            <i class="bi bi-box-arrow-right" style="font-size: 1.2rem;"></i>
-            Registrar Entrada</button>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#salida">
-            <i class="bi bi-box-arrow-left" style="font-size: 1.2rem;"></i>
-            Registrar Salida</button>
+  </div>
+
+  <div class="kardex-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-search"></i>
+            Producto
+          </label>
+          <input type="text" class="form-control filter-input" placeholder="Buscar por producto...">
         </div>
       </div>
-      <!-- Tabla de Resultados -->
-      <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-          <thead class="table-dark">
+    </div>
+
+    <!-- Tabla de kardex -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="kardex-table">
+          <thead>
             <tr>
               <th>Nro</th>
-              <th scope="col">Producto</th>
-              <th scope="col">Marca</th>
-              <th scope="col">Entradas</th>
-              <th scope="col">Salidas </th>
-              <th scope="col">Fecha Registro</th>
+              <th>Producto</th>
+              <th>Marca</th>
+              <th>Entradas</th>
+              <th>Salidas</th>
+              <th>Fecha Registro</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let i=index; let pro of apiProductos">
-              <td>{{i+1}}</td>
-              <td>{{pro.nombre}}</td>
-              <td>{{pro.categorium.nombre}}</td>
-              <td><span class="badge bg-warning">{{pro.stock}}</span></td>
-              <td><span class="badge bg-success">{{pro.stock_minimo}}</span></td>
-              <td>{{pro.fecha_registro}}</td>
-              <!-- <td>
-                    <button class="btn btn-info btn-sm">Detalles</button>
-                  </td> -->
+              <td>
+                <span class="badge-number">{{i+1}}</span>
+              </td>
+              <td>
+                <span class="producto-name">{{pro.nombre}}</span>
+              </td>
+              <td>
+                <span class="marca-badge">{{pro.categorium.nombre}}</span>
+              </td>
+              <td>
+                <span class="entrada-badge">{{pro.stock}}</span>
+              </td>
+              <td>
+                <span class="salida-badge">{{pro.stock_minimo}}</span>
+              </td>
+              <td>
+                <i class="bi bi-calendar3 me-1" style="color: var(--kardex-primary);"></i>
+                {{pro.fecha_registro}}
+              </td>
             </tr>
-            <tr>
-
-            </tr>
-            <!-- Más filas de ejemplo -->
           </tbody>
         </table>
       </div>

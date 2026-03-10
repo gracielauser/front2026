@@ -1533,7 +1533,20 @@
   font-weight: 600;
   transition: all 0.3s ease;
 }
-
+.btn-report{
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: var(--ventas-white);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 .cantidad-ultra-input:focus {
   outline: none;
   border-color: var(--ventas-primary);

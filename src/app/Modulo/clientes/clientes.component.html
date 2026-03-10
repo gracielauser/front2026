@@ -1,98 +1,129 @@
-<div class="container-fluid" style="padding: 0 0;">
-  <div class="card shadow-sm">
-    <div class="card-header-clientes">
-      <div class="header-content">
-        <div class="header-icon">
-          <i class="bi bi-person-vcard"></i>
-        </div>
-        <div class="header-text">
-          <h5 class="mb-1">Gestionar Clientes</h5>
-          <p class="mb-0">Administra la información de tus clientes</p>
-        </div>
+<div class="clientes-container">
+  <div class="clientes-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="bi bi-person-vcard"></i>
+      </div>
+      <div>
+        <h1 class="header-title">Gestión de Clientes</h1>
+        <p class="header-subtitle">Administra la información de tus clientes</p>
+      </div>
+      <div class="filter-item align-self-end ms-auto">
+        <button class="btn-nuevo" data-bs-toggle="modal" data-bs-target="#addcliente" (click)="limpiar()">
+          <i class="bi bi-plus-circle"></i>
+          Nuevo Cliente
+        </button>
       </div>
     </div>
-    <div class="card-body">
-      <div class="row g-3 mb-4">
-        <div class="col-md-3">
-          <div class="search-box">
-            <i class="bi bi-search search-icon"></i>
-            <input type="text" class="form-control ps-5" placeholder="🔍 Buscar por nombre o ci/nit"
-            [(ngModel)]="nombre">
-          </div>
+  </div>
+
+  <div class="clientes-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-search"></i>
+            Nombre o CI/NIT
+          </label>
+          <input type="text" class="form-control filter-input" placeholder="Buscar por nombre o ci/nit"
+                 [(ngModel)]="nombre">
         </div>
-        <div class="col-md-2">
-          <select class="form-select" [(ngModel)]="ciudad">
-            <option value="">🌎 Todas las ciudades</option>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-geo-alt"></i>
+            Ciudad
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="ciudad">
+            <option value="">Todas las ciudades</option>
             <option *ngFor="let c of ciudades" [value]="c">{{c}}</option>
           </select>
         </div>
-        <div class="col-md-2">
-        </div>
-        <div class="col-md-3">
-          <select class="form-select" [(ngModel)]="estado">
-            <option selected value=1>✅ Activos</option>
-            <option value=2>❌ Inactivos</option>
-            <option value="">📋 Todos</option>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-toggle-on"></i>
+            Estado
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="estado">
+            <option value="1" selected>Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
           </select>
         </div>
-        <div class="col-md-2">
-          <button class="btn btn-clientes-primary w-100" data-bs-toggle="modal" data-bs-target="#addcliente" (click)="limpiar()">
-            <i class="bi bi-plus-circle me-2"></i>Nuevo
-          </button>
-        </div>
       </div>
+    </div>
 
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
+    <!-- Tabla de clientes -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="clientes-table">
           <thead>
             <tr>
-              <th scope="col"><i class="bi bi-hash me-1"></i>Nro</th>
-              <th scope="col"><i class="bi bi-credit-card me-1"></i>Tipo Doc</th>
-              <th scope="col"><i class="bi bi-person me-1"></i>Nombre Completo</th>
-              <th scope="col"><i class="bi bi-building me-1"></i>Ciudad</th>
-              <th scope="col"><i class="bi bi-phone me-1"></i>Celular</th>
-              <th scope="col"><i class="bi bi-envelope me-1"></i>Email</th>
-              <th scope="col"><i class="bi bi-toggle-on me-1"></i>Estado</th>
-              <th scope="col"><i class="bi bi-gear me-1"></i>Acciones</th>
+              <th scope="col">Nro</th>
+              <th scope="col">Tipo Doc</th>
+              <th scope="col">Nombre Completo</th>
+              <th scope="col">Ciudad</th>
+              <th scope="col">Celular</th>
+              <th scope="col">Email</th>
+              <th scope="col">Estado</th>
+              <th scope="col">Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let cli of apiClientes | estado:estado | nombresApellido:nombre | ciudad:ciudad | paginate: { itemsPerPage: 6, currentPage: page }; let i=index">
-              <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">{{i+1}}</td>
               <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
-                <span class="badge" [ngClass]="cli.tipo_documento == 1 ? 'bg-primary' : 'bg-info'">
+                <span class="badge-number">{{i+1}}</span>
+              </td>
+              <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
+                <span class="badge-documento" [ngClass]="cli.tipo_documento == 1 ? 'badge-ci' : 'badge-nit'">
                   {{cli.tipo_documento == 1 ? 'CI' : 'NIT'}}: {{cli.ci_nit}}
                 </span>
               </td>
               <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
-                <strong>{{cli.nombre}} {{cli.ap_paterno}} {{cli.ap_materno}}</strong>
+                <strong class="client-name">{{cli.nombre}} {{cli.ap_paterno}} {{cli.ap_materno}}</strong>
               </td>
               <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
-                <i class="bi bi-building-fill text-muted me-1"></i>{{cli.ciudad || 'Sin ciudad'}}
+                <span class="client-data">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  {{cli.ciudad || 'Sin ciudad'}}
+                </span>
               </td>
               <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
-                <i class="bi bi-phone-fill text-muted me-1"></i>{{cli.celular || 'Sin celular'}}
+                <span class="client-data">
+                  <i class="bi bi-phone-fill"></i>
+                  {{cli.celular || 'Sin celular'}}
+                </span>
               </td>
               <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
-                <i class="bi bi-envelope-fill text-muted me-1"></i>{{cli.email || 'Sin email'}}
+                <span class="client-data">
+                  <i class="bi bi-envelope-fill"></i>
+                  {{cli.email || 'Sin email'}}
+                </span>
               </td>
               <td>
-                <div class="form-check form-switch">
+                <div class="switch-custom">
                   <input class="form-check-input" type="checkbox" [checked]="cli.estado==1"
                     (change)="showModal($event, cli)">
                 </div>
               </td>
               <td>
-                <button (click)="cargarDatosCliente(cli)" class="btn btn-sm btn-clientes-edit" data-bs-toggle="modal" data-bs-target="#addcliente">
-                  <i class="bi bi-pencil-square me-1"></i>Editar
+                <button (click)="cargarDatosCliente(cli)" class="btn-edit" data-bs-toggle="modal" data-bs-target="#addcliente">
+                  <i class="bi bi-pencil"></i>
+                  Editar
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+
       <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+        <pagination-controls (pageChange)="page = $event"
+                            previousLabel="Anterior"
+                            nextLabel="Siguiente">
+        </pagination-controls>
       </div>
     </div>
   </div>
