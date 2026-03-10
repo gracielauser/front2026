@@ -71,7 +71,8 @@
 .icon-wrapper {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, var(--marcas-primary), var(--marcas-primary-dark));
+    background: linear-gradient(135deg, #0468A0, #049093);
+
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -95,7 +96,7 @@
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--marcas-primary), var(--marcas-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -228,7 +229,7 @@
 }
 
 .marcas-table thead {
-  background: linear-gradient(135deg, var(--marcas-primary), var(--marcas-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
 }
 
@@ -305,8 +306,8 @@
 
 /* Botón editar */
 .btn-edit {
-  background: white;
-  color: var(--marcas-primary);
+  background: var(--marcas-primary);
+  color: white;
   border: 2px solid var(--marcas-primary);
   padding: 0.4rem 1rem;
   border-radius: 8px;

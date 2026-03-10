@@ -361,154 +361,144 @@
       </div>
 
       <div class="modal-body-ultra">
-       <!-- Información General Ultra -->
-        <div class="detalle-ultra-section">
-          <div class="detalle-section-header">
+        <!-- Información General Compacta -->
+        <div class="detalle-compact-section">
+          <div class="detalle-section-header-compact">
             <i class="bi bi-info-circle-fill"></i>
             <span>Información General</span>
           </div>
-          <div class="detalle-ultra-grid">
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-calendar3"></i></div>
-              <div class="item-content">
-                <span class="item-label">Fecha de Venta</span>
-                <span class="item-value">{{ DetVenta?.fecha_registro }}</span>
+          <div class="detalle-compact-grid">
+            <div class="detalle-compact-item">
+              <div class="compact-icon"><i class="bi bi-hash"></i></div>
+              <div class="compact-content">
+                <span class="compact-label">Nº Venta</span>
+                <span class="compact-value">{{ DetVenta?.nro_venta }}</span>
               </div>
             </div>
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-hash"></i></div>
-              <div class="item-content">
-                <span class="item-label">N° de Venta</span>
-                <span class="item-value">{{ DetVenta?.nro_venta }}</span>
+            <div class="detalle-compact-item">
+              <div class="compact-icon"><i class="bi bi-calendar3"></i></div>
+              <div class="compact-content">
+                <span class="compact-label">Fecha</span>
+                <span class="compact-value">{{ DetVenta?.fecha_registro }}</span>
               </div>
             </div>
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-person-badge"></i></div>
-              <div class="item-content">
-                <span class="item-label">Vendedor</span>
-                <span class="item-value">
+            <div class="detalle-compact-item">
+              <div class="compact-icon"><i class="bi bi-person-circle"></i></div>
+              <div class="compact-content">
+                <span class="compact-label">Cliente</span>
+                <span class="compact-value">{{ DetVenta?.cliente == null ? 'Público general' : DetVenta?.cliente?.nombres }}</span>
+              </div>
+            </div>
+            <div class="detalle-compact-item">
+              <div class="compact-icon"><i class="bi bi-person-badge"></i></div>
+              <div class="compact-content">
+                <span class="compact-label">Vendedor</span>
+                <span class="compact-value">
                   {{ DetVenta?.usuario?.empleado?.nombre }}
                   {{ DetVenta?.usuario?.empleado?.ap_paterno }}
-                  {{ DetVenta?.usuario?.empleado?.ap_materno }}
                 </span>
               </div>
             </div>
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-receipt"></i></div>
-              <div class="item-content">
-                <span class="item-label">Tipo de Venta</span>
-                <span class="item-value">
-                  <ng-container *ngIf="DetVenta?.tipo_venta == 1">Normal (Sin factura)</ng-container>
-                  <ng-container *ngIf="DetVenta?.tipo_venta == 2">
-                    Facturado
-                    <span *ngIf="DetVenta?.facturas && DetVenta?.facturas[0]">
-                      - Fac. {{ DetVenta?.facturas[0].nro_factura }}
-                    </span>
-                  </ng-container>
-                </span>
+            <div class="detalle-compact-item">
+              <div class="compact-icon"><i class="bi bi-credit-card"></i></div>
+              <div class="compact-content">
+                <span class="compact-label">Pago</span>
+                <span class="compact-value">{{ DetVenta?.tipo_pago == 1 ? 'Efectivo' : 'QR' }}</span>
               </div>
             </div>
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-credit-card"></i></div>
-              <div class="item-content">
-                <span class="item-label">Tipo de Pago</span>
-                <span class="item-value">{{ DetVenta?.tipo_pago == 1 ? 'Efectivo' : 'QR' }}</span>
-              </div>
-            </div>
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-check-circle"></i></div>
-              <div class="item-content">
-                <span class="item-label">Estado</span>
-                <span class="item-value">{{ DetVenta?.estado == 1 ? 'Válido' : 'Anulado' }}</span>
-              </div>
-            </div>
-            <div class="detalle-ultra-item">
-              <div class="item-icon"><i class="bi bi-person-circle"></i></div>
-              <div class="item-content">
-                <span class="item-label">Cliente</span>
-                <span class="item-value">
-                  {{ DetVenta?.cliente == null ? 'Público general' : DetVenta?.cliente?.nombres }}
+            <div class="detalle-compact-item">
+              <div class="compact-icon"><i class="bi bi-check-circle"></i></div>
+              <div class="compact-content">
+                <span class="compact-label">Estado</span>
+                <span class="compact-value" [class.text-success]="DetVenta?.estado == 1" [class.text-danger]="DetVenta?.estado == 2">
+                  {{ DetVenta?.estado == 1 ? 'Válido' : 'Anulado' }}
                 </span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Productos Vendidos Ultra -->
-        <div class="detalle-ultra-section">
-          <div class="detalle-section-header">
-            <i class="bi bi-box-seam"></i>
-            <span>Productos Vendidos</span>
+        <!-- Productos y Totales en 2 Columnas -->
+        <div class="detalle-two-column-layout">
+          <!-- Columna Izquierda: Productos -->
+          <div class="detalle-productos-column">
+            <div class="detalle-section-header-compact">
+              <i class="bi bi-box-seam"></i>
+              <span>Productos</span>
+            </div>
+            <div class="productos-compact-list">
+              <div class="producto-compact-item" *ngFor="let d of detallesVenta; let i = index">
+                <div class="producto-compact-header">
+                  <div class="producto-compact-number">{{ i + 1 }}</div>
+                  <div class="producto-compact-name">
+                    <i class="bi bi-box-fill"></i>
+                    <span>{{ d.producto?.nombre }}</span>
+                  </div>
+                </div>
+                <div class="producto-compact-details">
+                  <div class="producto-compact-price">
+                    <span class="price-label">Precio:</span>
+                    <span class="price-value">{{ d.precio_unitario | currency:'Bs ':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <div class="producto-compact-qty">
+                    <span class="qty-label">Cant:</span>
+                    <span class="qty-badge">{{ d.cantidad }}</span>
+                  </div>
+                  <div class="producto-compact-subtotal">
+                    <span class="subtotal-label">Subtotal:</span>
+                    <span class="subtotal-value">{{ d.sub_total | currency:'Bs ':'symbol':'1.2-2' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="detalle-table-ultra-container">
-            <table class="detalle-ultra-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Producto</th>
-                  <th>Precio Unit.</th>
-                  <th class="th-center-ultra">Cantidad</th>
-                  <th class="th-right-ultra">Subtotal</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let d of detallesVenta; let i = index">
-                  <td>{{ i + 1 }}</td>
-                  <td>
-                    <div class="producto-name-detalle">
-                      <i class="bi bi-box-fill"></i>
-                      <span>{{ d.producto?.nombre }}</span>
-                    </div>
-                  </td>
-                  <td>{{ d.precio_unitario | currency:'BOB':'symbol':'1.2-2' }}</td>
-                  <td class="th-center-ultra">
-                    <span class="cantidad-badge">{{ d.cantidad }}</span>
-                  </td>
-                  <td class="th-right-ultra">
-                    <span class="subtotal-detalle">{{ d.sub_total | currency:'BOB':'symbol':'1.2-2' }}</span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
 
-        <!-- Totales Ultra -->
-        <div class="detalle-ultra-section">
-          <div class="detalle-section-header">
-            <i class="bi bi-cash-stack"></i>
-            <span>Resumen de Totales</span>
-          </div>
-          <div class="totales-detalle-ultra">
-            <div class="total-detalle-row">
-              <span class="total-detalle-label">Subtotal</span>
-              <span class="total-detalle-value">{{ DetVenta?.monto_total | currency:'BOB':'symbol':'1.2-2' }}</span>
+          <!-- Columna Derecha: Totales y Acciones -->
+          <div class="detalle-totales-column">
+            <div class="detalle-section-header-compact">
+              <i class="bi bi-cash-stack"></i>
+              <span>Totales</span>
             </div>
-            <div class="total-detalle-row">
-              <span class="total-detalle-label">Descuento</span>
-              <span class="total-detalle-value discount">
-                {{ (DetVenta?.descuento) ? (DetVenta?.descuento | currency:'BOB':'symbol':'1.2-2') : 'Sin descuento' }}
-              </span>
+            <div class="totales-compact-card">
+              <div class="total-compact-row">
+                <span class="total-compact-label">Subtotal</span>
+                <span class="total-compact-value">{{ DetVenta?.monto_total | currency:'Bs ':'symbol':'1.2-2' }}</span>
+              </div>
+              <div class="total-compact-row">
+                <span class="total-compact-label">Descuento</span>
+                <span class="total-compact-value discount">
+                  {{ (DetVenta?.descuento) ? (DetVenta?.descuento | currency:'Bs ':'symbol':'1.2-2') : '-' }}
+                </span>
+              </div>
+              <div class="total-compact-final">
+                <span class="total-final-label-compact">Total General</span>
+                <span class="total-final-value-compact">
+                  {{ ((DetVenta?.monto_total || 0) - (DetVenta?.descuento || 0)) | currency:'Bs ':'symbol':'1.2-2' }}
+                </span>
+              </div>
             </div>
-            <div class="total-detalle-row total-final-row">
-              <span class="total-final-label">Total General</span>
-              <span class="total-final-value">
-                {{ ((DetVenta?.monto_total || 0) - (DetVenta?.descuento || 0)) | currency:'Bs ':'symbol':'1.2-2' }}
-              </span>
-            </div>
-          </div>
-        </div>
 
-        <!-- Acciones -->
-        <div class="actions-detalle-ultra">
-          <button class="btn-action-ultra btn-pdf" (click)="generarPdf(true)">
-            <i class="bi bi-file-earmark-pdf-fill"></i>
-            <span>Nota de venta</span>
-          </button>
-          <button *ngIf="DetVenta?.tipo_venta==2" class="btn-action-ultra btn-pdf" (click)="generarPdf(false)">
-            <i class="bi bi-file-earmark-pdf-fill"></i>
-            <span>Factura</span>
-          </button>
+            <!-- Tipo de Venta Info -->
+            <div class="tipo-venta-compact" *ngIf="DetVenta?.tipo_venta == 2">
+              <i class="bi bi-file-earmark-check-fill"></i>
+              <div class="tipo-venta-info">
+                <span class="tipo-label">Factura</span>
+                <span class="tipo-value">{{ DetVenta?.facturas && DetVenta?.facturas[0] ? DetVenta?.facturas[0].nro_factura : 'N/A' }}</span>
+              </div>
+            </div>
+
+            <!-- Acciones Compactas -->
+            <div class="actions-compact">
+              <button class="btn-compact btn-compact-primary" (click)="generarPdf(true)">
+                <i class="bi bi-file-earmark-pdf-fill"></i>
+                <span>Nota de Venta</span>
+              </button>
+              <button *ngIf="DetVenta?.tipo_venta==2" class="btn-compact btn-compact-secondary" (click)="generarPdf(false)">
+                <i class="bi bi-file-earmark-check-fill"></i>
+                <span>Factura</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

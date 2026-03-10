@@ -71,7 +71,7 @@
 .icon-wrapper {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, var(--clientes-primary), var(--clientes-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -95,7 +95,7 @@
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--clientes-primary), var(--clientes-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -228,7 +228,7 @@
 }
 
 .clientes-table thead {
-  background: linear-gradient(135deg, var(--clientes-primary), var(--clientes-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
 }
 
@@ -260,7 +260,7 @@
 
 /* Badges */
 .badge-number {
-  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 6px;
@@ -331,8 +331,8 @@
 
 /* Botón editar */
 .btn-edit {
-  background: white;
-  color: var(--clientes-primary);
+    background: var(--clientes-primary);
+  color: white;
   border: 2px solid var(--clientes-primary);
   padding: 0.4rem 1rem;
   border-radius: 8px;
@@ -341,7 +341,6 @@
   transition: all 0.3s ease;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   cursor: pointer;
 }
 

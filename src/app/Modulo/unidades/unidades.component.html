@@ -1,71 +1,101 @@
-<div class="container-fluid">
-      <div class="card">
-          <div class="card-header">
-              <h5>Gestionar Unidades de Medida</h5>
-              <p class="mb-0">Administra la información de las unidades de medida</p>
-          </div>
-          <div class="card-body">
-              <div class="row mb-3">
-                  <div class="col-md-4">
-                    <input type="text" class="form-control" placeholder="Buscar por nombre"
-                           [(ngModel)]="nombre">
-                  </div>
-                  <div class="col-md-3">
-
-                  </div>
-                  <div class="col-md-3">
-                    <select class="form-select" [(ngModel)]="estado">
-                      <option selected value="1">Activos</option>
-                      <option value="2">Inactivos</option>
-                      <option value="">Todos</option>
-                    </select>
-                  </div>
-                  <div class="col-md-2">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addUnidad">
-                      <i class="bi bi-plus-circle"></i>
-                      Nueva Unidad
-                    </button>
-                  </div>
-              </div>
-              <div class="table-responsive tamaño">
-                  <table class="table table-striped">
-                      <thead>
-                          <tr>
-                              <th scope="col">Nro</th>
-                              <th scope="col">Nombre</th>
-                              <th scope="col">Abreviatura</th>
-                              <th scope="col">Estado</th>
-                              <th scope="col">Acciones</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                          <tr *ngFor="let i=index; let uni of apiUnidad |nombre:nombre|estado:estado |paginate: { itemsPerPage: 6, currentPage: page }">
-                              <td>{{i+1}}</td>
-                              <td>{{uni.nombre}}</td>
-                              <td>{{uni.abreviatura}}</td>
-                               <!--Estado-->
-                            <td>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" [checked]="uni.estado==1"
-                                        (change)="showModal($event, uni)">
-                                </div>
-                            </td>
-                              <!--Modificar-->
-                              <td>
-                                  <button (click)="ModificarUnidad(uni)" class="btn btn-outline-primary btn-sm"data-bs-toggle="modal" data-bs-target="#modUnidad">
-                                      <i class="bi bi-pencil"></i> Editar
-                                  </button>
-                              </td>
-                          </tr>
-                      </tbody>
-                  </table>
-              </div>
-              <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+<div class="unidades-container">
+  <div class="unidades-header">
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="bi bi-rulers"></i>
       </div>
-          </div>
+      <div>
+        <h1 class="header-title">Gestionar Unidades de Medida</h1>
+        <p class="header-subtitle">Administra la información de las unidades de medida</p>
+      </div>
+      <div class="filter-item align-self-end ms-auto">
+        <button class="btn-nuevo" data-bs-toggle="modal" data-bs-target="#addUnidad">
+          <i class="bi bi-plus-circle"></i>
+          Nueva Unidad
+        </button>
       </div>
     </div>
+  </div>
+
+  <div class="unidades-content">
+    <!-- Filtros -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-search"></i>
+            Nombre
+          </label>
+          <input type="text" class="form-control filter-input" placeholder="Buscar por nombre"
+                 [(ngModel)]="nombre">
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-toggle-on"></i>
+            Estado
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="estado">
+            <option selected value="1">Activos</option>
+            <option value="2">Inactivos</option>
+            <option value="">Todos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de unidades -->
+    <div class="table-section">
+      <div class="table-container">
+        <table class="unidades-table">
+          <thead>
+            <tr>
+              <th>Nro</th>
+              <th>Nombre</th>
+              <th>Abreviatura</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i=index; let uni of apiUnidad |nombre:nombre|estado:estado |paginate: { itemsPerPage: 6, currentPage: page }">
+              <td>
+                <span class="badge-number">{{i+1}}</span>
+              </td>
+              <td>
+                <span class="nombre-text">{{uni.nombre}}</span>
+              </td>
+              <td>
+                <span class="abreviatura-badge">{{uni.abreviatura}}</span>
+              </td>
+              <td>
+                <div class="form-check form-switch estado-switch">
+                  <input class="form-check-input" type="checkbox" [checked]="uni.estado==1"
+                         (change)="showModal($event, uni)">
+                </div>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button (click)="ModificarUnidad(uni)" class="btn-action btn-edit" 
+                          data-bs-toggle="modal" data-bs-target="#modUnidad">
+                    <i class="bi bi-pencil"></i>
+                    Modificar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="page = $event" 
+                            previousLabel="Anterior"
+                            nextLabel="Siguiente"></pagination-controls>
+      </div>
+    </div>
+  </div>
+</div>
   <!-- MODAL  -->
   <div class="modal fade" id="addUnidad" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -140,8 +170,9 @@
               letras.</div>
           </div>
             <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"  [disabled]="uniForm.invalid">Guardar</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"  [disabled]="uniForm.invalid">Guardar</button>
+
         </div>
           </form>
         </div>
@@ -222,8 +253,8 @@
               letras.</div>
           </div>
             <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"  [disabled]="uniForm.invalid">Guardar</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" data-bs-dismiss="modal"  [disabled]="uniForm.invalid">Guardar</button>
         </div>
           </form>
         </div>
