@@ -10,16 +10,18 @@ import { ClienteService } from '../../../Servicios/cliente.service';
 import { ProductoService } from '../../../Servicios/producto.service';
 import { VentaService } from '../../../Servicios/venta.service';
 import { CategoriaService } from '../../../Servicios/categoria.service';
-import { ProductoGeneralPipe } from '../../../Filtros/producto-general.pipe';
 
 @Component({
   selector: 'app-nueva-venta',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule, ProductoGeneralPipe],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './nueva-venta.component.html',
   styleUrls: ['./nueva-venta.component.css']
 })
 export class NuevaVentaComponent implements OnInit {
+
+  // Constante para sessionStorage
+  private readonly CARRITO_STORAGE_KEY = 'carritoVentaProductos';
 
   usu: Usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
   apiProductos: Producto[] = [];
@@ -107,7 +109,10 @@ export class NuevaVentaComponent implements OnInit {
     });
 
     this.proSer.getListaProductos().subscribe(data => {
-      this.apiProductos = data;
+      this.apiProductos = data.filter((pro: any) => pro.estado == 1);
+      
+      // Cargar productos del sessionStorage después de obtener la lista completa
+      this.cargarCarritoDesdeStorage();
     });
 
     this.ventaForm.get('documento')?.disable();
@@ -122,6 +127,81 @@ export class NuevaVentaComponent implements OnInit {
       this.paginaActual = 1; // Resetear paginación al refrescar
       console.log('Productos refrescados:', data);
     });
+  }
+
+  // ===== MÉTODOS DE PERSISTENCIA EN SESSIONSTORAGE =====
+  
+  /**
+   * Guarda los IDs de los productos en el carrito en sessionStorage
+   */
+  private guardarCarritoEnStorage(): void {
+    const idsProductos = this.productosVender.map(p => p.id_producto);
+    sessionStorage.setItem(this.CARRITO_STORAGE_KEY, JSON.stringify(idsProductos));
+  }
+
+  /**
+   * Carga los productos del sessionStorage y los agrega al carrito
+   * Solo agrega productos que tengan stock > 0
+   */
+  private cargarCarritoDesdeStorage(): void {
+    const idsGuardados = sessionStorage.getItem(this.CARRITO_STORAGE_KEY);
+    
+    if (!idsGuardados) {
+      return;
+    }
+
+    try {
+      const idsProductos: number[] = JSON.parse(idsGuardados);
+      const productosSinStock: string[] = [];
+      
+      idsProductos.forEach(idProducto => {
+        const producto = this.apiProductos.find(p => p.id_producto === idProducto);
+        
+        if (producto) {
+          if (producto.stock > 0) {
+            // Agregar producto al carrito sin validación de stock (ya validado)
+            if (!this.productosVender.includes(producto)) {
+              this.productosVender.push(producto);
+              this.agregarCantidad(1);
+              this.productosVentaPrecios.push(producto.precio_venta);
+              this.productosVentaSubtotales.push(producto.precio_venta * 1);
+            }
+          } else {
+            productosSinStock.push(producto.nombre);
+          }
+        }
+      });
+
+      // Recalcular total después de cargar productos
+      if (this.productosVender.length > 0) {
+        this.calcularTotal();
+        console.log(`✅ Carrito cargado: ${this.productosVender.length} producto(s)`);
+      }
+
+      // Mostrar alerta si hay productos sin stock
+      if (productosSinStock.length > 0) {
+        const mensaje = productosSinStock.length === 1
+          ? `⚠️ El producto "${productosSinStock[0]}" ya no tiene stock disponible y no se agregó al carrito.`
+          : `⚠️ Los siguientes productos ya no tienen stock disponible y no se agregaron al carrito:\n${productosSinStock.join(', ')}`;
+        
+        this.mostrarAlerta(false, mensaje);
+      }
+
+      // Actualizar sessionStorage con solo los productos que sí se agregaron
+      if (productosSinStock.length > 0) {
+        this.guardarCarritoEnStorage();
+      }
+    } catch (error) {
+      console.error('❌ Error al cargar carrito desde sessionStorage:', error);
+      this.limpiarCarritoStorage();
+    }
+  }
+
+  /**
+   * Limpia el carrito del sessionStorage
+   */
+  private limpiarCarritoStorage(): void {
+    sessionStorage.removeItem(this.CARRITO_STORAGE_KEY);
   }
 
   onCategoriaChange(event: any) {
@@ -146,6 +226,7 @@ export class NuevaVentaComponent implements OnInit {
   get productosFiltrados(): any[] {
     let productos = this.apiProductos;
 
+    // Filtro por categoría/subcategoría
     if (this.categoriaSeleccionada) {
       if (this.subcategoriaSeleccionada) {
         productos = productos.filter(p => p.id_categoria == Number(this.subcategoriaSeleccionada));
@@ -155,6 +236,20 @@ export class NuevaVentaComponent implements OnInit {
           p.id_categoria == Number(this.categoriaSeleccionada) || subcategoriaIds.includes(p.id_categoria)
         );
       }
+    }
+
+    // Filtro por búsqueda (nombre, código, marca)
+    if (this.busqueda && this.busqueda.trim()) {
+      const termino = this.busqueda.toLowerCase().trim();
+      productos = productos.filter(producto => {
+        const nombre = (producto.nombre || '').toLowerCase();
+        const codigo = (producto.codigo || '').toLowerCase();
+        const marca = (producto.marca?.nombre || '').toLowerCase();
+        
+        return nombre.includes(termino) ||
+               codigo.includes(termino) ||
+               marca.includes(termino);
+      });
     }
 
     return productos;
@@ -233,7 +328,7 @@ export class NuevaVentaComponent implements OnInit {
         precio_unitario: this.productosVender[i].precio_venta,
         id_venta: 0,
         id_producto: this.productosVender[i].id_producto,
-        precio_venta: this.productosVender[i].precio_compra,
+        precio_compra: this.productosVender[i].precio_compra,
       };
       venta.detallesVenta.push(detalle);
     }
@@ -282,6 +377,9 @@ export class NuevaVentaComponent implements OnInit {
       this.productosVentaSubtotales.push(pro.precio_venta * 1);
     }
     this.calcularTotal();
+    
+    // Guardar en sessionStorage
+    this.guardarCarritoEnStorage();
   }
 
   Cancelar() {
@@ -300,6 +398,9 @@ export class NuevaVentaComponent implements OnInit {
     this.productosVentaCantidades = [];
     this.productosVentaPrecios = [];
     this.productosVentaSubtotales = [];
+
+    // Limpiar sessionStorage del carrito
+    this.limpiarCarritoStorage();
 
     // Resetear variables
     this.busqueda = '';
@@ -491,6 +592,9 @@ export class NuevaVentaComponent implements OnInit {
     this.productosVentaPrecios.splice(i, 1);
     this.productosVentaSubtotales.splice(i, 1);
     this.calcularTotal();
+    
+    // Actualizar sessionStorage
+    this.guardarCarritoEnStorage();
   }
 
   observarFactura(n: number) {
