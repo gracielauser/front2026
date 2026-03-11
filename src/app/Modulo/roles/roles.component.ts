@@ -25,6 +25,7 @@ export class RolesComponent {
   isEditMode: boolean = false;
   modalTitle: string = 'Adicionar Rol';
   rolModel: any = null;
+  formSubmitted: boolean = false;
 
   constructor(
     private rolService: RolServiceService
@@ -46,8 +47,8 @@ export class RolesComponent {
   rolForm = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
     descripcion: new FormControl('', [Validators.required]),
-    estado: new FormControl('', Validators.required),
-    permisos: new FormControl('', Validators.required),
+    estado: new FormControl('1'),
+    permisos: new FormControl(''),
   });
   get control() {
     return this.rolForm.controls
@@ -64,6 +65,8 @@ export class RolesComponent {
   }
 
   AgregarRol() {
+    this.formSubmitted = true;
+    
     if (this.rolForm.invalid || this.permisos.length === 0) {
       this.rolForm.markAllAsTouched();
       this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
@@ -148,8 +151,6 @@ export class RolesComponent {
     } else {
       this.permisos = this.permisos.filter(p => p !== nroModulo);
     }
-    // Actualizar el campo permisos del formulario para validación
-    this.rolForm.patchValue({ permisos: this.permisos.length > 0 ? this.permisos.join(',') : '' });
     console.log('Permisos seleccionados:', this.permisos);
   }
   cargarDatosRol(rol: any) {
@@ -167,10 +168,10 @@ export class RolesComponent {
     this.rolForm.patchValue({
       nombre: rol.nombre,
       descripcion: rol.descripcion,
-      estado: rol.estado,
-      permisos: rol.permisos || ''
+      estado: rol.estado
     });
 
+    this.formSubmitted = false;
     console.log('Editar rol - Permisos cargados:', this.permisos);
   }
 
@@ -185,6 +186,7 @@ export class RolesComponent {
     this.isEditMode = false;
     this.modalTitle = 'Adicionar Rol';
     this.rolModel = null;
+    this.formSubmitted = false;
   }
   rolSeleccionado: any = null;
   estadoTemporal: number = 0;

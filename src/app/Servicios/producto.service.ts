@@ -36,4 +36,14 @@ private baseUrl=environment.apiUrl+'/api/producto'
          responseType: 'blob' // 👈 clave para manejar PDF
        });
      }
+     catalogoPDF(body={}): Observable<Blob> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte/catalogo`,body, {
+         responseType: 'blob' // 👈 clave para manejar PDF
+       });
+     }
+     beneficioPDF(body={}): Observable<Blob> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte/ganancias-productos`,body, {
+         responseType: 'blob' // 👈 clave para manejar PDF
+       });
+     }
 }

@@ -948,7 +948,7 @@
 
 /* Tabla de Productos Ultra */
 .productos-ultra-table-container {
-  max-height: 700px;
+  max-height: 500px;
   overflow-y: auto;
   border-radius: var(--radius-md);
   border: 1px solid var(--ventas-gray-200);

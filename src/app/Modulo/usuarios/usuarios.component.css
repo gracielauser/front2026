@@ -72,7 +72,7 @@
 .icon-wrapper {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, var(--usuarios-primary), var(--usuarios-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -96,7 +96,8 @@
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--usuarios-primary), var(--usuarios-primary-dark));
+    background: linear-gradient(135deg, #0468A0, #049093);
+
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -229,7 +230,8 @@
 }
 
 .usuarios-table thead {
-  background: linear-gradient(135deg, var(--usuarios-primary), var(--usuarios-primary-dark));
+    background: linear-gradient(135deg, #0468A0, #049093);
+
   color: white;
 }
 
@@ -396,7 +398,7 @@
 }
 
 ::ng-deep .modal-header {
-  background: linear-gradient(135deg, var(--usuarios-primary), var(--usuarios-secondary));
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
   border-radius: 12px 12px 0 0;
   padding: 1rem 1.5rem;

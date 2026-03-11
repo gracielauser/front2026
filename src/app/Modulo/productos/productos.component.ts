@@ -70,7 +70,14 @@ export class ProductosComponent implements OnInit, AfterViewInit {
     private UniMedSer: UnidadMedidaService,
     private MarSer: MarcaService
   ) { }
-
+catalogoPDF(){
+    this.ProSer.catalogoPDF({}).subscribe((pdfBlob) => {
+      // Aquí puedes manejar el PDF recibido, por ejemplo, abrirlo en una nueva ventana
+      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      window.open(url);
+    });
+}
   ngOnInit(): void {
     this.CatSer.getListaCategoria().subscribe((lista) => {
       this.apiCategorias = lista

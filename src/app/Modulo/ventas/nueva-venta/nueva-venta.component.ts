@@ -230,9 +230,10 @@ export class NuevaVentaComponent implements OnInit {
       const detalle = {
         cantidad: this.productosVentaCantidades[i],
         sub_total: this.productosVentaSubtotales[i],
-        precio_unitario: this.productosVentaSubtotales[i] / this.productosVentaCantidades[i],
+        precio_unitario: this.productosVender[i].precio_venta,
         id_venta: 0,
-        id_producto: this.productosVender[i].id_producto
+        id_producto: this.productosVender[i].id_producto,
+        precio_venta: this.productosVender[i].precio_compra,
       };
       venta.detallesVenta.push(detalle);
     }

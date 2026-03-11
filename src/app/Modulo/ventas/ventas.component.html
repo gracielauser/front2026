@@ -256,7 +256,7 @@
                 <td class="col-amount">
                   <div class="amount-display">
                     <span class="amount-currency">Bs</span>
-                    <span class="amount-value">{{ ven.monto_total | number:'1.2-2' }}</span>
+                    <span class="amount-value">{{ ven.monto_total - (ven.descuento || 0) | number:'1.2-2' }}</span>
                   </div>
                 </td>
                 <td class="col-center">
@@ -443,6 +443,10 @@
                   <div class="producto-compact-qty">
                     <span class="qty-label">Cant:</span>
                     <span class="qty-badge">{{ d.cantidad }}</span>
+                  </div>
+                  <div class="producto-compact-descuento">
+                    <span class="descuento-label">Desc:</span>
+                    <span class="descuento-value">{{ ((d.precio_unitario * d.cantidad) - d.sub_total) | currency:'Bs ':'symbol':'1.2-2' }}</span>
                   </div>
                   <div class="producto-compact-subtotal">
                     <span class="subtotal-label">Subtotal:</span>

@@ -184,8 +184,7 @@
   outline: none;
 }
 
-.btn-nuevo {
-  background: linear-gradient(135deg, var(--productos-success), #059669);
+.btn-nuevo, .btn-catalogo {
   color: white;
   border: none;
   border-radius: 8px;
@@ -198,6 +197,13 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.btn-nuevo{
+  background: linear-gradient(135deg, var(--productos-success), #059669);
+}
+.btn-catalogo{
+  background: linear-gradient(135deg, var(--productos-success), #053f96);
+  margin-bottom: 5px;
 }
 
 .btn-nuevo:hover {

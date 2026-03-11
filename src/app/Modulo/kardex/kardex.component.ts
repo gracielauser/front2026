@@ -15,8 +15,7 @@ export class KardexComponent {
   apiProductos: any[] = []
 
   constructor(
-    private ProSer: ProductoService,
-
+    private ProSer: ProductoService
   ) {
 
   }
@@ -28,7 +27,22 @@ export class KardexComponent {
 
 
   }
-
+reporteBeneficio(){
+  // this.ProSer.getPDF().subscribe((pdfBlob) => {
+    // const url = window.URL.createObjectURL(pdfBlob);
+    // const a = document.createElement('a');
+    // a.href = url;
+    // a.download = 'reporte_beneficio_producto.pdf';
+    // a.click();
+    // window.URL.revokeObjectURL(url);
+  // });
+  this.ProSer.beneficioPDF({}).subscribe((pdfBlob) => {
+      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+      // Abre en una nueva pestaña
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }); 
+}
   ListarProductos() {
     this.ProSer.getListaProductos().subscribe(data => {
       this.apiProductos = data

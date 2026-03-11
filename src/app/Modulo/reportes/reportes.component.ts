@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CompraService } from '../../Servicios/compra.service';
 import { ClienteService } from '../../Servicios/cliente.service';
+import { GastoService } from '../../Servicios/gasto.service';
 
 //(pdfMake as any).vfs = (pdfFonts as any).pdfMake.vfs;
 
@@ -43,7 +44,8 @@ export class ReportesComponent implements OnInit {
     private ProSer: ProductoService,
     private CatSer:CategoriaService,
     private ComSer: CompraService,
-    private CliSer: ClienteService
+    private CliSer: ClienteService,
+    private GasSer: GastoService
   ) { }
   //para los filtros
 
@@ -287,7 +289,14 @@ export class ReportesComponent implements OnInit {
     // Generar y descargar el PDF
     //pdfMake.createPdf(documentDefinition).download('reporte-inventario.pdf');
   }
-
+reporteGastos(){
+this.GasSer.getPDF({}).subscribe((pdfBlob) => {
+      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+      // Abre en una nueva pestaña
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+    }); 
+}
 reporteClientesPDF(){
 this.CliSer.getPDF({}).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });

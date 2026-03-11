@@ -587,7 +587,7 @@
 }
 
 ::ng-deep .modal-header {
-  background: linear-gradient(135deg, var(--empleados-primary), var(--empleados-primary-dark));
+  background: linear-gradient(135deg, #0468A0, #049093);
   color: white;
   border-radius: 12px 12px 0 0;
   padding: 1rem 1.5rem;

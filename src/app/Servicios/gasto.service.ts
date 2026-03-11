@@ -24,4 +24,8 @@ export class GastoService {
       let url = this.baseUrl+"/anular";
       return this.xhttp.put(url,gasto)
      }
+     getPDF(body={}): Observable<Blob> {  
+      let url = environment.apiUrl+"/api/reporte/gastos";
+      return this.xhttp.post(url, body, { responseType: 'blob' });
+     }
 }
