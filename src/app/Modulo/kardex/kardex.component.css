@@ -796,3 +796,111 @@
     padding-bottom: 1rem;
   }
 }
+
+/* ===========================
+   BOTÓN VER KARDEX
+   =========================== */
+
+.btn-ver-kardex {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-ver-kardex:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+  background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
+.btn-ver-kardex i {
+  font-size: 1rem;
+}
+
+/* ===========================
+   MODAL KARDEX DETALLADO
+   =========================== */
+
+.producto-detalle-card {
+  background: linear-gradient(135deg, #f8fafc, #e0f2fe);
+  border: 2px solid var(--kardex-primary);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-item label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--kardex-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.info-item label i {
+  color: var(--kardex-primary);
+  font-size: 1rem;
+}
+
+.info-item span {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--kardex-dark);
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid var(--kardex-border);
+}
+
+/* Tabla de movimientos detallados */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-primary {
+  background: linear-gradient(135deg, var(--kardex-primary), var(--kardex-primary-dark)) !important;
+  color: white;
+}
+
+.table-primary th {
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.5px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(8, 145, 178, 0.05);
+}
+
+.table-bordered {
+  border: 2px solid var(--kardex-border);
+}
+
+.table-bordered td,
+.table-bordered th {
+  border-color: var(--kardex-border);
+}
+

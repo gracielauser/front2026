@@ -838,6 +838,9 @@
   color: white;
   padding: 1.5rem 2rem;
   border: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-header-ultra.modal-header-info {
@@ -875,7 +878,9 @@
 
 .modal-title-ultra {
   flex: 1;
-} h2 {
+}
+
+.modal-title-ultra h2 {
   font-size: 1.75rem;
   font-weight: 800;
   margin: 0 0 0.25rem 0;
@@ -894,6 +899,17 @@
 
 .btn-close-ultra:hover {
   opacity: 1;
+}
+
+/* Botón de cierre estándar de Bootstrap con estilo blanco */
+.modal-header-ultra .btn-close-white {
+  filter: brightness(0) invert(1);
+  opacity: 0.8;
+}
+
+.modal-header-ultra .btn-close-white:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .modal-body-ultra {

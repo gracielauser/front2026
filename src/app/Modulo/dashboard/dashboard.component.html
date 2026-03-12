@@ -142,7 +142,7 @@
                 <div class="me-3">
                   <img
                     *ngIf="producto.foto"
-                    [src]="'http://localhost:3001/uploads/' + producto.foto"
+                    [src]="'http://localhost:3002/uploads/' + producto.foto"
                     alt="{{producto.nombre}}"
                     class="rounded"
                     style="width: 60px; height: 60px; object-fit: cover;"
@@ -248,7 +248,7 @@
               <div class="col-md-5">
                 <img
                   *ngIf="productoSeleccionado.foto"
-                  [src]="'http://localhost:3001/uploads/' + productoSeleccionado.foto"
+                  [src]="'http://localhost:3002/uploads/' + productoSeleccionado.foto"
                   alt="{{productoSeleccionado.nombre}}"
                   class="img-fluid rounded shadow-sm"
                   onerror="this.src='assets/image-not-found.png'">

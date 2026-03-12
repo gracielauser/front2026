@@ -355,9 +355,7 @@
             <p>Información completa de la transacción</p>
           </div>
         </div>
-        <button class="btn-close-ultra" (click)="cerrarModalDetalle()">
-          <i class="bi bi-x-lg"></i>
-        </button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalDetalle()"></button>
       </div>
 
       <div class="modal-body-ultra">
@@ -432,7 +430,7 @@
                   <div class="producto-compact-number">{{ i + 1 }}</div>
                   <div class="producto-compact-name">
                     <i class="bi bi-box-fill"></i>
-                    <span>{{ d.producto?.nombre }}</span>
+                    <span>{{ d.producto?.nombre }} | {{ d.producto?.codigo }}</span>
                   </div>
                 </div>
                 <div class="producto-compact-details">
@@ -531,9 +529,7 @@
             <p>Esta acción no se puede deshacer</p>
           </div>
         </div>
-        <button class="btn-close-ultra" (click)="cerrarModalAnular()">
-          <i class="bi bi-x-lg"></i>
-        </button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalAnular()"></button>
       </div>
 
       <div class="modal-body-ultra modal-body-center">

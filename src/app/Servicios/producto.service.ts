@@ -16,6 +16,9 @@ private baseUrl=environment.apiUrl+'/api/producto'
   getListaProductos():Observable<any[]>{
     return this.xhttp.get<any[]>(this.baseUrl+'/listar');
    }
+   verKardexDetallado(id:number):Observable<any>{
+    return this.xhttp.get<any>(this.baseUrl+'/kardex/'+id);
+   }
    movimientos():Observable<any[]>{
     return this.xhttp.get<any[]>(this.baseUrl+'/movimientos');
    }

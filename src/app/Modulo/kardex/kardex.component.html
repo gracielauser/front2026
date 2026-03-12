@@ -85,6 +85,7 @@
               <th>Entradas</th>
               <th>Salidas</th>
               <th>Ganancia Neta</th>
+              <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -109,6 +110,12 @@
               </td>
               <td>
                 <span class="ganancia-badge">{{mov.ganancia_neta | number:'1.2-2'}}</span>
+              </td>
+              <td>
+                <button class="btn-ver-kardex" (click)="verKardexDetallado(mov)" title="Ver Kardex Detallado">
+                  <i class="bi bi-eye-fill"></i>
+                  Ver Kardex
+                </button>
               </td>
             </tr>
           </tbody>
@@ -159,6 +166,7 @@
                   id="tipo-salida"
                   formControlName="tipo_movimiento"
                   [value]="1"
+                  (change)="validarCantidadConStock()"
                 />
                 <label for="tipo-salida" class="radio-label-ultra">
                   <i class="bi bi-box-arrow-left"></i>
@@ -247,7 +255,7 @@
               Cantidad <span class="text-danger">*</span>
             </label>
             <div class="input-group">
-              <button type="button" class="btn btn-outline-secondary" (click)="decrementar()">
+              <button type="button" class="btn btn-outline-secondary" (click)="decrementar()" [disabled]="!productoSeleccionado">
                 <i class="bi bi-dash-lg"></i>
               </button>
               <input
@@ -257,16 +265,24 @@
                 id="cantidad"
                 min="1"
                 max="1000"
-                placeholder="Ingrese cantidad"
+                placeholder="Seleccione producto primero"
+                [disabled]="!productoSeleccionado"
                 [ngClass]="{
                   'is-valid': control['cantidad'].valid && (control['cantidad'].dirty || control['cantidad'].touched),
                   'is-invalid': control['cantidad'].invalid && (control['cantidad'].dirty || control['cantidad'].touched)
                 }">
-              <button type="button" class="btn btn-outline-secondary" (click)="incrementar()">
+              <button type="button" class="btn btn-outline-secondary" (click)="incrementar()" [disabled]="!productoSeleccionado">
                 <i class="bi bi-plus-lg"></i>
               </button>
             </div>
-            <div class="form-text">Mínimo: 1 | Máximo: 1000</div>
+            <div class="form-text" *ngIf="!productoSeleccionado">Primero seleccione un producto</div>
+            <div class="form-text" *ngIf="productoSeleccionado && control['tipo_movimiento'].value === 1">
+              <i class="bi bi-info-circle text-warning"></i>
+              Stock disponible: <strong>{{productoSeleccionado.stock || 0}}</strong> unidades | Máximo: 1000
+            </div>
+            <div class="form-text" *ngIf="productoSeleccionado && control['tipo_movimiento'].value === 2">
+              Mínimo: 1 | Máximo: 1000
+            </div>
             <div class="valid-feedback" *ngIf="control['cantidad'].valid && (control['cantidad'].dirty || control['cantidad'].touched)">
               <i class="bi bi-check-circle-fill"></i> Cantidad válida
             </div>
@@ -328,6 +344,141 @@
         {{ mensajeExito }}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL KARDEX DETALLADO -->
+<div class="modal fade" id="kardexDetalleModal" tabindex="-1" aria-labelledby="kardexDetalleLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="kardexDetalleLabel">
+          <i class="bi bi-clipboard2-data-fill"></i>
+          Kardex Detallado del Producto
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="productoKardex">
+        <!-- INFORMACIÓN DEL PRODUCTO -->
+        <div class="producto-detalle-card">
+          <div class="row g-3">
+            <div class="col-md-3">
+              <div class="info-item">
+                <label><i class="bi bi-upc-scan"></i> Código</label>
+                <span>{{productoKardex.codigo}}</span>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="info-item">
+                <label><i class="bi bi-box-seam"></i> Producto</label>
+                <span>{{productoKardex.nombre}}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="info-item">
+                <label><i class="bi bi-award"></i> Marca</label>
+                <span>{{productoKardex.marca?.nombre || 'Sin marca'}}</span>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="info-item">
+                <label><i class="bi bi-tags"></i> Categoría</label>
+                <span>{{productoKardex.categorium?.nombre || 'N/A'}}</span>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="info-item">
+                <label><i class="bi bi-boxes"></i> Stock Actual</label>
+                <span class="text-primary fw-bold">{{productoKardex.stock || 0}}</span>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="info-item">
+                <label><i class="bi bi-currency-dollar"></i> Precio Compra</label>
+                <span>{{productoKardex.precio_compra | number:'1.2-2'}} Bs.</span>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="info-item">
+                <label><i class="bi bi-cash-stack"></i> Precio Venta</label>
+                <span>{{productoKardex.precio_venta | number:'1.2-2'}} Bs.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABLA DE MOVIMIENTOS DETALLADOS -->
+        <div class="mt-4">
+          <h6 class="mb-3 text-secondary">
+            <i class="bi bi-list-check"></i>
+            Historial de Movimientos
+          </h6>
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+              <thead class="table-primary">
+                <tr>
+                  <th>Fecha</th>
+                  <th>Tipo</th>
+                  <th>Referencia</th>
+                  <th>Movimiento</th>
+                  <th>Responsable</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let mov of movimientosDetallados" [ngClass]="{'table-secondary': mov.estado === 'invalido'}">
+                  <td>{{mov.fecha}}</td>
+                  <td>
+                    <span class="badge bg-primary">{{mov.tipo}}</span>
+                  </td>
+                  <td>
+                    <span *ngIf="mov.referencia" class="text-muted">
+                      <i class="bi bi-receipt"></i> {{mov.referencia}}
+                    </span>
+                    <span *ngIf="!mov.referencia" class="text-muted fst-italic">Sin referencia</span>
+                  </td>
+                  <td>
+                    <span
+                      class="badge fw-bold"
+                      [ngClass]="{
+                        'bg-success': mov.movimiento.startsWith('+') && mov.estado === 'valido',
+                        'bg-danger': mov.movimiento.startsWith('-') && mov.estado === 'valido',
+                        'bg-secondary': mov.estado === 'invalido'
+                      }">
+                      {{mov.movimiento}}
+                    </span>
+                  </td>
+                  <td>
+                    <span *ngIf="mov.responsable">
+                      <i class="bi bi-person-fill"></i> {{mov.responsable.nombre_completo}}
+                    </span>
+                    <span *ngIf="!mov.responsable" class="text-muted fst-italic">Sin responsable</span>
+                  </td>
+                  <td>
+                    <span
+                      class="badge"
+                      [ngClass]="mov.estado === 'valido' ? 'bg-success' : 'bg-secondary'">
+                      {{mov.estado === 'valido' ? 'Válido' : 'Inválido'}}
+                    </span>
+                  </td>
+                </tr>
+                <tr *ngIf="movimientosDetallados.length === 0">
+                  <td colspan="6" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                    No hay movimientos registrados para este producto
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cerrar
+        </button>
+      </div>
     </div>
   </div>
 </div>
