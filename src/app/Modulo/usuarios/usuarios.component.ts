@@ -33,6 +33,9 @@ export class UsuariosComponent implements OnInit {
   showPersonaDropdown: boolean = false;
   personaSeleccionada: any = null;
 
+  //Validación de usuario único
+  usuarioExistente: boolean = false;
+
   //Filtros y Paginacion q  a
   persona:string=''
   usuario:string=''
@@ -148,6 +151,7 @@ export class UsuariosComponent implements OnInit {
     if (this.usuarioForm.get('usuario')?.invalid) return false;
     if (this.usuarioForm.get('persona')?.invalid) return false;
     if (this.rolesSeleccionados.length === 0) return false;
+    if (this.usuarioExistente) return false; // Validar que el usuario no exista
 
     const clave = this.usuarioForm.get('clave')?.value;
     const repetirClave = this.usuarioForm.get('repetirClave')?.value;
@@ -308,6 +312,31 @@ export class UsuariosComponent implements OnInit {
   }
   eliminarUsuario(id: number){
   }
+  // Validar si el usuario ya existe
+  validarUsuarioUnico(): void {
+    const usuarioIngresado = this.usuarioForm.get('usuario')?.value?.trim().toLowerCase();
+
+    if (!usuarioIngresado || usuarioIngresado.length < 3) {
+      this.usuarioExistente = false;
+      return;
+    }
+
+    // Buscar en la lista de usuarios
+    const existe = this.apiUsuario.some(usu => {
+      const usuarioLista = usu.usuario?.trim().toLowerCase();
+
+      // Si estamos editando, excluir al usuario actual
+      if (this.cambiotitulEditar && this.usuarioModel?.id_usuario === usu.id_usuario) {
+        return false;
+      }
+
+      return usuarioLista === usuarioIngresado;
+    });
+
+    this.usuarioExistente = existe;
+    console.log(`Usuario "${usuarioIngresado}" ${existe ? 'YA EXISTE' : 'disponible'}`);
+  }
+
   limpiar() {//asi como para limpiar este metodo nos servira para llamar a la lista de roles y todo lo que necesitemos reiniciar para agregar un nuevo usuario
     this.usuarioForm.reset();
     this.usuarioForm.patchValue({ estado: '1' });
@@ -319,6 +348,7 @@ export class UsuariosComponent implements OnInit {
     this.personaSeleccionada = null;
     this.personasFiltradas = [];
     this.showPersonaDropdown = false;
+    this.usuarioExistente = false;
     this.actualizarValidacionesPassword();
   }
 listarPersonas(){

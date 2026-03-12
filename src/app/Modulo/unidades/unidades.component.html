@@ -72,11 +72,16 @@
                 <div class="form-check form-switch estado-switch">
                   <input class="form-check-input" type="checkbox" [checked]="uni.estado==1"
                          (change)="showModal($event, uni)">
+                  <label class="form-check-label">
+                    <span class="badge" [ngClass]="uni.estado==1 ? 'badge-active' : 'badge-inactive'">
+                      {{uni.estado==1 ? 'Activo' : 'Inactivo'}}
+                    </span>
+                  </label>
                 </div>
               </td>
               <td>
                 <div class="action-buttons">
-                  <button (click)="ModificarUnidad(uni)" class="btn-action btn-edit" 
+                  <button (click)="ModificarUnidad(uni)" class="btn-action btn-edit"
                           data-bs-toggle="modal" data-bs-target="#modUnidad">
                     <i class="bi bi-pencil"></i>
                     Modificar
@@ -89,7 +94,7 @@
       </div>
 
       <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="page = $event" 
+        <pagination-controls (pageChange)="page = $event"
                             previousLabel="Anterior"
                             nextLabel="Siguiente"></pagination-controls>
       </div>
@@ -278,9 +283,10 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
         <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
           data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+
       </div>
     </div>
   </div>

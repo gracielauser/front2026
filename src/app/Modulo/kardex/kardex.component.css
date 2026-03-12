@@ -326,6 +326,75 @@
   font-size: 0.875rem;
 }
 
+.ganancia-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* ===========================
+   PAGINACIÓN
+   =========================== */
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--kardex-border);
+}
+
+.pagination-wrapper::ng-deep .ngx-pagination {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.5rem;
+}
+
+.pagination-wrapper::ng-deep .ngx-pagination li {
+  display: inline-flex;
+}
+
+.pagination-wrapper::ng-deep .ngx-pagination a,
+.pagination-wrapper::ng-deep .ngx-pagination button {
+  padding: 0.5rem 0.875rem;
+  border-radius: 6px;
+  background: white;
+  border: 2px solid var(--kardex-border);
+  color: var(--kardex-dark);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.pagination-wrapper::ng-deep .ngx-pagination a:hover,
+.pagination-wrapper::ng-deep .ngx-pagination button:hover {
+  background: var(--kardex-light);
+  border-color: var(--kardex-primary);
+  color: var(--kardex-primary);
+}
+
+.pagination-wrapper::ng-deep .ngx-pagination .current {
+  background: linear-gradient(135deg, var(--kardex-primary), var(--kardex-primary-dark)) !important;
+  color: white !important;
+  border-color: var(--kardex-primary) !important;
+  box-shadow: 0 4px 8px rgba(8, 145, 178, 0.3);
+}
+
+.pagination-wrapper::ng-deep .ngx-pagination .disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ===========================
    MODALES
    =========================== */
@@ -484,16 +553,150 @@
   color: white;
 }
 
+/* Radio group ultra para tipo de movimiento */
+.radio-group-ultra {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.radio-option-ultra {
+  flex: 1;
+}
+
+.radio-option-ultra input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.radio-label-ultra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.radio-label-ultra:hover {
+  border-color: var(--kardex-primary);
+  background: rgba(8, 145, 178, 0.05);
+}
+
+.radio-option-ultra input[type="radio"]:checked + .radio-label-ultra {
+  border-color: var(--kardex-primary);
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(14, 116, 144, 0.1));
+  color: var(--kardex-primary);
+  font-weight: 600;
+  box-shadow: 0 4px 8px rgba(8, 145, 178, 0.2);
+}
+
+.radio-label-ultra i {
+  font-size: 1.125rem;
+}
+
+/* ==================== LISTA PRODUCTOS ==================== */
+.productos-lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid var(--kardex-primary);
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 2000;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  margin-top: 0.5rem;
+}
+
+.producto-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.producto-item:hover {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+}
+
+.producto-item i {
+  color: var(--kardex-primary);
+  font-size: 1.5rem;
+}
+
+.producto-info {
+  flex: 1;
+}
+
+.producto-info strong {
+  display: block;
+  color: #1e293b;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.producto-info small {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-right: 1rem;
+}
+
+.producto-item-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.producto-item-empty i {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.producto-item.text-muted {
+  cursor: default;
+  background: #f8fafc;
+  border-top: 2px solid #e2e8f0;
+  padding: 0.75rem;
+}
+
+.producto-item.text-muted:hover {
+  background: #f8fafc;
+}
+
 /* ===========================
    TOAST
    =========================== */
 
-.toast-custom {
+.toast-custom-green {
   background: linear-gradient(135deg, var(--kardex-success), #059669);
   color: white;
   border: none;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+  animation: fadeInToast 0.5s ease;
+}
+
+.toast-custom-red {
+  background: linear-gradient(135deg, var(--kardex-danger), #dc2626);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
   animation: fadeInToast 0.5s ease;
 }
 

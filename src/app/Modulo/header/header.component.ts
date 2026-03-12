@@ -32,6 +32,7 @@ export class HeaderComponent implements OnInit {
       this.nombreRol = rolObj.nombre
     } else {
       this.cambiarRol(this.roles[0])
+      localStorage.setItem('rol', JSON.stringify(this.roles[0]))
       this.nombreRol = this.roles[0].nombre
     }
     console.log('roles', this.roles);

@@ -26,7 +26,7 @@
             <i class="bi bi-search"></i>
             Nombre
           </label>
-          <input type="text" class="form-control filter-input" [(ngModel)]="nombre" 
+          <input type="text" class="form-control filter-input" [(ngModel)]="nombre"
                  placeholder="Buscar por nombre" aria-label="Buscar por nombre">
         </div>
 
@@ -75,12 +75,17 @@
                 <div class="form-check form-switch">
                   <input class="form-check-input switch-custom" type="checkbox" [checked]="pro.estado==1"
                     (change)="showModal($event, pro)">
+                  <label class="form-check-label">
+                    <span class="badge" [ngClass]="pro.estado==1 ? 'badge-active' : 'badge-inactive'">
+                      {{pro.estado==1 ? 'Activo' : 'Inactivo'}}
+                    </span>
+                  </label>
                 </div>
               </td>
               <td>
-                <button (click)="ModificarProveedor(pro)" class="btn-edit" 
+                <button (click)="ModificarProveedor(pro)" class="btn-edit"
                         data-bs-toggle="modal" data-bs-target="#modproveedor">
-                  <i class="bi bi-pencil"></i> Editar
+                  <i class="bi bi-pencil"></i> Modificar
                 </button>
               </td>
             </tr>
@@ -246,8 +251,9 @@
             <div class="invalid-feedback">Este campo es obligatorio.</div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="proveForm.invalid">Guardar</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="proveForm.invalid">Guardar</button>
+
           </div>
         </form>
       </div>
@@ -419,7 +425,7 @@
 <div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog ">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header modal-header-warning">
         <h5 class="modal-title fs-5">Confirmar cambio de estado</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
@@ -432,9 +438,10 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
         <button type="button" class="btn btn-secondary" (click)="cancelarCambio()"
           data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">Guardar</button>
+
       </div>
     </div>
   </div>

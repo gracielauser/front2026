@@ -109,11 +109,10 @@
               </td>
               <td>
                 <span class="badge-estado" [ngClass]="{
-                  'badge-pendiente': com.estado == 1,
-                  'badge-recibido': com.estado == 2,
-                  'badge-cancelado': com.estado == 3
+                  'badge-recibido': com.estado == 1,
+                  'badge-cancelado': com.estado == 2,
                 }">
-                  {{ com.estado == 1 ? 'PENDIENTE' : (com.estado == 2 ? 'RECIBIDO' : 'CANCELADO') }}
+                  {{ com.estado == 1 ? 'RECEPCIONADA' : (com.estado == 2 ? 'ANULADA' : 'Desconocido') }}
                 </span>
               </td>
               <td>
@@ -124,13 +123,14 @@
                   </button>
 
                   <!-- Recepcionar (solo pendientes) -->
-                  <button *ngIf="com.estado == 1" class="btn-action btn-receive" (click)="Detalle(com); abrirModalRecepcion()" title="Recepcionar">
+                  <!-- <button *ngIf="com.estado == 1" class="btn-action btn-receive" (click)="Detalle(com); abrirModalRecepcion()" title="Recepcionar">
                     <i class="bi bi-box-seam-fill"></i>
-                  </button>
+                  </button> -->
 
-                  <!-- Anular (solo pendientes y recibidas) -->
+                  <!-- Anular (solo pendientes y recepcionadas) -->
                   <button *ngIf="com.estado == 1 || com.estado == 2" class="btn-action btn-cancel" (click)="anularCompra(com)" title="Anular">
                     <i class="bi bi-x-circle-fill"></i>
+                    Anular
                   </button>
                 </div>
               </td>
@@ -245,7 +245,7 @@
                     <div class="col-md-10 position-relative">
                       <label class="form-label-custom">Buscar Producto</label>
                       <input type="text" #buscarProducto class="form-control form-control-modern"
-                             placeholder="Escriba el nombre del producto"
+                             placeholder="🔍 Buscar por nombre, código o marca..."
                              [(ngModel)]="nombre" [ngModelOptions]="{standalone: true}"
                              (input)="filtrarProducto($event)"
                              (blur)="ocultarListaConRetraso()">
@@ -259,6 +259,7 @@
                             <strong>{{prod.nombre}}</strong>
                             <div>
                               <small>Código: <span class="text-dark">{{prod.codigo}}</span></small>
+                              <small class="text-muted">| Marca: <span class="text-info fw-semibold">{{prod.marca?.nombre || 'Sin marca'}}</span></small>
                               <small class="text-primary fw-semibold">| Precio: {{prod.precio_compra}} Bs.</small>
                             </div>
                           </div>
@@ -353,7 +354,7 @@
             </button>
             <button type="submit" class="btn-guardar" [disabled]="compraForm.invalid || detallesCompra.length === 0">
               <i class="bi bi-save-fill"></i>
-              Guardar Compra
+              Guardar
             </button>
           </div>
         </form>
@@ -396,11 +397,11 @@
           <div class="detalle-info-item">
             <label>Estado:</label>
             <span class="badge-estado" [ngClass]="{
-              'badge-pendiente': detCompra?.estado == 1,
-              'badge-recibido': detCompra?.estado == 2,
+              'badge-recibido': detCompra?.estado == 1,
+              'badge-anulada': detCompra?.estado == 2,
               'badge-cancelado': detCompra?.estado == 3
             }">
-              {{ detCompra?.estado == 1 ? 'Pendiente' : (detCompra?.estado == 2 ? 'Recibido' : 'Cancelado') }}
+              {{ detCompra?.estado == 1 ? 'Recepcionada' : (detCompra?.estado == 2 ? 'Anulada' : 'Desconocido') }}
             </span>
           </div>
           <div class="detalle-info-item" *ngIf="detCompra?.estado == 2">
@@ -606,7 +607,7 @@
         </button>
         <button type="button" class="btn-confirmar btn-danger" (click)="confirmarAnular()">
           <i class="bi bi-trash-fill"></i>
-          Confirmar Anulación
+          Guardar
         </button>
       </div>
     </div>

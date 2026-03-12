@@ -30,8 +30,17 @@ export class SidevarComponent implements OnInit {
    this.rol =  JSON.parse(rolSelccionado)
   }
   tienePermiso(permisoId: number): boolean {
+    // Rol con id 1 (Administrador) tiene acceso total
+    if (this.rol && this.rol.id_rol === 1) {
+      return true;
+    }
+
+    if (!this.rol || !this.rol.permisos) {
+      return false;
+    }
+
     const permisos = this.rol.permisos.split(',');
-    return permisos.some(p => Number(p) === permisoId);
+    return permisos.some(p => Number(p.trim()) === permisoId);
   }
 
   toggleSubmenu(event: Event, menuName: string): void {

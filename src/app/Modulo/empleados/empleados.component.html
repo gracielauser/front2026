@@ -195,6 +195,12 @@
             <div id="msgLetras" class="invalid-feedback" style="display:none;">Solo se aceptan números.</div>
             <div id="msgMaxDigitos" class="invalid-feedback" style="display:none;">Máximo 8 dígitos.</div>
             <div id="msgMinDigitos" class="invalid-feedback" style="display:none;">Mínimo 6 dígitos.</div>
+            <div *ngIf="ciDuplicado && (control['ci'].dirty || control['ci'].touched)" class="alert alert-danger alert-dismissible fade show mt-2 p-2" role="alert">
+              <i class="bi bi-exclamation-triangle-fill me-1"></i>
+              <strong>CI ya registrado:</strong> Este CI pertenece a
+              <strong>{{ ciDuplicado.nombre }} {{ ciDuplicado.ap_paterno }} {{ ciDuplicado.ap_materno }}</strong>
+              <button type="button" class="btn-close" (click)="ciDuplicado = null" aria-label="Close" style="padding: 0.25rem 0.5rem; font-size: 0.7rem;"></button>
+            </div>
           </div>
 
           <!-- NOMBRE -->
@@ -379,7 +385,7 @@
         </button>
         <button type="button" class="btn btn-primary" (click)="submitForm()" [disabled]="empleadoForm.invalid">
           <i [class]="isEditMode ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
-          {{ isEditMode ? 'Actualizar' : 'Guardar' }}
+          {{ isEditMode ? 'Guardar' : 'Guardar' }}
         </button>
       </div>
     </div>
@@ -402,6 +408,7 @@
         </div>
         <div class="confirm-text">
           ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> a este empleado?
+          <p>Su usuario también será {{ estadoTemporal == 1 ? 'activado' : 'desactivado' }}</p>
         </div>
       </div>
       <div class="modal-footer">
@@ -409,7 +416,7 @@
           <i class="bi bi-x-circle"></i> Cancelar
         </button>
         <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">
-          <i class="bi bi-check-circle"></i> Confirmar
+          <i class="bi bi-check-circle"></i> Guardar
         </button>
       </div>
     </div>

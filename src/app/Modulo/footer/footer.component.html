@@ -1,17 +1,62 @@
 <footer >
     <div class="row">
       <div class="col-2 ">
-        Conectado
+        Conectado {{PersonaNombre}}
       </div>
       <div class="col-8">
         Derechos de autor Graciela Pinedo
       </div>
       <div class="col-2 salir">
         <i class="bi bi-box-arrow-in-left icon"></i>
-        <span routerLink="/login">Cerrar Sesion</span>
+        <span style="cursor: pointer;" (click)="mostrarModalCerrarSesion($event)">Cerrar Sesion</span>
       </div>
     </div>
 </footer>
+
+<!-- MODAL CONFIRMACIÓN CERRAR SESIÓN -->
+<div class="modal fade" id="cerrarSesionModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-ultra-modern">
+      <div class="modal-header-ultra" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+        <div class="modal-header-left">
+          <div class="modal-icon-animated">
+            <div class="icon-bg-pulse"></div>
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <div class="modal-title-ultra">
+            <h2>Confirmar cierre de sesión</h2>
+            <p>¿Estás seguro de que deseas salir?</p>
+          </div>
+        </div>
+        <button class="btn-close-ultra" data-bs-dismiss="modal" aria-label="Close">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body-ultra modal-body-center">
+        <div class="warning-ultra-content">
+          <div class="warning-ultra-icon">
+            <i class="bi bi-box-arrow-right"></i>
+          </div>
+          <p class="warning-ultra-text">
+            Se cerrará tu sesión actual y tendrás que volver a iniciar sesión para acceder al sistema.
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-footer-ultra">
+        <button type="button" class="btn-ultra btn-ultra-cancel" (click)="cancelarCerrarSesion()" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i>
+          <span>Cancelar</span>
+        </button>
+        <button type="button" class="btn-ultra btn-ultra-warning" (click)="confirmarCerrarSesion()" data-bs-dismiss="modal">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!--</footer>
  <div class="estado">

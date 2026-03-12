@@ -6,10 +6,10 @@
             <p class="mb-0">Administra la información del negocio</p>
         </div>
         <div class="card-body">
-            
+
           <div class="container">
             <fieldset class="conta">
-                
+
                 <form class="row g-3">
                     <div class="col-md-6">
                       <label for="inputEmail4" class="form-label">Nombre Dueño</label>
@@ -27,7 +27,7 @@
                         <label for="inputPassword4" class="form-label">Email</label>
                         <input type="email" class="form-control" id="inputPassword4" value="RepuestosAccesoriosAutoPinedo@gmail.com" disabled>
                       </div>
-                   
+
                       <div class="col-md-6">
                         <label for="inputEmail4" class="form-label">telefono</label>
                         <input type="number" class="form-control" id="inputEmail4" value="73233423" disabled>
@@ -42,10 +42,10 @@
                           <option selected>Tarija</option>
                         </select>
                       </div>
-                    
+
                   </form>
             </fieldset>
-        </div>        
+        </div>
         </div>
     </div>
   </div>
@@ -55,7 +55,8 @@
         <div class="content-area">
             <!-- Stats Cards Row 1 -->
             <div class="row">
-                 <div class="col-lg-3 col-md-6">
+                 <!-- VENTAS DEL DÍA - Permiso 12 -->
+                 <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(12)">
                     <div class="stats-card bg-green  hover-zoom">
                         <div>
                             <h3>Bs. 0.00</h3>
@@ -66,7 +67,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <!-- COMPRAS DEL MES - Permiso 10 -->
+                <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(10)">
                     <div class="stats-card bg-red hover-zoom">
                         <div>
                             <h3>Bs. 0</h3>
@@ -77,7 +79,8 @@
                         </div>
                     </div>
                 </div>
-             <div class="col-lg-3 col-md-6">
+             <!-- PRODUCTOS EN STOCK - Permiso 6 -->
+             <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(6)">
                     <div class="stats-card bg-blue-gray hover-zoom">
                         <div>
                             <h3>{{apiProductos.length}}</h3>
@@ -88,11 +91,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <!-- GASTOS DEL MES - Permiso 15 -->
+                <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(15)">
                     <div class="stats-card bg-deep-purple hover-zoom">
                         <div>
-                            <h3>9</h3>
-                            <p>PEDIDOS PENDIENTES</p>
+                            <h3>Bs. 23</h3>
+                            <p>GASTOS DEL MES</p>
                         </div>
                         <div class="icon">
                              <i class="fas fa-calendar-alt fs-1"></i>
@@ -102,7 +106,8 @@
             <!-- Stats Cards Row 2 -->
             <div class="row">
                  </div>
-                    <div class="col-lg-3 col-md-6">
+                    <!-- CLIENTES REGISTRADOS - Permiso 4 -->
+                    <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(4)">
                     <div class="stats-card bg-cyan hover-zoom">
                         <div>
                             <h3>{{apiCliente.length}}</h3>
@@ -113,7 +118,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <!-- PROVEEDORES - Permiso 11 -->
+                <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(11)">
                     <div class="stats-card bg-teal hover-zoom">
                         <div>
                             <h3>{{apiProveedores.length}}</h3>
@@ -124,7 +130,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <!-- MARCAS - Permiso 8 -->
+                <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(8)">
                     <div class="stats-card bg-lime hover-zoom">
                         <div>
                             <h3>{{apiMarcas.length}}</h3>
@@ -135,7 +142,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6">
+                <!-- CATEGORIAS - Permiso 7 -->
+                <div class="col-lg-3 col-md-6" *ngIf="tienePermiso(7)">
                     <div class="stats-card bg-orange hover-zoom">
                         <div>
                             <h3>{{apiCategorias.length}}</h3>
@@ -177,7 +185,7 @@
                             <h3>39.00</h3>
                             <p>CLIENTES</p>
                         </div>
-                      
+
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-6">
@@ -192,63 +200,68 @@
                     </div>
                 </div>-->
             </div>
-            <!-- Table -->
-            <div class="table-container">
-                <h5 class="mb-3">ÚLTIMOS PRODUCTOS</h5>
+            <!-- Table - PRODUCTOS CON STOCK BAJO - Permiso 6 -->
+            <div class="table-container" *ngIf="tienePermiso(6)">
+                <h5 class="mb-3">PRODUCTOS CON STOCK BAJO</h5>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>Barra/Interno</th>
-                                <th>Producto</th>
+                                <th>Nro</th>
+                                <th>Código</th>
+                                <th>Nombre</th>
                                 <th>Marca</th>
                                 <th>Presentación</th>
-                                <th>S.Min.</th>
                                 <th>Stock</th>
-                                <th>Precio</th>
+                                <th>Stock Mínimo</th>
+                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>PR00000084</td>
-                                <td>GALAXY S24 ULTRA 5G 256GB TITANIUM BLACK</td>
-                                <td>SAMSUNG</td>
-                                <td>UNIDAD</td>
-                                <td>10.00</td>
-                                <td>108.96</td>
-                                <td>3980.00</td>
+                            <tr *ngFor="let producto of productosStockBajo | paginate: { itemsPerPage: 15, currentPage: page }; let i=index">
+                                <td>{{(page - 1) * 15 + i + 1}}</td>
+                                <td>{{producto.codigo}}</td>
+                                <td>{{producto.nombre}}</td>
+                                <td>{{producto.marca?.nombre || 'N/A'}}</td>
+                                <td>{{producto.unidad_medida?.nombre || 'N/A'}}</td>
+                                <td>
+                                    <span class="badge" [ngClass]="{
+                                        'badge-danger': producto.stock === 0,
+                                        'badge-warning': producto.stock > 0 && producto.stock < producto.stock_minimo,
+                                        'badge-info': producto.stock >= producto.stock_minimo
+                                    }">
+                                        {{producto.stock}}
+                                    </span>
+                                </td>
+                                <td>{{producto.stock_minimo}}</td>
+                                <td>
+                                    <span class="badge" [ngClass]="{
+                                        'badge-danger': producto.stock === 0,
+                                        'badge-warning': producto.stock > 0 && producto.stock < producto.stock_minimo
+                                    }">
+                                        {{producto.stock === 0 ? 'AGOTADO' : 'POR AGOTARSE'}}
+                                    </span>
+                                </td>
                             </tr>
-                            <tr>
-                                <td>PR00000083</td>
-                                <td>SAMSUNG: GALAXY A56 5G 256GB BLACK</td>
-                                <td>SAMSUNG</td>
-                                <td>UNIDAD</td>
-                                <td>10.00</td>
-                                <td>25.00</td>
-                                <td>1890.00</td>
-                            </tr>
-                            <tr>
-                                <td>PR00000082</td>
-                                <td>AASAS</td>
-                                <td>BALDWIND</td>
-                                <td>TALLA</td>
-                                <td>0.00</td>
-                                <td><span class="badge-minimal">EN MÍNIMO</span></td>
-                                <td>0.01</td>
-                            </tr>
-                            <tr>
-                                <td>PR00000081</td>
-                                <td>INFINIX</td>
-                                <td>LG</td>
-                                <td>TALLA</td>
-                                <td>2.00</td>
-                                <td><span class="badge-warning">POR AGOTARSE</span></td>
-                                <td>120.00</td>
+                            <tr *ngIf="productosStockBajo.length === 0">
+                                <td colspan="8" class="text-center py-4">
+                                    <i class="bi bi-inbox fs-3 text-muted"></i>
+                                    <p class="text-muted mb-0">No hay productos con stock bajo</p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Paginación -->
+                <div class="pagination-wrapper mt-3" *ngIf="productosStockBajo.length > 15">
+                    <pagination-controls
+                        (pageChange)="page = $event"
+                        previousLabel="Anterior"
+                        nextLabel="Siguiente">
+                    </pagination-controls>
+                </div>
             </div>
         </div>
 
-   
+

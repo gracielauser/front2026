@@ -83,15 +83,14 @@
                 </span>
               </td>
               <td>
-                <div class="estado-switch">
+                <div class="form-check form-switch switch-custom">
                   <input class="form-check-input" type="checkbox" [checked]="cat.estado==1"
                          (change)="showModal($event, cat)">
-                  <span class="badge" [ngClass]="{
-                    'badge-activo': cat.estado == 1,
-                    'badge-inactivo': cat.estado != 1
-                  }">
-                    {{cat.estado == 1 ? 'Activo' : 'Inactivo'}}
-                  </span>
+                  <label class="form-check-label">
+                    <span class="badge" [ngClass]="cat.estado==1 ? 'badge-active' : 'badge-inactive'">
+                      {{cat.estado==1 ? 'Activo' : 'Inactivo'}}
+                    </span>
+                  </label>
                 </div>
               </td>
               <td>
@@ -192,14 +191,15 @@
                   </div>
                 </div>
                 <div class="subcategoria-actions">
-                  <span class="badge-mini" [ngClass]="{
-                    'badge-activo': subCat.estado == 1,
-                    'badge-inactivo': subCat.estado != 1
-                  }">
-                    {{subCat.estado == 1 ? 'Activo' : 'Inactivo'}}
-                  </span>
-                  <input class="form-check-input me-2" type="checkbox" [checked]="subCat.estado==1"
-                         (change)="showModal($event, subCat)" title="Cambiar estado">
+                  <div class="form-check form-switch switch-custom-mini">
+                    <input class="form-check-input" type="checkbox" [checked]="subCat.estado==1"
+                           (change)="showModal($event, subCat)" title="Cambiar estado">
+                    <label class="form-check-label">
+                      <span class="badge badge-mini" [ngClass]="subCat.estado==1 ? 'badge-active' : 'badge-inactive'">
+                        {{subCat.estado==1 ? 'Activo' : 'Inactivo'}}
+                      </span>
+                    </label>
+                  </div>
                   <button type="button" class="btn-action-mini btn-edit" (click)="abrirModalEditar(subCat, true)"
                           title="Editar subcategoría">
                     <i class="bi bi-pencil-fill"></i>
@@ -224,7 +224,7 @@
                 'bi-floppy': !isEditMode,
                 'bi-arrow-repeat': isEditMode
               }"></i>
-              {{isEditMode ? 'Actualizar' : 'Guardar'}}
+              {{isEditMode ? 'Guardar' : 'Guardar'}}
             </button>
           </div>
         </form>
@@ -319,7 +319,7 @@
       <div class="modal-header modal-header-warning">
         <div class="modal-title-wrapper">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          <h5 class="modal-title">Confirmar cambio de estado</h5>
+          <h5 class="modal-title">Confirmar accion</h5>
         </div>
         <button type="button" class="btn-close btn-close-white" (click)="cerrarModalConfirmacion()"></button>
       </div>
@@ -335,7 +335,7 @@
         </button>
         <button type="button" class="btn-confirmar" (click)="guardarCambio()">
           <i class="bi bi-check-circle"></i>
-          Confirmar
+          Guardar
         </button>
       </div>
     </div>

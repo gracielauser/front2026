@@ -81,6 +81,9 @@ ngAfterViewInit() {
   }
 
   apiEmpleados: any[] = []
+  ciDuplicado: any = null; // Almacena info del empleado con CI duplicado
+  ciOriginal: string = ''; // CI original del empleado en modo edición
+
   constructor(
     private empleadoSer: EmpleadoService
   ) { }
@@ -118,6 +121,8 @@ ngAfterViewInit() {
     this.empleadoForm.reset();
     this.empleadoForm.patchValue({ estado: '1' });
     this.selectedFile = null;
+    this.ciDuplicado = null;
+    this.ciOriginal = ''; // Resetear CI original
   }
 
   onFileChange(event: any) {
@@ -153,6 +158,8 @@ ngAfterViewInit() {
         this.listar()
         this.empleadoForm.reset()
         this.selectedFile = null;
+        this.ciDuplicado = null;
+        this.ciOriginal = '';
         this.mensajeExito = data.mensaje;
 
         // Mensaje de éxito
@@ -167,20 +174,69 @@ ngAfterViewInit() {
     })
   }
   validarCi(e: any){
-    const input = e.target.value
-    this.empleadoSer.validarCi(input).subscribe((data)=>{
-      console.log('EXISTE ESTE CI: ',data.existe);
+    const input = e.target.value.trim();
+    console.log('ci escribiendo: ',input);
 
-      if(data.existe){
-        // this.empleadoForm.get('ci')?.setErrors({ ciExists: true });
+    // Si está vacío o muy corto, resetear
+    if (!input || input.length < 6) {
+      this.ciDuplicado = null;
+      const currentErrors = this.empleadoForm.get('ci')?.errors;
+      if (currentErrors && currentErrors['ciExists']) {
+        delete currentErrors['ciExists'];
+        this.empleadoForm.get('ci')?.setErrors(Object.keys(currentErrors).length > 0 ? currentErrors : null);
       }
-    })
+      return;
+    }
+
+    // Si estamos editando y el CI no ha cambiado, no validar
+    if (this.isEditMode && input === this.ciOriginal) {
+      console.log('✅ CI sin cambios - mismo empleado');
+      this.ciDuplicado = null;
+      const currentErrors = this.empleadoForm.get('ci')?.errors;
+      if (currentErrors && currentErrors['ciExists']) {
+        delete currentErrors['ciExists'];
+        this.empleadoForm.get('ci')?.setErrors(Object.keys(currentErrors).length > 0 ? currentErrors : null);
+      }
+      return;
+    }
+
+    // Buscar en la lista local de empleados
+    const empleadoExistente = this.apiEmpleados.find(emp => Number(emp.ci) === Number(input));
+
+    if (empleadoExistente) {
+      // Verificar si es el mismo empleado en modo edición
+      if (this.isEditMode && empleadoExistente.id_empleado === this.idModificar) {
+        console.log('✅ Es el mismo empleado, CI válido');
+        this.ciDuplicado = null;
+        const currentErrors = this.empleadoForm.get('ci')?.errors;
+        if (currentErrors && currentErrors['ciExists']) {
+          delete currentErrors['ciExists'];
+          this.empleadoForm.get('ci')?.setErrors(Object.keys(currentErrors).length > 0 ? currentErrors : null);
+        }
+      } else {
+        // Es un CI de otro empleado
+        console.log('❌ CI ya registrado por:', empleadoExistente.nombre);
+        this.ciDuplicado = empleadoExistente;
+        this.empleadoForm.get('ci')?.setErrors({ ciExists: true });
+      }
+    } else {
+      // CI disponible
+      console.log('✅ CI disponible');
+      this.ciDuplicado = null;
+      const currentErrors = this.empleadoForm.get('ci')?.errors;
+      if (currentErrors && currentErrors['ciExists']) {
+        delete currentErrors['ciExists'];
+        this.empleadoForm.get('ci')?.setErrors(Object.keys(currentErrors).length > 0 ? currentErrors : null);
+      }
+    }
   }
   Cancelar(){
     this.empleadoForm.reset();
     this.isEditMode = false;
     this.idModificar = 0;
     this.selectedFile = null;
+    this.ciDuplicado = null;
+    this.ciOriginal = ''; // Resetear CI original
   }
 
   submitForm() {
@@ -235,6 +291,8 @@ ngAfterViewInit() {
     this.isEditMode = true;
     this.modalTitle = 'Editar Empleado';
     this.idModificar = emp.id_empleado;//aqui guardo el id del empleado que voy a modificar
+    this.ciDuplicado = null; // Limpiar alerta de CI duplicado
+    this.ciOriginal = emp.ci; // 👈 Guardar CI original del empleado
     this.empleadoForm.patchValue({
       nombre: emp.nombre,
       ap_paterno: emp.ap_paterno,
@@ -274,6 +332,7 @@ ngAfterViewInit() {
         this.empleadoForm.reset();
         this.idModificar = 0;
         this.selectedFile = null;
+        this.ciOriginal = ''; // Resetear CI original
         this.mostrarAlerta(true,data.mensaje);
         this.cerrarModal()
 

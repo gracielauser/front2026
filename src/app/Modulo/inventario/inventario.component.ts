@@ -75,7 +75,7 @@ export class InventarioComponent implements OnInit {
     this.ProSer.getListaProductos().subscribe(data => {
       this.apiProductos = data
       console.log("productos",data);
-      
+
     })
   }
   ListarPedidos() {
@@ -210,9 +210,9 @@ export class InventarioComponent implements OnInit {
       defectuosos: this.recepForm.get('defectuosos')?.value,
       detalle_pedido: this.recepForm.get('detalle_pedido')?.value
     }
-    this.InvSer.saveRecepcionCompra(Recepcion).subscribe(() => {
-      console.log("ggggg", Recepcion);
-    })
+    // this.InvSer.saveRecepcionCompra(Recepcion).subscribe(() => {
+    //   console.log("ggggg", Recepcion);
+    // })
   }
   mostrar: boolean = false
   pedido: Pedido

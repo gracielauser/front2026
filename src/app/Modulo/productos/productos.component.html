@@ -482,7 +482,7 @@
       <div class="modal-header modal-header-warning">
         <div class="modal-title-wrapper">
           <i class="bi bi-exclamation-triangle-fill"></i>
-          <h5 class="modal-title">Confirmar Cambio</h5>
+          <h5 class="modal-title">Confirmar accion</h5>
         </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
@@ -490,6 +490,8 @@
         <p class="confirmation-text">
           ¿Estás seguro de <strong>{{estadoTemporal == 1 ? 'activar' : 'desactivar'}}</strong> este producto?
         </p>
+          <p>Este producto {{ estadoTemporal == 1 ? 'ahora' : 'ya no' }} estará disponible para compras ni ventas</p>
+
       </div>
       <div class="modal-footer modal-footer-custom">
         <button type="button" class="btn-cancelar" data-bs-dismiss="modal" (click)="cancelarCambio()">
@@ -498,7 +500,7 @@
         </button>
         <button type="button" class="btn-confirmar" data-bs-dismiss="modal" (click)="guardarCambio()">
           <i class="bi bi-check-circle"></i>
-          Confirmar
+          Guardar
         </button>
       </div>
     </div>

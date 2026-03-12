@@ -84,9 +84,14 @@
                 </span>
               </td>
               <td>
-                <div class="switch-custom">
+                <div class="form-check form-switch switch-custom">
                   <input class="form-check-input" type="checkbox" [checked]="usu.estado==1"
                     (change)="showModal($event, usu)">
+                  <label class="form-check-label">
+                    <span class="badge" [ngClass]="usu.estado==1 ? 'badge-active' : 'badge-inactive'">
+                      {{usu.estado==1 ? 'Activo' : 'Inactivo'}}
+                    </span>
+                  </label>
                 </div>
               </td>
               <td>
@@ -136,12 +141,12 @@
               <i class="bi bi-person-badge"></i>
               Usuario <span class="text-danger">*</span>
             </label>
-            <input type="text" formControlName="usuario" class="form-control" placeholder="Ej: Juan123"
+            <input type="text" formControlName="usuario" class="form-control" placeholder="Ej: juan123"
               pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
+              (input)="validarUsuarioUnico()"
               onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosUsuario').style.display='block';
          setTimeout(()=>document.getElementById('msgNumerosUsuario').style.display='none',4000);event.preventDefault();}"
               oninput="
-             this.value=this.value.charAt(0).toUpperCase()+this.value.slice(1);
            if(this.value.length>8){
              document.getElementById('msgMaxLetrasUsuario').style.display='block';
              setTimeout(()=>document.getElementById('msgMaxLetrasUsuario').style.display='none',2000);
@@ -152,10 +157,13 @@
              setTimeout(()=>document.getElementById('msgMinLetrasUsuario').style.display='none',2000);
            }
          " [ngClass]="{
-         'is-valid': control['usuario'].valid && control['usuario'].value?.length>=3 && (control['usuario'].dirty||control['usuario'].touched),
-         'is-invalid': control['usuario'].invalid && (control['usuario'].dirty||control['usuario'].touched)}">
-            <div class="valid-feedback"><i class="bi bi-check-circle-fill"></i> Correcto</div>
-            <div class="invalid-feedback">Campo obligatorio. Solo letras.</div>
+         'is-valid': control['usuario'].valid && control['usuario'].value?.length>=3 && !usuarioExistente && (control['usuario'].dirty||control['usuario'].touched),
+         'is-invalid': (control['usuario'].invalid || usuarioExistente) && (control['usuario'].dirty||control['usuario'].touched)}">
+            <div class="valid-feedback"><i class="bi bi-check-circle-fill"></i> Usuario disponible</div>
+            <div class="invalid-feedback" *ngIf="!usuarioExistente">Campo obligatorio. Solo letras.</div>
+            <div class="invalid-feedback" *ngIf="usuarioExistente">
+              <i class="bi bi-exclamation-triangle-fill"></i> Este usuario ya existe en el sistema
+            </div>
             <div id="msgNumerosUsuario" class="invalid-feedback" style="display:none;">Solo letras.</div>
             <div id="msgMaxLetrasUsuario" class="invalid-feedback" style="display:none;">Máximo 8 letras.</div>
             <div id="msgMinLetrasUsuario" class="invalid-feedback" style="display:none;">Mínimo 3 letras.</div>
@@ -307,7 +315,7 @@
         </button>
         <button type="button" class="btn btn-primary" (click)="AgregarUsuario()" [disabled]="!validarFormulario()">
           <i [class]="cambiotitulEditar ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
-          {{cambiotitulEditar ? 'Actualizar' : 'Guardar'}}
+          {{cambiotitulEditar ? 'Guardar' : 'Guardar'}}
         </button>
       </div>
     </div>
@@ -330,6 +338,7 @@
         </div>
         <div class="confirm-text">
           ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> a este usuario?
+          <p>El usuario {{ estadoTemporal == 1 ? 'ahora' : 'ya no' }} tendrá acceso al sistema.</p>
         </div>
       </div>
       <div class="modal-footer">
@@ -337,7 +346,7 @@
           <i class="bi bi-x-circle"></i> Cancelar
         </button>
         <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">
-          <i class="bi bi-check-circle"></i> Confirmar
+          <i class="bi bi-check-circle"></i> Guardar
         </button>
       </div>
     </div>

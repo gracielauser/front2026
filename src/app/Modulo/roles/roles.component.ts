@@ -66,7 +66,7 @@ export class RolesComponent {
 
   AgregarRol() {
     this.formSubmitted = true;
-    
+
     if (this.rolForm.invalid || this.permisos.length === 0) {
       this.rolForm.markAllAsTouched();
       this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
@@ -102,6 +102,12 @@ export class RolesComponent {
   }
 
   modificarRol() {
+    // No permitir modificar el rol Administrador (id_rol = 1)
+    if (this.rolModel && this.rolModel.id_rol === 1) {
+      this.mostrarAlerta(false, '⚠️ No se puede modificar el rol Administrador');
+      return;
+    }
+
     const rolModificado = {
       id_rol: this.rolModel.id_rol,
       nombre: this.rolForm.value.nombre,
@@ -143,6 +149,13 @@ export class RolesComponent {
   }
 
   asignacion(e: Event, nroModulo: number) {
+    // No permitir modificar permisos del rol Administrador (id_rol = 1)
+    if (this.rolModel && this.rolModel.id_rol === 1) {
+      (e.target as HTMLInputElement).checked = true;
+      this.mostrarAlerta(false, '⚠️ No se pueden modificar los permisos del rol Administrador');
+      return;
+    }
+
     const activo = (e.target as HTMLInputElement).checked;
     if (activo) {
       if (!this.permisos.includes(nroModulo)) {
@@ -182,6 +195,8 @@ export class RolesComponent {
   limpiar() {
     this.rolForm.reset();
     this.rolForm.patchValue({ estado: '1' });
+    this.rolForm.markAsUntouched();
+    this.rolForm.markAsPristine();
     this.permisos = [];
     this.isEditMode = false;
     this.modalTitle = 'Adicionar Rol';

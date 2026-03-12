@@ -295,6 +295,22 @@
   box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.25);
 }
 
+.badge-active {
+  background: linear-gradient(135deg, var(--proveedores-success), #059669);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.badge-inactive {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
 /* Botón editar */
 .btn-edit {
   background: white;
@@ -385,6 +401,14 @@
 
 .modal-header {
   background: linear-gradient(135deg, var(--proveedores-primary), var(--proveedores-primary-dark));
+  color: white;
+  border: none;
+  padding: 1.25rem 1.5rem;
+}
+
+/* Modal de confirmación de cambio de estado - Color naranja/warning */
+.modal-header-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
   color: white;
   border: none;
   padding: 1.25rem 1.5rem;

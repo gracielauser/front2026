@@ -69,9 +69,14 @@
                 <span class="role-description">{{rol.descripcion}}</span>
               </td>
               <td>
-                <div class="switch-custom">
-                  <input class="form-check-input" type="checkbox" [checked]="rol.estado==1"
+                <div class="form-check form-switch switch-custom">
+                  <input *ngIf="rol.id_rol!=1" class="form-check-input" type="checkbox" [checked]="rol.estado==1"
                     (change)="showModal($event, rol)">
+                  <label class="form-check-label">
+                    <span class="badge" [ngClass]="rol.estado==1 ? 'badge-active' : 'badge-inactive'">
+                      {{rol.estado==1 ? 'Activo' : 'Inactivo'}}
+                    </span>
+                  </label>
                 </div>
               </td>
               <td>
@@ -115,7 +120,7 @@
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
-      
+
       <div class="modal-body-ultra">
         <!-- ALERTA INFORMATIVA -->
         <div class="alert-ultra-info">
@@ -132,6 +137,7 @@
                 <span>Nombre <span class="text-danger">*</span></span>
               </label>
               <input type="text" formControlName="nombre" class="form-ultra-input" placeholder="Ej: Administrador"
+                [readonly]="rolModel && rolModel.id_rol === 1"
                 pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                 onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumeros').style.display='block';
            setTimeout(()=>document.getElementById('msgNumeros').style.display='none',4000);event.preventDefault();}"
@@ -148,9 +154,9 @@
              }
            " [ngClass]="{
            'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
-           'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
+           'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched) && control['nombre'].value?.length > 0}">
               <div class="valid-feedback"><i class="bi bi-check-circle-fill"></i> Correcto</div>
-              <div class="invalid-feedback">Campo obligatorio. Solo letras.</div>
+              <div class="invalid-feedback" *ngIf="control['nombre'].dirty || control['nombre'].touched">Campo obligatorio. Solo letras.</div>
               <div id="msgNumeros" class="invalid-feedback" style="display:none;">Solo letras.</div>
               <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">Máximo 40 letras.</div>
               <div id="msgMinLetras" class="invalid-feedback" style="display:none;">Mínimo 3 letras.</div>
@@ -164,6 +170,7 @@
               </label>
               <textarea class="form-ultra-textarea" formControlName="descripcion" rows="3"
                 placeholder="Descripción del rol..."
+                [readonly]="rolModel && rolModel.id_rol === 1"
                 pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                 onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosDes').style.display='block';
            setTimeout(()=>document.getElementById('msgNumerosDes').style.display='none',4000);event.preventDefault();}"
@@ -180,10 +187,10 @@
              }
            " [ngClass]="{
            'is-valid': control['descripcion'].valid && control['descripcion'].value?.length>=6 && (control['descripcion'].dirty||control['descripcion'].touched),
-           'is-invalid': control['descripcion'].invalid && (control['descripcion'].dirty||control['descripcion'].touched)}">
+           'is-invalid': control['descripcion'].invalid && (control['descripcion'].dirty||control['descripcion'].touched) && control['descripcion'].value?.length > 0}">
               </textarea>
               <div class="valid-feedback"><i class="bi bi-check-circle-fill"></i> Correcto</div>
-              <div class="invalid-feedback">Campo obligatorio. Solo letras.</div>
+              <div class="invalid-feedback" *ngIf="control['descripcion'].dirty || control['descripcion'].touched">Campo obligatorio. Solo letras.</div>
               <div id="msgNumerosDes" class="invalid-feedback" style="display:none;">Solo letras.</div>
               <div id="msgMaxLetrasDes" class="invalid-feedback" style="display:none;">Máximo 50 letras.</div>
               <div id="msgMinLetrasDes" class="invalid-feedback" style="display:none;">Mínimo 6 letras.</div>
@@ -195,86 +202,171 @@
                 <i class="bi bi-key-fill"></i>
                 <span>Asignar permisos a rol <span class="text-danger">*</span></span>
               </label>
+
+              <!-- Alerta para rol Administrador -->
+              <div *ngIf="rolModel && rolModel.id_rol === 1" class="alert alert-warning mb-3">
+                <i class="bi bi-shield-lock-fill"></i>
+                <strong>Rol Administrador:</strong> Este rol tiene acceso total al sistema. Los permisos no pueden ser modificados.
+              </div>
+
               <div class="permisos-ultra-grid">
+                <!-- Permiso 1: Empleados -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso1"
-                    (change)="asignacion($event,1)" [checked]="verificarPermiso(1)">
+                    (change)="asignacion($event,1)" [checked]="verificarPermiso(1)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso1">
-                    <i class="bi bi-people-fill"></i>
-                    <span>Gestionar personal</span>
+                    <i class="bi bi-person-badge"></i>
+                    <span>Empleados</span>
                   </label>
                 </div>
+                <!-- Permiso 2: Usuarios -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso2"
-                    (change)="asignacion($event,2)" [checked]="verificarPermiso(2)">
+                    (change)="asignacion($event,2)" [checked]="verificarPermiso(2)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso2">
-                    <i class="bi bi-person-check-fill"></i>
-                    <span>Gestionar clientes</span>
+                    <i class="bi bi-person-fill-gear"></i>
+                    <span>Usuarios</span>
                   </label>
                 </div>
+                <!-- Permiso 3: Roles -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso3"
-                    (change)="asignacion($event,3)" [checked]="verificarPermiso(3)">
+                    (change)="asignacion($event,3)" [checked]="verificarPermiso(3)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso3">
-                    <i class="bi bi-box-seam"></i>
-                    <span>Gestionar productos</span>
+                    <i class="bi bi-shield-check"></i>
+                    <span>Roles</span>
                   </label>
                 </div>
+                <!-- Permiso 4: Clientes -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso4"
-                    (change)="asignacion($event,4)" [checked]="verificarPermiso(4)">
+                    (change)="asignacion($event,4)" [checked]="verificarPermiso(4)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso4">
-                    <i class="bi bi-cart-fill"></i>
-                    <span>Gestionar compras</span>
+                    <i class="bi bi-people-fill"></i>
+                    <span>Clientes</span>
                   </label>
                 </div>
+                <!-- Permiso 5: Dashboard -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso5"
-                    (change)="asignacion($event,5)" [checked]="verificarPermiso(5)">
+                    (change)="asignacion($event,5)" [checked]="verificarPermiso(5)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso5">
-                    <i class="bi bi-cash-coin"></i>
-                    <span>Gestionar ventas</span>
+                    <i class="bi bi-speedometer2"></i>
+                    <span>Dashboard</span>
                   </label>
                 </div>
+                <!-- Permiso 6: Listar Productos -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso6"
-                    (change)="asignacion($event,6)" [checked]="verificarPermiso(6)">
+                    (change)="asignacion($event,6)" [checked]="verificarPermiso(6)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso6">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Gestionar pedidos</span>
+                    <i class="bi bi-box-seam"></i>
+                    <span>Listar Productos</span>
                   </label>
                 </div>
+                <!-- Permiso 7: Categoría -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso7"
-                    (change)="asignacion($event,7)" [checked]="verificarPermiso(7)">
+                    (change)="asignacion($event,7)" [checked]="verificarPermiso(7)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso7">
-                    <i class="bi bi-archive-fill"></i>
-                    <span>Gestionar inventario</span>
+                    <i class="bi bi-tags-fill"></i>
+                    <span>Categoría</span>
                   </label>
                 </div>
+                <!-- Permiso 8: Marcas -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso8"
-                    (change)="asignacion($event,8)" [checked]="verificarPermiso(8)">
+                    (change)="asignacion($event,8)" [checked]="verificarPermiso(8)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
                   <label class="permiso-ultra-label" for="permiso8">
-                    <i class="bi bi-graph-up"></i>
+                    <i class="bi bi-award-fill"></i>
+                    <span>Marcas</span>
+                  </label>
+                </div>
+                <!-- Permiso 9: Unidades -->
+                <div class="permiso-ultra-card">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso9"
+                    (change)="asignacion($event,9)" [checked]="verificarPermiso(9)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
+                  <label class="permiso-ultra-label" for="permiso9">
+                    <i class="bi bi-rulers"></i>
+                    <span>Unidades</span>
+                  </label>
+                </div>
+                <!-- Permiso 10: Listar Compras -->
+                <div class="permiso-ultra-card">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso10"
+                    (change)="asignacion($event,10)" [checked]="verificarPermiso(10)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
+                  <label class="permiso-ultra-label" for="permiso10">
+                    <i class="bi bi-cart4"></i>
+                    <span>Listar Compras</span>
+                  </label>
+                </div>
+                <!-- Permiso 11: Proveedores -->
+                <div class="permiso-ultra-card">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso11"
+                    (change)="asignacion($event,11)" [checked]="verificarPermiso(11)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
+                  <label class="permiso-ultra-label" for="permiso11">
+                    <i class="bi bi-truck"></i>
+                    <span>Proveedores</span>
+                  </label>
+                </div>
+                <!-- Permiso 12: Ventas -->
+                <div class="permiso-ultra-card">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso12"
+                    (change)="asignacion($event,12)" [checked]="verificarPermiso(12)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
+                  <label class="permiso-ultra-label" for="permiso12">
+                    <i class="bi bi-cash-coin"></i>
+                    <span>Ventas</span>
+                  </label>
+                </div>
+                <!-- Permiso 13: Movimientos -->
+                <div class="permiso-ultra-card">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso13"
+                    (change)="asignacion($event,13)" [checked]="verificarPermiso(13)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
+                  <label class="permiso-ultra-label" for="permiso13">
+                    <i class="bi bi-boxes"></i>
+                    <span>Movimientos</span>
+                  </label>
+                </div>
+                <!-- Permiso 14: Reportes -->
+                <div class="permiso-ultra-card">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso14"
+                    (change)="asignacion($event,14)" [checked]="verificarPermiso(14)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
+                  <label class="permiso-ultra-label" for="permiso14">
+                    <i class="bi bi-clipboard-data-fill"></i>
                     <span>Reportes</span>
                   </label>
                 </div>
+                <!-- Permiso 15: Gastos -->
                 <div class="permiso-ultra-card">
-                  <input class="form-check-input-ultra" type="checkbox" id="permiso9"
-                    (change)="asignacion($event,9)" [checked]="verificarPermiso(9)">
-                  <label class="permiso-ultra-label" for="permiso9">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso15"
+                    (change)="asignacion($event,15)" [checked]="verificarPermiso(15)"
+                    [disabled]="rolModel && rolModel.id_rol === 1">
+                  <label class="permiso-ultra-label" for="permiso15">
                     <i class="bi bi-wallet2"></i>
-                    <span>Gestionar gastos</span>
+                    <span>Gastos</span>
                   </label>
                 </div>
               </div>
               <div *ngIf="formSubmitted && permisos.length === 0" class="permisos-alert permisos-alert-danger">
-                <i class="bi bi-exclamation-circle"></i> 
+                <i class="bi bi-exclamation-circle"></i>
                 <span>Debe seleccionar al menos un permiso</span>
               </div>
               <div *ngIf="permisos.length > 0" class="permisos-alert permisos-alert-success">
-                <i class="bi bi-check-circle-fill"></i> 
+                <i class="bi bi-check-circle-fill"></i>
                 <span>{{permisos.length}} permiso(s) seleccionado(s)</span>
               </div>
             </div>
@@ -290,7 +382,7 @@
         <button type="button" class="btn-ultra btn-ultra-primary" (click)="AgregarRol()"
                 [disabled]="rolForm.invalid || permisos.length === 0">
           <i [class]="isEditMode ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
-          <span>{{isEditMode ? 'Actualizar' : 'Guardar'}}</span>
+          <span>{{isEditMode ? 'Guardar' : 'Guardar'}}</span>
         </button>
       </div>
     </div>
@@ -308,21 +400,19 @@
             <i class="bi bi-exclamation-triangle-fill"></i>
           </div>
           <div class="modal-title-ultra">
-            <h2>Confirmar cambio de estado</h2>
-            <p>Esta acción afectará los permisos asociados</p>
+            <h2>Confirmar accion</h2>
           </div>
         </div>
         <button class="btn-close-ultra" data-bs-dismiss="modal" aria-label="Close">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
-      
+
       <div class="modal-body-ultra modal-body-center">
         <div class="warning-ultra-content">
           <div class="warning-ultra-icon">
             <i class="bi bi-exclamation-circle-fill"></i>
           </div>
-          <h3 class="warning-ultra-title">¿Confirmar cambio de estado?</h3>
           <p class="warning-ultra-text">
             Estás a punto de <strong>{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</strong> el rol
             <strong class="text-primary">{{rolSeleccionado?.nombre}}</strong>.
@@ -338,7 +428,7 @@
         </button>
         <button type="button" class="btn-ultra btn-ultra-warning" (click)="guardarCambio()" data-bs-dismiss="modal">
           <i class="bi bi-check-circle-fill"></i>
-          <span>Confirmar cambio</span>
+          <span>Guardar</span>
         </button>
       </div>
     </div>

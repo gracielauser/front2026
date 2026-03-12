@@ -593,7 +593,7 @@ filtrarProducto(event: any){
       nro_compra: this.compraForm.get('nro_compra').value,
       monto_total: this.compraForm.get('monto_total').value,
       estado: 1,
-      id_proveedor: this.compraForm.get('id_proveedor').value.id_proveedor,
+      id_proveedor: this.compraForm.get('id_proveedor').value,
       id_usuario: JSON.parse(localStorage.getItem('usuario')).id_usuario
     }
     console.log("compra : ", Compra);
@@ -892,9 +892,9 @@ actualizarSubtotal(index: number) {
         defectuosos: this.recepForm.get('defectuosos')?.value,
         detalle_pedido: this.recepForm.get('detalle_pedido')?.value
       }
-      this.InvSer.saveRecepcionCompra(Recepcion).subscribe(() => {
-        console.log("ggggg", Recepcion);
-      })
+      // this.InvSer.saveRecepcionCompra(Recepcion).subscribe(() => {
+      //   console.log("ggggg", Recepcion);
+      // })
     }
     mostrar: boolean = false
     pedido: Pedido

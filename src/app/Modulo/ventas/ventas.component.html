@@ -267,7 +267,7 @@
                        [class.bi-receipt]="ven.tipo_venta == 1"
                        [class.bi-file-earmark-check-fill]="ven.tipo_venta == 2"></i>
                     <span *ngIf="ven.tipo_venta == 1">Normal</span>
-                    <span *ngIf="ven.tipo_venta == 2">Facturado Fac. {{ ven.facturas && ven.facturas[0] ? ven.facturas[0].nro_factura : 'N/A' }}</span>
+                    <span *ngIf="ven.tipo_venta == 2">Fac. {{ ven.facturas && ven.facturas[0] ? ven.facturas[0].nro_factura : 'N/A' }}</span>
                   </div>
                 </td>
                 <td class="col-center">
@@ -297,7 +297,7 @@
                       title="Anular venta"
                     >
                       <i class="bi bi-trash-fill"></i>
-                      <span class="action-tooltip">Anular</span>
+                      Anular
                     </button>
                     <div *ngIf="ven.estado == 2" class="status-anulado">
                       <i class="bi bi-x-octagon-fill"></i>

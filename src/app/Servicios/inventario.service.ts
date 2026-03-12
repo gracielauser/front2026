@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 })
 export class InventarioService {
 
-  private baseUrl=environment.apiUrl+'/api'
+  private baseUrl=environment.apiUrl+'/api/inventario'
   constructor(
     private xhttp:HttpClient
   ) { }
@@ -18,17 +18,9 @@ export class InventarioService {
     console.log("en servicio inventarios");
     return this.xhttp.get<any[]>(this.baseUrl+'/listainventario');
    }
-   saveInventario(usu:Inventario):Observable<any>{
-    let url = this.baseUrl+"/addinv";
+   saveInventario(usu:any):Observable<any>{
+    let url = this.baseUrl+"/agregar";
     return this.xhttp.post(url,usu)
    }
-   saveRecepcionCompra(rep:RecepcionCompra):Observable<any>{
-    let url = this.baseUrl+"/addrep";
-    return this.xhttp.post(url,rep)
-   }
 
-     modificarInventario(cantidad:any):Observable<any>{//modificar
-      let url = this.baseUrl+"/modificar";
-      return this.xhttp.put(url,cantidad)
-     }
 }

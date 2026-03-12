@@ -304,6 +304,22 @@
   outline: none;
 }
 
+.badge-active {
+  background: linear-gradient(135deg, var(--marcas-success), #059669);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.badge-inactive {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
 /* Botón editar */
 .btn-edit {
   background: var(--marcas-primary);
@@ -398,7 +414,7 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
-::ng-deep .modal-header {
+::ng-deep .modal-header-custom {
   background: linear-gradient(135deg, var(--marcas-primary), var(--marcas-primary-dark));
   color: white;
   border-bottom: none;
@@ -406,7 +422,7 @@
   padding: 1rem 1.5rem;
 }
 
-::ng-deep .modal-header .modal-title {
+::ng-deep .modal-header-custom .modal-title {
   font-weight: 600;
   font-size: 1.1rem;
   display: flex;
@@ -414,12 +430,12 @@
   gap: 0.5rem;
 }
 
-::ng-deep .modal-header .btn-close {
+::ng-deep .modal-header-custom .btn-close {
   filter: brightness(0) invert(1);
   opacity: 0.8;
 }
 
-::ng-deep .modal-header .btn-close:hover {
+::ng-deep .modal-header-custom .btn-close:hover {
   opacity: 1;
 }
 
@@ -674,8 +690,17 @@
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
 }
 
-.modal-header {
+.modal-header-custom {
   background: linear-gradient(135deg, #0468A0 0%, #049093 100%);
+  color: white;
+  border-radius: 15px 15px 0 0;
+  border: none;
+  padding: 1.25rem 1.5rem;
+}
+
+/* Modal de confirmación de cambio de estado - Color naranja/warning */
+.modal-header-warning {
+  background: linear-gradient(135deg, var(--marcas-warning), #d97706) !important;
   color: white;
   border-radius: 15px 15px 0 0;
   border: none;

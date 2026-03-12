@@ -14,8 +14,10 @@ private baseUrl=environment.apiUrl+'/api/producto'
   ) { }
   //lista de la api
   getListaProductos():Observable<any[]>{
-    console.log("en servicio");
     return this.xhttp.get<any[]>(this.baseUrl+'/listar');
+   }
+   movimientos():Observable<any[]>{
+    return this.xhttp.get<any[]>(this.baseUrl+'/movimientos');
    }
    //datos de la API
    saveProductos(pro:FormData):Observable<any>{//adicionar

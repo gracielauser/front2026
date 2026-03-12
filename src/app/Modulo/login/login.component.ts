@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms'; 
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Login } from '../../Modelos/Login.model';
 import { Usuario } from '../../Modelos/usuario';
@@ -18,12 +18,15 @@ export class LoginComponent implements OnInit {
 
   loginDat!:Login;
 
-  constructor( 
+  constructor(
     private logser:LoginService,
     private router:Router
-  ) { 
+  ) {
      }
   ngOnInit(): void {
+    localStorage.removeItem('usuario');
+  localStorage.removeItem('rol');
+  localStorage.removeItem('token');
   }
   loginForm=new UntypedFormGroup({
     login:new UntypedFormControl('userprimer',[Validators.required]),
@@ -45,12 +48,12 @@ this.logser.obtenerUsuario(us).subscribe(data =>{
   }
 })
   }
-  
+
   get d(){
     return this.loginForm.controls
   }
- 
-  
- 
-  
+
+
+
+
 }

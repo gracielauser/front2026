@@ -628,7 +628,7 @@
 }
 
 .btn-confirmar {
-  background: linear-gradient(135deg, var(--productos-success), #059669);
+  background:  #1e54b8;
   color: white;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }

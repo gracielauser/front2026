@@ -300,6 +300,22 @@
   border-color: var(--roles-success);
 }
 
+.badge-active {
+  background: linear-gradient(135deg, var(--roles-success), #059669);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.badge-inactive {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
 /* Botón editar */
 .btn-edit {
   background: linear-gradient(135deg, var(--roles-primary), var(--roles-primary-dark));
@@ -1016,19 +1032,19 @@
   .form-ultra-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .form-ultra-field.col-span-full {
     grid-column: span 1;
   }
-  
+
   .permisos-ultra-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .modal-footer-ultra {
     flex-direction: column;
   }
-  
+
   .btn-ultra {
     width: 100%;
     justify-content: center;

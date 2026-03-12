@@ -329,6 +329,22 @@
   outline: none;
 }
 
+.badge-active {
+  background: linear-gradient(135deg, var(--clientes-success), #059669);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.badge-inactive {
+  background: linear-gradient(135deg, #9ca3af, #6b7280);
+  color: white;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
 /* Botón editar */
 .btn-edit {
     background: var(--clientes-primary);

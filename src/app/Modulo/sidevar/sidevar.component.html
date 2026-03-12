@@ -6,21 +6,21 @@
   </a>
 
   <!-- Gestionar Personal -->
-  <div [ngClass]="{'active': isMenuActive('personal')}" *ngIf="tienePermiso(1)">
+  <div [ngClass]="{'active': isMenuActive('personal')}" *ngIf="tienePermiso(1) || tienePermiso(2) || tienePermiso(3)">
     <a class="has-submenu" (click)="toggleSubmenu($event, 'personal')">
       <i class="bi bi-person-circle fs-5"></i>
       <span>Gestionar Personal</span>
     </a>
     <div class="submenu">
-      <a routerLink="/home/empleados" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(1)" routerLink="/home/empleados" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Empleados</span>
       </a>
-      <a routerLink="/home/usuarios" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(2)" routerLink="/home/usuarios" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Usuarios</span>
       </a>
-      <a routerLink="/home/roles" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(3)" routerLink="/home/roles" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Roles</span>
       </a>
@@ -28,35 +28,35 @@
   </div>
 
   <!-- Clientes -->
-  <a routerLink="/home/clientes" routerLinkActive="active-link">
+  <a *ngIf="tienePermiso(4)" routerLink="/home/clientes" routerLinkActive="active-link">
     <i class="bi bi-people-fill fs-5"></i>
     <span>Clientes</span>
   </a>
 
   <!-- Productos -->
-  <div [ngClass]="{'active': isMenuActive('productos')}">
+  <div [ngClass]="{'active': isMenuActive('productos')}" *ngIf="tienePermiso(5) || tienePermiso(6) || tienePermiso(7) || tienePermiso(8) || tienePermiso(9)">
     <a class="has-submenu" (click)="toggleSubmenu($event, 'productos')">
       <i class="bi bi-box-seam fs-5"></i>
       <span>Productos</span>
     </a>
     <div class="submenu">
-      <a routerLink="/home/dashboard" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(5)" routerLink="/home/dashboard" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Dashboard</span>
       </a>
-      <a routerLink="/home/productos" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(6)" routerLink="/home/productos" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Listar Productos</span>
       </a>
-      <a routerLink="/home/categoria" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(7)" routerLink="/home/categoria" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Categoría</span>
       </a>
-      <a routerLink="/home/marcas" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(8)" routerLink="/home/marcas" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Marcas</span>
       </a>
-      <a routerLink="/home/unidades" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(9)" routerLink="/home/unidades" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Unidades</span>
       </a>
@@ -64,17 +64,17 @@
   </div>
 
   <!-- Compras -->
-  <div [ngClass]="{'active': isMenuActive('compras')}">
+  <div [ngClass]="{'active': isMenuActive('compras')}" *ngIf="tienePermiso(10) || tienePermiso(11)">
     <a class="has-submenu" (click)="toggleSubmenu($event, 'compras')">
       <i class="bi bi-cart4 fs-5"></i>
       <span>Compras</span>
     </a>
     <div class="submenu">
-      <a routerLink="/home/compras" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(10)" routerLink="/home/compras" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Listar Compras</span>
       </a>
-      <a routerLink="/home/proveedores" routerLinkActive="active-link">
+      <a *ngIf="tienePermiso(11)" routerLink="/home/proveedores" routerLinkActive="active-link">
         <i class="bi bi-arrow-right-circle"></i>
         <span>Proveedores</span>
       </a>
@@ -82,7 +82,7 @@
   </div>
 
   <!-- Ventas -->
-  <a routerLink="/home/ventas" routerLinkActive="active-link">
+  <a *ngIf="tienePermiso(12)" routerLink="/home/ventas" routerLinkActive="active-link">
     <i class="bi bi-cash-coin fs-5"></i>
     <span>Ventas</span>
   </a>
@@ -93,32 +93,20 @@
     <span>Pedidos</span>
   </a> -->
 
-  <!-- Inventario -->
-  <div [ngClass]="{'active': isMenuActive('inventario')}">
-    <a class="has-submenu" (click)="toggleSubmenu($event, 'inventario')">
-      <i class="bi bi-boxes fs-5"></i>
-      <span>Inventario</span>
-    </a>
-    <div class="submenu">
-      <a routerLink="/home/inventario" routerLinkActive="active-link">
-        <i class="bi bi-arrow-right-circle"></i>
-        <span>Consultas de Stock</span>
-      </a>
-      <a routerLink="/home/kardex" routerLinkActive="active-link">
-        <i class="bi bi-arrow-right-circle"></i>
-        <span>Resumen de Movimientos</span>
-      </a>
-    </div>
-  </div>
+  <!-- Movimientos -->
+  <a *ngIf="tienePermiso(13)" routerLink="/home/kardex" routerLinkActive="active-link">
+    <i class="bi bi-boxes fs-5"></i>
+    <span>Movimientos</span>
+  </a>
 
   <!-- Reportes -->
-  <a routerLink="/home/reportes" routerLinkActive="active-link">
+  <a *ngIf="tienePermiso(14)" routerLink="/home/reportes" routerLinkActive="active-link">
     <i class="bi bi-clipboard-data-fill fs-5"></i>
     <span>Reportes</span>
   </a>
 
   <!-- Gastos -->
-  <a routerLink="/home/gastos" routerLinkActive="active-link">
+  <a *ngIf="tienePermiso(15)" routerLink="/home/gastos" routerLinkActive="active-link">
     <i class="bi bi-wallet2 fs-5"></i>
     <span>Gastos</span>
   </a>

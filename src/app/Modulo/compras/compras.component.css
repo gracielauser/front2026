@@ -299,15 +299,23 @@
 }
 
 .btn-action {
-  width: 36px;
+  min-width: 36px;
   height: 36px;
   border: none;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
+  padding: 0 0.75rem;
   transition: all 0.3s ease;
   cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-action i {
   font-size: 1rem;
 }
 

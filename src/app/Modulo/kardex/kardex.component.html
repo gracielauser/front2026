@@ -13,9 +13,9 @@
           <i class="bi bi-file"></i>
           Beneficio por producto
         </button>
-        <button class="btn-salida" data-bs-toggle="modal" data-bs-target="#salida">
+        <button class="btn-salida" data-bs-toggle="modal" data-bs-target="#movimientoModal" (click)="limpiarFormulario()">
           <i class="bi bi-box-arrow-left"></i>
-          Registrar Salida
+          Nuevo movimiento
         </button>
       </div>
     </div>
@@ -28,9 +28,46 @@
         <div class="filter-item">
           <label class="filter-label">
             <i class="bi bi-search"></i>
-            Producto
+            Nombre o Código
           </label>
-          <input type="text" class="form-control filter-input" placeholder="Buscar por producto...">
+          <input
+            type="text"
+            class="form-control filter-input"
+            [(ngModel)]="nombreCodigo"
+            placeholder="Buscar por nombre o código...">
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-tags"></i>
+            Categoría
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="categoria" (change)="onFiltroCategoriaPrincipalChange($event)">
+            <option value="">Todas las categorías</option>
+            <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">{{cat.nombre}}</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-bookmark"></i>
+            Subcategoría
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="subcategoria" [disabled]="subCategoriasFiltro.length === 0">
+            <option value="">Todas las subcategorías</option>
+            <option *ngFor="let subcat of subCategoriasFiltro" [value]="subcat.id_categoria">{{subcat.nombre}}</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-award"></i>
+            Marca
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="marca">
+            <option value="">Todas las marcas</option>
+            <option *ngFor="let m of marcasDisponibles" [value]="m.id_marca">{{m.nombre}}</option>
+          </select>
         </div>
       </div>
     </div>
@@ -42,105 +79,255 @@
           <thead>
             <tr>
               <th>Nro</th>
+              <th>Código</th>
               <th>Producto</th>
               <th>Marca</th>
               <th>Entradas</th>
               <th>Salidas</th>
-              <th>Fecha Registro</th>
+              <th>Ganancia Neta</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let i=index; let pro of apiProductos">
+            <tr *ngFor="let mov of movimientosFiltrados | paginate: { itemsPerPage: 7, currentPage: page }; let i = index">
               <td>
-                <span class="badge-number">{{i+1}}</span>
+                <span class="badge-number">{{ (page - 1) * 7 + i + 1 }}</span>
               </td>
               <td>
-                <span class="producto-name">{{pro.nombre}}</span>
+                <span class="producto-name">{{mov.producto?.codigo}}</span>
               </td>
               <td>
-                <span class="marca-badge">{{pro.categorium.nombre}}</span>
+                <span class="producto-name">{{mov.producto?.nombre}}</span>
               </td>
               <td>
-                <span class="entrada-badge">{{pro.stock}}</span>
+                <span class="marca-badge">{{mov.producto?.marca?.nombre}}</span>
               </td>
               <td>
-                <span class="salida-badge">{{pro.stock_minimo}}</span>
+                <span class="entrada-badge">{{mov.entradas}}</span>
               </td>
               <td>
-                <i class="bi bi-calendar3 me-1" style="color: var(--kardex-primary);"></i>
-                {{pro.fecha_registro}}
+                <span class="salida-badge">{{mov.salidas}}</span>
+              </td>
+              <td>
+                <span class="ganancia-badge">{{mov.ganancia_neta | number:'1.2-2'}}</span>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <div class="pagination-wrapper">
+        <pagination-controls
+          (pageChange)="page = $event"
+          previousLabel="Anterior"
+          nextLabel="Siguiente">
+        </pagination-controls>
+      </div>
     </div>
   </div>
 </div>
-<!-- MODAL ENTRADA -->
-<div class="modal fade" id="entrada" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+
+<!-- MODAL REGISTRAR MOVIMIENTO -->
+<div class="modal fade" id="movimientoModal" tabindex="-1" aria-labelledby="movimientoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Adicionar Entrada</h1>
+        <h1 class="modal-title fs-5" id="movimientoModalLabel">
+          <i class="bi bi-clipboard-check"></i>
+          Registrar Movimiento de Inventario
+        </h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <!-- ALERTA AZUL -->
-        <div class="alert alert-info p-2 mb-3 d-flex align-items-center" role="alert">
-          <i class="bi bi-info-circle-fill me-3 fs-3"></i>
-          Estimado usuario: Los campos marcados con <span class="text-danger">*</span> son obligatorios.
+        <!-- ALERTA INFORMATIVA -->
+        <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+          <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+          <small>Los campos marcados con <span class="text-danger fw-bold">*</span> son obligatorios.</small>
         </div>
-        <form class="row g-3" [formGroup]="movimientoForm">
-          <!--PRODUCTO-->
-          <div class="col-md-12">
-            <label for="producto" class="form-label">Producto <span class="text-danger"> * </span></label>
-            <select class="form-select" formControlName="id_producto" id="producto" required
-              [ngClass]="{
-         'is-valid': control['id_producto'].valid && (control['id_producto'].dirty||control['id_producto'].touched),
-         'is-invalid': control['id_producto'].invalid && (control['id_producto'].dirty||control['id_producto'].touched)}">
-              <option selected disabled value="">Seleccione...</option>
-              <option *ngFor="let pro of apiProductos" [ngValue]="pro.id_producto">{{pro.nombre}}</option>
-            </select>
-            <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio.</div>
 
+        <form class="row g-3 needs-validation" [formGroup]="movimientoForm" (ngSubmit)="guardarMovimiento()">
+
+          <!-- TIPO DE MOVIMIENTO -->
+          <div class="col-md-12">
+            <label class="form-label">
+              <i class="bi bi-arrow-left-right"></i>
+              Tipo de Movimiento <span class="text-danger">*</span>
+            </label>
+            <div class="radio-group-ultra">
+              <div class="radio-option-ultra">
+                <input
+                  type="radio"
+                  id="tipo-salida"
+                  formControlName="tipo_movimiento"
+                  [value]="1"
+                />
+                <label for="tipo-salida" class="radio-label-ultra">
+                  <i class="bi bi-box-arrow-left"></i>
+                  <span>Salida</span>
+                </label>
+              </div>
+              <div class="radio-option-ultra">
+                <input
+                  type="radio"
+                  id="tipo-entrada"
+                  formControlName="tipo_movimiento"
+                  [value]="2"
+                />
+                <label for="tipo-entrada" class="radio-label-ultra">
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  <span>Entrada</span>
+                </label>
+              </div>
+            </div>
           </div>
-          <!--motivo-->
+
+          <!-- PRODUCTO CON BÚSQUEDA -->
+          <div class="col-md-12">
+            <label for="producto" class="form-label">
+              <i class="bi bi-box-seam"></i>
+              Producto <span class="text-danger">*</span>
+            </label>
+
+            <div class="position-relative">
+              <input
+                type="text"
+                #buscarProductoInput
+                class="form-control"
+                [(ngModel)]="buscarProducto"
+                [ngModelOptions]="{standalone: true}"
+                placeholder="🔍 Buscar por nombre, código o marca..."
+                autocomplete="off"
+                (input)="filtrarProductoModal($event)"
+                (blur)="ocultarListaProductosConRetraso()"
+                [ngClass]="{
+                  'is-valid': control['id_producto'].valid && control['id_producto'].value && (control['id_producto'].dirty || control['id_producto'].touched),
+                  'is-invalid': control['id_producto'].invalid && (control['id_producto'].dirty || control['id_producto'].touched)
+                }">
+
+              <div class="valid-feedback" *ngIf="control['id_producto'].valid && control['id_producto'].value && (control['id_producto'].dirty || control['id_producto'].touched)">
+                <i class="bi bi-check-circle-fill"></i> Producto seleccionado
+              </div>
+              <div class="invalid-feedback" *ngIf="control['id_producto'].invalid && (control['id_producto'].dirty || control['id_producto'].touched)">
+                Debe seleccionar un producto
+              </div>
+
+              <!-- Lista de productos filtrados -->
+              <div class="productos-lista" *ngIf="mostrarListaProductos && buscarProducto">
+                <div class="producto-item" *ngFor="let prod of productosFiltrados.slice(0, 6)"
+                     (mousedown)="seleccionarProducto(prod, buscarProductoInput)">
+                  <i class="bi bi-box"></i>
+                  <div class="producto-info">
+                    <strong>{{prod.nombre}}</strong>
+                    <div>
+                      <small>Código: <span class="text-dark">{{prod.codigo}}</span></small>
+                      <small class="text-muted">| Marca: <span class="text-info fw-semibold">{{prod.marca?.nombre || 'Sin marca'}}</span></small>
+                      <small class="text-primary fw-semibold">| Stock: {{prod.stock}}</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="producto-item-empty" *ngIf="productosFiltrados.length === 0">
+                  <i class="bi bi-inbox"></i>
+                  <span>No se encontraron productos</span>
+                </div>
+                <div class="producto-item text-center text-muted" *ngIf="productosFiltrados.length > 6">
+                  <small><i class="bi bi-three-dots"></i> {{productosFiltrados.length - 6}} productos más... Refine su búsqueda</small>
+                </div>
+              </div>
+            </div>
+
+            <small class="text-muted d-block mt-2">
+              <i class="bi bi-info-circle"></i>
+              {{productosFiltrados.length}} productos disponibles
+            </small>
+          </div>
+
+          <!-- CANTIDAD -->
           <div class="col-md-6">
-            <label for="motivos" class="form-label">Motivo <span class="text-danger"> * </span></label>
-            <select class="form-select" formControlName="motivo" id="motivos" required  [ngClass]="{
-         'is-valid': control['motivo'].valid && (control['motivo'].dirty||control['motivo'].touched),
-         'is-invalid': control['motivo'].invalid && (control['motivo'].dirty||control['motivo'].touched)}">
-              <option selected disabled value="">Seleccione...</option>
-              <option>POR INVENTARIO INICIAL</option>
-               <option>POR AJUSTE DE INVENTARIO</option>
-                <option>POR AVERIA DE PRODUCTO</option>
-              <option>Otro</option>
-            </select>
-            <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio.</div>
+            <label for="cantidad" class="form-label">
+              <i class="bi bi-123"></i>
+              Cantidad <span class="text-danger">*</span>
+            </label>
+            <div class="input-group">
+              <button type="button" class="btn btn-outline-secondary" (click)="decrementar()">
+                <i class="bi bi-dash-lg"></i>
+              </button>
+              <input
+                type="number"
+                formControlName="cantidad"
+                class="form-control text-center"
+                id="cantidad"
+                min="1"
+                max="1000"
+                placeholder="Ingrese cantidad"
+                [ngClass]="{
+                  'is-valid': control['cantidad'].valid && (control['cantidad'].dirty || control['cantidad'].touched),
+                  'is-invalid': control['cantidad'].invalid && (control['cantidad'].dirty || control['cantidad'].touched)
+                }">
+              <button type="button" class="btn btn-outline-secondary" (click)="incrementar()">
+                <i class="bi bi-plus-lg"></i>
+              </button>
+            </div>
+            <div class="form-text">Mínimo: 1 | Máximo: 1000</div>
+            <div class="valid-feedback" *ngIf="control['cantidad'].valid && (control['cantidad'].dirty || control['cantidad'].touched)">
+              <i class="bi bi-check-circle-fill"></i> Cantidad válida
+            </div>
+            <div class="invalid-feedback" *ngIf="control['cantidad'].invalid && (control['cantidad'].dirty || control['cantidad'].touched)">
+              Ingrese una cantidad entre 1 y 1000
+            </div>
           </div>
-          <!--cantidad-->
-<div class="col-md-6">
-  <div class="form-group">
-    <label for="cantidad">Cantidad Movimiento</label>
-    <div class="input-group">
-      <button type="button" class="btn btn-outline-secondary" (click)="decrementar()">-</button>
-      <input type="number" formControlName="cantidad" class="form-control text-center" step="0.01" min="0">
-      <button type="button" class="btn btn-outline-secondary" (click)="incrementar()">+</button>
+
+          <!-- MOTIVO (OPCIONAL) -->
+          <div class="col-md-6">
+            <label for="motivo" class="form-label">
+              <i class="bi bi-chat-left-text"></i>
+              Motivo <span class="text-muted">(Opcional)</span>
+            </label>
+            <input
+              type="text"
+              formControlName="motivo"
+              class="form-control"
+              id="motivo"
+              maxlength="100"
+              placeholder="Ej: Ajuste de inventario..."
+              [ngClass]="{
+                'is-valid': control['motivo'].valid && control['motivo'].value && (control['motivo'].dirty || control['motivo'].touched)
+              }">
+            <div class="form-text">
+              {{control['motivo'].value?.length || 0}}/100 caracteres
+            </div>
+          </div>
+
+          <!-- FECHA (OCULTA, SE GENERA AUTOMÁTICAMENTE) -->
+          <input type="hidden" formControlName="fecha_registro">
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="guardarMovimiento()"
+          [disabled]="!validarFormulario()">
+          <i class="bi bi-save"></i>
+          Guardar
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-
-          <!-- BOTONES -->
-          <div class="modal-footer">
-            <button type="submit" class="btn btn-primary">Guardar</button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          </div>
-        </form>
+<!-- Modal de éxito/error -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="toastExito" class="toast align-items-center border-0"
+       [ngClass]="exito ? 'toast-custom-green' : 'toast-custom-red'" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        {{ mensajeExito }}
       </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
   </div>
 </div>
