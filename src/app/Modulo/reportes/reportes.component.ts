@@ -13,7 +13,7 @@ import { ProductoService } from '../../Servicios/producto.service';
 import { Categoria } from '../../Modelos/categoria';
 import { CategoriaService } from '../../Servicios/categoria.service';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CompraService } from '../../Servicios/compra.service';
 import { ClienteService } from '../../Servicios/cliente.service';
 import { GastoService } from '../../Servicios/gasto.service';
@@ -23,7 +23,7 @@ import { GastoService } from '../../Servicios/gasto.service';
 @Component({
   selector: 'app-reportes',
   standalone:true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './reportes.component.html',
   styleUrls: ['./reportes.component.css'],
 })
@@ -34,6 +34,15 @@ export class ReportesComponent implements OnInit {
   apiDetalleVenta: DetalleVenta[] = []
   apiProducto: Producto[] = []
   apiCategoria:Categoria[]=[]
+
+  // Datos de inventario
+  datosInventarioReporte: any = null
+  filtroInventario = {
+    categoria: '',
+    marca: '',
+    estado: '',
+    busqueda: ''
+  }
 
   compras: any[] = [];
   constructor(
@@ -149,7 +158,110 @@ export class ReportesComponent implements OnInit {
     ];
 
   }
+datosInventario(){
+  this.ProSer.datosReporte().subscribe((data)=>{
+    console.log('datos: ',data);
+    this.datosInventarioReporte = data;
+  })
+}
 
+get productosFiltradosInventario(): any[] {
+  if (!this.datosInventarioReporte || !this.datosInventarioReporte.productos) {
+    return [];
+  }
+
+  return this.datosInventarioReporte.productos.filter((p: any) => {
+    const coincideCategoria = !this.filtroInventario.categoria ||
+      p.categoria.id_categoria.toString() === this.filtroInventario.categoria;
+
+    const coincideMarca = !this.filtroInventario.marca ||
+      p.marca.id_marca.toString() === this.filtroInventario.marca;
+
+    const coincideEstado = this.filtroInventario.estado === '' ||
+      p.estado_valor.toString() === this.filtroInventario.estado;
+
+    const coincideBusqueda = !this.filtroInventario.busqueda ||
+      p.nombre.toLowerCase().includes(this.filtroInventario.busqueda.toLowerCase()) ||
+      p.codigo.toLowerCase().includes(this.filtroInventario.busqueda.toLowerCase());
+
+    return coincideCategoria && coincideMarca && coincideEstado && coincideBusqueda;
+  });
+}
+
+get categorias(): any[] {
+  if (!this.datosInventarioReporte || !this.datosInventarioReporte.productos) {
+    return [];
+  }
+  const categoriasMap = new Map();
+  this.datosInventarioReporte.productos.forEach((p: any) => {
+    if (!categoriasMap.has(p.categoria.id_categoria)) {
+      categoriasMap.set(p.categoria.id_categoria, p.categoria);
+    }
+  });
+  return Array.from(categoriasMap.values());
+}
+
+get marcas(): any[] {
+  if (!this.datosInventarioReporte || !this.datosInventarioReporte.productos) {
+    return [];
+  }
+  const marcasMap = new Map();
+  this.datosInventarioReporte.productos.forEach((p: any) => {
+    if (!marcasMap.has(p.marca.id_marca)) {
+      marcasMap.set(p.marca.id_marca, p.marca);
+    }
+  });
+  return Array.from(marcasMap.values());
+}
+
+limpiarFiltrosInventario() {
+  this.filtroInventario = {
+    categoria: '',
+    marca: '',
+    estado: '',
+    busqueda: ''
+  };
+}
+
+get totalesFiltrados(): any {
+  const productos = this.productosFiltradosInventario;
+
+  if (productos.length === 0) {
+    return {
+      total_productos: 0,
+      productos_activos: 0,
+      productos_inactivos: 0,
+      total_unidades_stock: 0,
+      valor_inventario_compra: 0,
+      valor_inventario_venta: 0,
+      ganancia_potencial: 0,
+      margen_ganancia_total_porcentaje: 0
+    };
+  }
+
+  const productos_activos = productos.filter((p: any) => p.estado_valor === 1).length;
+  const productos_inactivos = productos.filter((p: any) => p.estado_valor === 0).length;
+  const total_unidades_stock = productos.reduce((sum: number, p: any) => sum + (p.stock || 0), 0);
+  const valor_inventario_compra = productos.reduce((sum: number, p: any) =>
+    sum + ((p.precio_compra || 0) * (p.stock || 0)), 0);
+  const valor_inventario_venta = productos.reduce((sum: number, p: any) =>
+    sum + ((p.precio_venta || 0) * (p.stock || 0)), 0);
+  const ganancia_potencial = valor_inventario_venta - valor_inventario_compra;
+  const margen_ganancia_total_porcentaje = valor_inventario_compra > 0
+    ? (ganancia_potencial / valor_inventario_compra) * 100
+    : 0;
+
+  return {
+    total_productos: productos.length,
+    productos_activos,
+    productos_inactivos,
+    total_unidades_stock,
+    valor_inventario_compra,
+    valor_inventario_venta,
+    ganancia_potencial,
+    margen_ganancia_total_porcentaje
+  };
+}
    async descargarPDF(): Promise<void> {
     console.log("haciendo pdf");
 
@@ -295,7 +407,7 @@ this.GasSer.getPDF({}).subscribe((pdfBlob) => {
       // Abre en una nueva pestaña
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
-    }); 
+    });
 }
 reporteClientesPDF(){
 this.CliSer.getPDF({}).subscribe((pdfBlob) => {

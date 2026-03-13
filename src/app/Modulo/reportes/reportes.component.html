@@ -31,7 +31,7 @@
           </button>
         </div>
         <div class="col-md-6 mb-3">
-          <button class="btn btn-custom btn-inventario w-100" data-bs-toggle="modal" data-bs-target="#inventario">
+          <button class="btn btn-custom btn-inventario w-100" (click)="datosInventario()" data-bs-toggle="modal" data-bs-target="#inventario">
             Reporte de Inventario
             <i class="bi bi-box-seam fs-1"></i>
           </button>
@@ -505,100 +505,91 @@
             <div class="card shadow-sm mb-4">
               <div class="card-body">
                 <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
-                <form class="row g-3">
+                <div class="row g-3">
                   <div class="col-md-3">
                     <label for="categoria" class="form-label">Categoría</label>
-                    <select id="categoria" class="form-select">
-                      <option selected>Todos</option>
-                      <option>Filtros</option>
-                      <option>Aceites</option>
-                      <option>Accesorios</option>
+                    <select id="categoria" class="form-select" [(ngModel)]="filtroInventario.categoria">
+                      <option value="">Todas las categorías</option>
+                      <option *ngFor="let cat of categorias" [value]="cat.id_categoria">{{cat.nombre}}</option>
                     </select>
                   </div>
 
                   <div class="col-md-3">
                     <label for="marca" class="form-label">Marca</label>
-                    <select id="marca" class="form-select">
-                      <option selected>Todas</option>
-                      <option>Shell</option>
-                      <option>Castrol</option>
-                      <option>Motul</option>
-                    </select>
-                  </div>
-
-                  <!-- <div class="col-md-3">
-                    <label for="origen" class="form-label">Origen del movimiento</label>
-                    <select id="origen" class="form-select">
-                      <option selected>Todos</option>
-                      <option>Sistema Web</option>
-                      <option>App Móvil</option>
-                    </select>
-                  </div> -->
-
-                  <div class="col-md-3">
-                    <label for="estadoStock" class="form-label">Estado del stock</label>
-                    <select id="estadoStock" class="form-select">
-                      <option selected>Todos</option>
-                      <option>Bajo stock</option>
-                      <option>Sin stock</option>
-                      <option>Normal</option>
+                    <select id="marca" class="form-select" [(ngModel)]="filtroInventario.marca">
+                      <option value="">Todas las marcas</option>
+                      <option *ngFor="let m of marcas" [value]="m.id_marca">{{m.nombre}}</option>
                     </select>
                   </div>
 
                   <div class="col-md-3">
-                    <label for="fechaInicio" class="form-label">Desde</label>
-                    <input type="date" id="fechaInicio" class="form-control">
+                    <label for="estadoProducto" class="form-label">Estado del Producto</label>
+                    <select id="estadoProducto" class="form-select" [(ngModel)]="filtroInventario.estado">
+                      <option value="">Todos</option>
+                      <option value="1">Activo</option>
+                      <option value="2">Inactivo</option>
+                    </select>
                   </div>
 
                   <div class="col-md-3">
-                    <label for="fechaFin" class="form-label">Hasta</label>
-                    <input type="date" id="fechaFin" class="form-control">
+                    <label for="busquedaProducto" class="form-label">Buscar Producto</label>
+                    <input type="text" id="busquedaProducto" class="form-control"
+                      placeholder="Nombre o código..." [(ngModel)]="filtroInventario.busqueda">
                   </div>
 
                   <div class="col-md-3 d-flex align-items-end">
-                    <button type="button" (click)="inventarioPDF()" class="btn btn-primary w-100"><i class="bi bi-search"></i> Generar
-                      reporte</button>
+                    <button type="button" (click)="limpiarFiltrosInventario()" class="btn btn-secondary w-100">
+                      <i class="bi bi-x-circle"></i> Limpiar Filtros
+                    </button>
+                  </div>
+
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" (click)="inventarioPDF()" class="btn btn-danger w-100">
+                      <i class="bi bi-filetype-pdf"></i> Generar PDF
+                    </button>
                   </div>
 
                   <div class="col-md-3 d-flex align-items-end">
                     <button type="button" class="btn btn-success w-100"><i class="bi bi-file-earmark-excel"></i>
-                      Exportar</button>
+                      Exportar Excel</button>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
 
             <!-- Resumen -->
-            <div class="row mb-4">
+            <div class="row mb-4" *ngIf="datosInventarioReporte">
               <div class="col-md-3">
                 <div class="card text-center border-primary shadow-sm">
                   <div class="card-body">
-                    <h6>Total productos</h6>
-                    <h3 class="text-primary">250</h3>
+                    <h6><i class="bi bi-box-seam"></i> Total productos</h6>
+                    <h3 class="text-primary">{{totalesFiltrados.total_productos}}</h3>
+                    <small class="text-muted">Activos: {{totalesFiltrados.productos_activos}} | Inactivos: {{totalesFiltrados.productos_inactivos}}</small>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
-                <div class="card text-center border-warning shadow-sm">
+                <div class="card text-center border-info shadow-sm">
                   <div class="card-body">
-                    <h6>Productos con bajo stock</h6>
-                    <h3 class="text-warning">18</h3>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="card text-center border-danger shadow-sm">
-                  <div class="card-body">
-                    <h6>Productos sin stock</h6>
-                    <h3 class="text-danger">6</h3>
+                    <h6><i class="bi bi-stack"></i> Total unidades en stock</h6>
+                    <h3 class="text-info">{{totalesFiltrados.total_unidades_stock}}</h3>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card text-center border-success shadow-sm">
                   <div class="card-body">
-                    <h6>Movimientos del mes</h6>
-                    <h3 class="text-success">135</h3>
+                    <h6><i class="bi bi-currency-dollar"></i> Valor inventario (Compra)</h6>
+                    <h3 class="text-success">{{totalesFiltrados.valor_inventario_compra | number:'1.2-2'}} Bs.</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center border-warning shadow-sm">
+                  <div class="card-body">
+                    <h6><i class="bi bi-graph-up-arrow"></i> Ganancia Potencial</h6>
+                    <h3 class="text-warning">{{totalesFiltrados.ganancia_potencial | number:'1.2-2'}} Bs.</h3>
+                    <small class="text-muted">Margen: {{totalesFiltrados.margen_ganancia_total_porcentaje | number:'1.2-2'}}%</small>
                   </div>
                 </div>
               </div>
@@ -607,51 +598,66 @@
             <!-- Tabla de inventario -->
             <div class="card shadow-sm">
               <div class="card-body">
-                <h5 class="card-title mb-3"><i class="bi bi-list-ul"></i> Detalle del inventario</h5>
+                <h5 class="card-title mb-3">
+                  <i class="bi bi-list-ul"></i> Detalle del inventario
+                  <span class="badge bg-primary ms-2">{{productosFiltradosInventario.length}} productos</span>
+                </h5>
                 <div class="table-responsive">
-                  <table class="table table-striped align-middle">
+                  <table class="table table-hover table-bordered align-middle">
                     <thead class="table-primary">
                       <tr>
                         <th>#</th>
+                        <th>Código</th>
                         <th>Producto</th>
                         <th>Categoría</th>
                         <th>Marca</th>
-                        <th>Stock actual</th>
-                        <th>Último movimiento</th>
-                        <th>Tipo de movimiento</th>
-                        <th>Origen</th>
+                        <th>Unidad</th>
+                        <th>Stock</th>
+                        <th>Stock Mín.</th>
+                        <th>Precio Compra</th>
+                        <th>Precio Venta</th>
+                        <th>Margen %</th>
+                        <th>Estado</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>Aceite 10W40</td>
-                        <td>Aceites</td>
-                        <td>Castrol</td>
-                        <td><span class="badge bg-success">25</span></td>
-                        <td>14/10/2025</td>
-                        <td>Salida (Venta)</td>
-                        <td><span class="badge bg-info">App Móvil</span></td>
+                      <tr *ngFor="let prod of productosFiltradosInventario; let i = index">
+                        <td>{{i + 1}}</td>
+                        <td><strong>{{prod.codigo}}</strong></td>
+                        <td>
+                          <strong>{{prod.nombre}}</strong>
+                        </td>
+                        <td><span class="badge bg-info">{{prod.categoria.nombre}}</span></td>
+                        <td><span class="badge bg-secondary">{{prod.marca.nombre}}</span></td>
+                        <td>{{prod.unidad_medida.abreviatura}}</td>
+                        <td>
+                          <span class="badge"
+                            [ngClass]="{
+                              'bg-danger': prod.stock === 0,
+                              'bg-warning text-dark': prod.stock > 0 && prod.stock <= prod.stock_minimo,
+                              'bg-success': prod.stock > prod.stock_minimo
+                            }">
+                            {{prod.stock}}
+                          </span>
+                        </td>
+                        <td class="text-center">{{prod.stock_minimo}}</td>
+                        <td class="text-end">{{prod.precio_compra | number:'1.2-2'}} Bs.</td>
+                        <td class="text-end">{{prod.precio_venta | number:'1.2-2'}} Bs.</td>
+                        <td class="text-center">
+                          <span class="badge bg-primary">{{prod.margen_porcentaje | number:'1.2-2'}}%</span>
+                        </td>
+                        <td>
+                          <span class="badge"
+                            [ngClass]="prod.estado_valor === 1 ? 'bg-success' : 'bg-secondary'">
+                            {{prod.estado}}
+                          </span>
+                        </td>
                       </tr>
-                      <tr>
-                        <td>2</td>
-                        <td>Filtro de aire Toyota</td>
-                        <td>Filtros</td>
-                        <td>FRAM</td>
-                        <td><span class="badge bg-warning text-dark">5</span></td>
-                        <td>12/10/2025</td>
-                        <td>Entrada (Compra)</td>
-                        <td><span class="badge bg-primary">Sistema Web</span></td>
-                      </tr>
-                      <tr>
-                        <td>3</td>
-                        <td>Limpiaparabrisas universal</td>
-                        <td>Accesorios</td>
-                        <td>Bosch</td>
-                        <td><span class="badge bg-danger">0</span></td>
-                        <td>10/10/2025</td>
-                        <td>Salida (Venta)</td>
-                        <td><span class="badge bg-info">App Móvil</span></td>
+                      <tr *ngIf="productosFiltradosInventario.length === 0">
+                        <td colspan="12" class="text-center text-muted py-4">
+                          <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                          No se encontraron productos con los filtros aplicados
+                        </td>
                       </tr>
                     </tbody>
                   </table>

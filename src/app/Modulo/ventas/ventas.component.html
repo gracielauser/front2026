@@ -444,7 +444,7 @@
                   </div>
                   <div class="producto-compact-descuento">
                     <span class="descuento-label">Desc:</span>
-                    <span class="descuento-value">{{ ((d.precio_unitario * d.cantidad) - d.sub_total) | currency:'Bs ':'symbol':'1.2-2' }}</span>
+                    <span class="descuento-value">{{ ((d.precio_unitario * d.cantidad) - d.sub_total)>0?((d.precio_unitario * d.cantidad) - d.sub_total):0 | currency:'Bs ':'symbol':'1.2-2' }}</span>
                   </div>
                   <div class="producto-compact-subtotal">
                     <span class="subtotal-label">Subtotal:</span>

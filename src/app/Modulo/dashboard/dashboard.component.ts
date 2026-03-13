@@ -45,16 +45,16 @@ export class DashboardComponent implements OnInit {
     this.cargarPedidos();
   }
 cargarPedidos(): void {
-  this.pedidoService.getListaPedidos().subscribe({
-    next: (data) => {
-      this.apiPedidos = data;
-      console.log('Pedidos cargados:', this.apiPedidos);
-      this.generarGraficos();
-    },
-    error: (error) => {
-      console.error('Error al cargar pedidos:', error);
-    }
-  });
+  // this.pedidoService.getListaPedidos().subscribe({
+  //   next: (data) => {
+  //     this.apiPedidos = data;
+  //     console.log('Pedidos cargados:', this.apiPedidos);
+  //     this.generarGraficos();
+  //   },
+  //   error: (error) => {
+  //     console.error('Error al cargar pedidos:', error);
+  //   }
+  // });
 }
   cargarProductos(): void {
     this.productoService.getListaProductos().subscribe({
@@ -100,9 +100,9 @@ cargarPedidos(): void {
       this.generarGraficoProductos();
       this.generarGraficoFlujoCaja();
     }
-    if (this.apiPedidos.length > 0) {
-      this.generarGraficoPedidos();
-    }
+    // if (this.apiPedidos.length > 0) {
+    //   this.generarGraficoPedidos();
+    // }
   }
 
   // Gráfico 1: Últimos 3 meses (2 anteriores + mes actual)
@@ -919,18 +919,18 @@ cargarPedidos(): void {
 
     // Analizar pedidos del producto
     const pedidosProducto: any[] = [];
-    this.apiPedidos.forEach(pedido => {
-      pedido.detpedidos?.forEach((detalle: any) => {
-        if (detalle.producto?.id_producto === producto.id_producto) {
-          pedidosProducto.push({
-            fecha: pedido.fecha_registro,
-            cantidad: detalle.cantidad,
-            monto: detalle.sub_total,
-            precio: detalle.precio_unitario
-          });
-        }
-      });
-    });
+    // this.apiPedidos.forEach(pedido => {
+    //   pedido.detpedidos?.forEach((detalle: any) => {
+    //     if (detalle.producto?.id_producto === producto.id_producto) {
+    //       pedidosProducto.push({
+    //         fecha: pedido.fecha_registro,
+    //         cantidad: detalle.cantidad,
+    //         monto: detalle.sub_total,
+    //         precio: detalle.precio_unitario
+    //       });
+    //     }
+    //   });
+    // });
 
     const totalVendido = ventasProducto.reduce((sum, v) => sum + v.cantidad, 0);
     const totalPedidos = pedidosProducto.reduce((sum, p) => sum + p.cantidad, 0);
@@ -974,7 +974,6 @@ cargarPedidos(): void {
         indicator: [
           { name: 'Vendido', max: Math.max(totalVendido * 1.5, 100) },
           { name: 'Comprado', max: Math.max(totalComprado * 1.5, 100) },
-          { name: 'Pedidos App', max: Math.max(totalPedidos * 1.5, 50) },
           { name: 'Stock', max: Math.max(producto.stock * 1.5, 100) },
           { name: 'Ingresos Bs.', max: Math.max(ingresoTotal * 1.2, 1000) },
           { name: 'Costos Bs.', max: Math.max(costoTotal * 1.2, 1000) }
@@ -1213,18 +1212,18 @@ cargarPedidos(): void {
     });
 
     // Analizar pedidos del producto por fecha
-    this.apiPedidos.forEach(pedido => {
-      pedido.detpedidos?.forEach((detalle: any) => {
-        if (detalle.producto?.id_producto === producto.id_producto) {
-          const fecha = pedido.fecha_registro;
-          if (!historialData[fecha]) {
-            historialData[fecha] = { ventas: 0, compras: 0, pedidos: 0, cantidadVendida: 0, cantidadComprada: 0, cantidadPedidos: 0 };
-          }
-          historialData[fecha].pedidos += detalle.sub_total || 0;
-          historialData[fecha].cantidadPedidos += detalle.cantidad || 0;
-        }
-      });
-    });
+    // this.apiPedidos.forEach(pedido => {
+    //   pedido.detpedidos?.forEach((detalle: any) => {
+    //     if (detalle.producto?.id_producto === producto.id_producto) {
+    //       const fecha = pedido.fecha_registro;
+    //       if (!historialData[fecha]) {
+    //         historialData[fecha] = { ventas: 0, compras: 0, pedidos: 0, cantidadVendida: 0, cantidadComprada: 0, cantidadPedidos: 0 };
+    //       }
+    //       historialData[fecha].pedidos += detalle.sub_total || 0;
+    //       historialData[fecha].cantidadPedidos += detalle.cantidad || 0;
+    //     }
+    //   });
+    // });
 
     const fechasOrdenadas = Object.keys(historialData).sort();
     const ventas = fechasOrdenadas.map(fecha => historialData[fecha].ventas);

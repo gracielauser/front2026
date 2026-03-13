@@ -12,6 +12,7 @@ private baseUrl=environment.apiUrl+'/api/producto'
   constructor(
     private xhttp:HttpClient
   ) { }
+
   //lista de la api
   getListaProductos():Observable<any[]>{
     return this.xhttp.get<any[]>(this.baseUrl+'/listar');
@@ -51,4 +52,7 @@ private baseUrl=environment.apiUrl+'/api/producto'
          responseType: 'blob' // 👈 clave para manejar PDF
        });
      }
+     datosReporte():Observable<any>{
+    return this.xhttp.get<any>(`${environment.apiUrl}/api/reporte-producto/inventario/datos`);
+  }
 }
