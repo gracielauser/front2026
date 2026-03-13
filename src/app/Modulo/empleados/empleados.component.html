@@ -385,7 +385,7 @@
         </button>
         <button type="button" class="btn btn-primary" (click)="submitForm()" [disabled]="empleadoForm.invalid">
           <i [class]="isEditMode ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
-          {{ isEditMode ? 'Guardar' : 'Guardar' }}
+          {{ isEditMode ? 'Actualizar' : 'Guardar' }}
         </button>
       </div>
     </div>
@@ -416,7 +416,7 @@
           <i class="bi bi-x-circle"></i> Cancelar
         </button>
         <button type="button" class="btn btn-primary" (click)="guardarCambio()" data-bs-dismiss="modal">
-          <i class="bi bi-check-circle"></i> Guardar
+          <i class="bi bi-check-circle"></i> Confirmar
         </button>
       </div>
     </div>

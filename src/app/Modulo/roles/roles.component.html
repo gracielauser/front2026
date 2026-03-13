@@ -382,7 +382,7 @@
         <button type="button" class="btn-ultra btn-ultra-primary" (click)="AgregarRol()"
                 [disabled]="rolForm.invalid || permisos.length === 0">
           <i [class]="isEditMode ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
-          <span>{{isEditMode ? 'Guardar' : 'Guardar'}}</span>
+          <span>{{isEditMode ? 'Actualizar' : 'Guardar'}}</span>
         </button>
       </div>
     </div>
@@ -428,7 +428,7 @@
         </button>
         <button type="button" class="btn-ultra btn-ultra-warning" (click)="guardarCambio()" data-bs-dismiss="modal">
           <i class="bi bi-check-circle-fill"></i>
-          <span>Guardar</span>
+          <span>Confirmar</span>
         </button>
       </div>
     </div>

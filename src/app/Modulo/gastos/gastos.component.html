@@ -98,7 +98,7 @@
                 <span class="descripcion-text">{{gasto.descripcion}}</span>
               </td>
               <td>
-                <button class="btn-anular" data-bs-toggle="modal" data-bs-target="#anular" 
+                <button class="btn-anular" data-bs-toggle="modal" data-bs-target="#anular"
                         (click)="showModal(gasto)">
                   <i class="bi bi-trash"></i> Anular
                 </button>
@@ -142,11 +142,11 @@
            if(this.value.length > 1 && this.value.startsWith('0')){
              this.value = this.value.replace(/^0+/, '');
            }" [ngClass]="{
-           'is-valid': control['monto'].valid 
+           'is-valid': control['monto'].valid
                        && +control['monto'].value >= 0.01
                        && +control['monto'].value <= 999999.99
                        && (control['monto'].dirty || control['monto'].touched),
-           'is-invalid': control['monto'].invalid 
+           'is-invalid': control['monto'].invalid
                          && (control['monto'].dirty || control['monto'].touched)
          }">
 <span class="input-group-text">Bs.</span>
@@ -231,9 +231,10 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="guardarCambio()">Guardar</button>
-        <button type="button" class="btn btn-secondary" 
+        <button type="button" class="btn btn-secondary"
           data-bs-dismiss="modal" (click)="cancelarCambio()">Cancelar</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="guardarCambio()">Confimar</button>
+
       </div>
     </div>
   </div>
