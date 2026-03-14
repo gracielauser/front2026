@@ -1,45 +1,70 @@
-<div class="container-fluid">
-  <div class="card">
-    <div class="card-header">
-      <h5>Gestionar Reportes</h5>
-      <p class="mb-0">Administra la información de los reportes</p>
+<div class="container-fluid py-4">
+  <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+    <div class="card-header text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem;">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-file-earmark-bar-graph fs-1 me-3"></i>
+        <div>
+          <h3 class="mb-1 fw-bold">Centro de Reportes</h3>
+          <p class="mb-0 opacity-75">Genera y visualiza reportes detallados del sistema</p>
+        </div>
+      </div>
     </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <button class="btn btn-custom btn-clientes w-100 " data-bs-toggle="modal" data-bs-target="#clientes">
-            Reporte de clientes
-            <i class="bi bi-people fs-1"></i>
+    <div class="card-body" style="padding: 2.5rem; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <button class="btn btn-custom btn-clientes w-100 shadow" (click)="datosClientes()" data-bs-toggle="modal"
+            data-bs-target="#clientes">
+            <span>
+              <i class="bi bi-people-fill d-block mb-2" style="font-size: 2rem;"></i>
+              <strong>Reporte de Clientes</strong>
+            </span>
+            <i class="bi bi-arrow-right-circle fs-2"></i>
           </button>
         </div>
-        <div class="col-md-6 mb-3">
-          <button class="btn btn-custom btn-pedidos w-100 " data-bs-toggle="modal" data-bs-target="#pedidos">
-            Reporte de pedidos
-            <i class="bi bi-inboxes-fill fs-1"></i>
+        <div class="col-md-6 col-lg-4">
+          <button class="btn btn-custom btn-pedidos w-100 shadow" (click)="datosNegocio()" data-bs-toggle="modal" data-bs-target="#pedidos">
+            <span>
+              <i class="bi bi-inboxes-fill d-block mb-2" style="font-size: 2rem;"></i>
+              <strong>Reporte del Negocio</strong>
+            </span>
+            <i class="bi bi-arrow-right-circle fs-2"></i>
           </button>
         </div>
-        <div class="col-md-6 mb-3">
-          <button class="btn btn-custom btn-ventas w-100 " data-bs-toggle="modal" data-bs-target="#ventas">
-            Reporte de Ventas
-            <i class="bi bi-currency-dollar fs-1"></i>
+        <div class="col-md-6 col-lg-4">
+          <button class="btn btn-custom btn-ventas w-100 shadow" (click)="datosVentas()" data-bs-toggle="modal" data-bs-target="#ventas">
+            <span>
+              <i class="bi bi-currency-dollar d-block mb-2" style="font-size: 2rem;"></i>
+              <strong>Reporte de Ventas</strong>
+            </span>
+            <i class="bi bi-arrow-right-circle fs-2"></i>
           </button>
         </div>
-        <div class="col-md-6 mb-3">
-          <button class="btn btn-custom btn-compras w-100" data-bs-toggle="modal" data-bs-target="#compras">
-            Reporte de Compras
-            <i class="bi bi-truck fs-1"></i>
+        <div class="col-md-6 col-lg-4">
+          <button class="btn btn-custom btn-compras w-100 shadow" (click)="datosCompras()" data-bs-toggle="modal" data-bs-target="#compras">
+            <span>
+              <i class="bi bi-truck d-block mb-2" style="font-size: 2rem;"></i>
+              <strong>Reporte de Compras</strong>
+            </span>
+            <i class="bi bi-arrow-right-circle fs-2"></i>
           </button>
         </div>
-        <div class="col-md-6 mb-3">
-          <button class="btn btn-custom btn-inventario w-100" (click)="datosInventario()" data-bs-toggle="modal" data-bs-target="#inventario">
-            Reporte de Inventario
-            <i class="bi bi-box-seam fs-1"></i>
+        <div class="col-md-6 col-lg-4">
+          <button class="btn btn-custom btn-inventario w-100 shadow" (click)="datosInventario()" data-bs-toggle="modal"
+            data-bs-target="#inventario">
+            <span>
+              <i class="bi bi-box-seam d-block mb-2" style="font-size: 2rem;"></i>
+              <strong>Reporte de Inventario</strong>
+            </span>
+            <i class="bi bi-arrow-right-circle fs-2"></i>
           </button>
         </div>
-        <div class="col-md-6 mb-3">
-          <button class="btn btn-custom btn-gastos w-100" data-bs-toggle="modal" data-bs-target="#gastos">
-            Reporte de Gastos
-            <i class="bi bi-receipt-cutoff fs-1"></i>
+        <div class="col-md-6 col-lg-4">
+          <button class="btn btn-custom btn-gastos w-100 shadow" (click)="datosGastos()" data-bs-toggle="modal" data-bs-target="#gastos">
+            <span>
+              <i class="bi bi-receipt-cutoff d-block mb-2" style="font-size: 2rem;"></i>
+              <strong>Reporte de Gastos</strong>
+            </span>
+            <i class="bi bi-arrow-right-circle fs-2"></i>
           </button>
         </div>
       </div>
@@ -64,63 +89,90 @@
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold"><i class="bi bi-people-fill me-2"></i>Reporte de Clientes</h2>
             <div>
-              <button class="btn btn-outline-primary me-2"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
               <button class="btn btn-success me-2"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
-              <button class="btn btn-danger" (click)="reporteClientesPDF()"><i class="bi bi-filetype-pdf"></i> Exportar PDF</button>
+              <button class="btn btn-danger" (click)="reporteClientesPDF()"><i class="bi bi-filetype-pdf"></i> Exportar
+                PDF</button>
             </div>
           </div>
 
           <!-- 🎯 Filtros -->
           <div class="card shadow-sm mb-4">
             <div class="card-body">
-              <form class="row g-3">
-                <div class="col-md-3">
-                  <label class="form-label">Tipo de cliente</label>
-                  <select class="form-select">
-                    <option value="todos">Todos</option>
-                    <option value="sistema">Registrados por el sistema</option>
-                    <option value="app">Registrados desde la app</option>
-                  </select>
-                </div>
+              <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+              <div class="row g-3">
                 <div class="col-md-3">
                   <label class="form-label">Fecha de registro (desde)</label>
-                  <input type="date" class="form-control">
+                  <input type="date" class="form-control" [(ngModel)]="filtroClientes.desde">
                 </div>
                 <div class="col-md-3">
                   <label class="form-label">Fecha de registro (hasta)</label>
-                  <input type="date" class="form-control">
+                  <input type="date" class="form-control" [(ngModel)]="filtroClientes.hasta">
                 </div>
-                <div class="col-md-3">
-                  <label class="form-label">Buscar por nombre</label>
-                  <input type="text" class="form-control" placeholder="Ej: Juan Pérez">
+                <div class="col-md-4">
+                  <label class="form-label">Buscar Cliente</label>
+                  <div class="position-relative">
+                    <input type="text" class="form-control" placeholder="Nombre, CI o Celular..."
+                      [(ngModel)]="filtroClientes.busqueda" (input)="filtrarClienteModal($event)"
+                      (focus)="filtrarClienteModal($event)" (blur)="ocultarListaClientesConRetraso()"
+                      #buscarClienteInput>
+
+                    <div class="productos-lista" *ngIf="mostrarListaClientes && datosClientesReporte">
+                      <div *ngFor="let cliente of todosClientesParaDropdown | slice:0:6" class="producto-item"
+                        (mousedown)="seleccionarClienteFiltro(cliente, buscarClienteInput)">
+                        <i class="bi bi-person-fill text-primary"></i>
+                        <div class="producto-info">
+                          <strong>{{cliente.nombre_completo}}</strong>
+                          <small>CI: {{cliente.ci_nit}} | Tel: {{cliente.celular || 'N/A'}}</small>
+                        </div>
+                      </div>
+                      <div class="producto-item-empty" *ngIf="datosClientesReporte.clientes.length === 0">
+                        <i class="bi bi-inbox"></i>
+                        <span>No hay clientes</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </form>
+                <div class="col-md-2 d-flex align-items-end">
+                  <button type="button" (click)="limpiarFiltrosClientes()" class="btn btn-secondary w-100">
+                    <i class="bi bi-x-circle"></i> Limpiar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- 📊 Resumen de clientes -->
-          <div class="row text-center mb-4">
-            <div class="col-md-4">
+          <div class="row text-center mb-4" *ngIf="datosClientesReporte">
+            <div class="col-md-3">
               <div class="card border-primary shadow-sm">
                 <div class="card-body">
-                  <h6 class="text-muted">Total de clientes</h6>
-                  <h3 class="fw-bold text-primary">324</h3>
+                  <h6 class="text-muted"><i class="bi bi-people-fill"></i> Total de clientes</h6>
+                  <h3 class="fw-bold text-primary">{{totalesFiltradosClientes.total_clientes}}</h3>
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="card border-success shadow-sm">
                 <div class="card-body">
-                  <h6 class="text-muted">Clientes registrados en el sistema</h6>
-                  <h3 class="fw-bold text-success">210</h3>
+                  <h6 class="text-muted"><i class="bi bi-cart-check-fill"></i> Con compras</h6>
+                  <h3 class="fw-bold text-success">{{totalesFiltradosClientes.clientes_con_compras}}</h3>
                 </div>
               </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <div class="card border-info shadow-sm">
                 <div class="card-body">
-                  <h6 class="text-muted">Clientes registrados desde la app</h6>
-                  <h3 class="fw-bold text-info">114</h3>
+                  <h6 class="text-muted"><i class="bi bi-bag-fill"></i> Total compras</h6>
+                  <h3 class="fw-bold text-info">{{totalesFiltradosClientes.total_compras}}</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card border-warning shadow-sm">
+                <div class="card-body">
+                  <h6 class="text-muted"><i class="bi bi-currency-dollar"></i> Beneficio Total</h6>
+                  <h3 class="fw-bold text-warning">{{totalesFiltradosClientes.total_beneficio | number:'1.2-2'}} Bs.
+                  </h3>
                 </div>
               </div>
             </div>
@@ -129,48 +181,66 @@
           <!-- 📋 Tabla de clientes -->
           <div class="card shadow-sm mb-4">
             <div class="card-body">
+              <h5 class="card-title mb-3">
+                <i class="bi bi-list-ul"></i> Detalle de clientes
+                <span class="badge bg-primary ms-2">{{clientesFiltrados.length}} clientes</span>
+              </h5>
               <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table table-hover table-bordered align-middle">
                   <thead class="table-primary">
                     <tr>
                       <th>#</th>
-                      <th>Nombre</th>
-                      <th>Correo</th>
-                      <th>Teléfono</th>
-                      <th>Tipo</th>
-                      <th>Fecha de registro</th>
-                      <th>Pedidos realizados</th>
-                      <th>Estado</th>
-                      <th class="text-center">Acciones</th>
+                      <th>CI/NIT</th>
+                      <th>Nombre Completo</th>
+                      <th>Celular</th>
+                      <th>Email</th>
+                      <th>Dirección</th>
+                      <th>Fecha Registro</th>
+                      <th>Compras</th>
+                      <th>Beneficio Total</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>1</td>
-                      <td>Juan Pérez</td>
-                      <td>juanperezgmail.com</td>
-                      <td>+591 67891234</td>
-                      <td><span class="badge bg-success">Sistema</span></td>
-                      <td>05/09/2025</td>
-                      <td>8</td>
-                      <td><span class="badge bg-success">Activo</span></td>
+                    <tr *ngFor="let cliente of clientesFiltrados; let i = index">
+                      <td>{{cliente.numero}}</td>
+                      <td><strong>{{cliente.ci_nit}}</strong></td>
+                      <td>
+                        <i class="bi bi-person-fill text-primary"></i>
+                        {{cliente.nombre_completo}}
+                      </td>
+                      <td>
+                        <span *ngIf="cliente.celular">
+                          <i class="bi bi-phone"></i> {{cliente.celular}}
+                        </span>
+                        <span *ngIf="!cliente.celular" class="text-muted fst-italic">Sin celular</span>
+                      </td>
+                      <td>
+                        <span *ngIf="cliente.email">{{cliente.email}}</span>
+                        <span *ngIf="!cliente.email" class="text-muted fst-italic">Sin email</span>
+                      </td>
+                      <td>
+                        <span *ngIf="cliente.direccion">{{cliente.direccion}}</span>
+                        <span *ngIf="!cliente.direccion" class="text-muted fst-italic">Sin dirección</span>
+                      </td>
+                      <td>
+                        <span *ngIf="cliente.fecha_registro">
+                          {{cliente.fecha_registro | date:'dd/MM/yyyy HH:mm'}}
+                        </span>
+                        <span *ngIf="!cliente.fecha_registro" class="text-muted fst-italic">N/A</span>
+                      </td>
                       <td class="text-center">
-                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleCliente"><i
-                            class="bi bi-eye"></i></button>
+                        <span class="badge" [ngClass]="cliente.cantidad_compras > 0 ? 'bg-success' : 'bg-secondary'">
+                          {{cliente.cantidad_compras}}
+                        </span>
+                      </td>
+                      <td class="text-end">
+                        <strong class="text-success">{{cliente.beneficio_total | number:'1.2-2'}} Bs.</strong>
                       </td>
                     </tr>
-                    <tr>
-                      <td>2</td>
-                      <td>María López</td>
-                      <td>maria.lopezexample.com</td>
-                      <td>+591 78965432</td>
-                      <td><span class="badge bg-info text-dark">App</span></td>
-                      <td>22/09/2025</td>
-                      <td>3</td>
-                      <td><span class="badge bg-success">Activo</span></td>
-                      <td class="text-center">
-                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleCliente"><i
-                            class="bi bi-eye"></i></button>
+                    <tr *ngIf="clientesFiltrados.length === 0">
+                      <td colspan="9" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                        No se encontraron clientes con los filtros aplicados
                       </td>
                     </tr>
                   </tbody>
@@ -179,69 +249,24 @@
             </div>
           </div>
 
-          <!-- 📈 Gráfico de clientes -->
-          <div class="card shadow-sm">
+          <!-- 📈 Estadísticas adicionales -->
+          <div class="card shadow-sm" *ngIf="datosClientesReporte?.estadisticas">
             <div class="card-body">
-              <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-line"></i> Estadísticas de Clientes</h5>
-              <div class="text-center py-4 text-muted">
-                <em>(Aquí puedes integrar un gráfico con Chart.js o Recharts para mostrar la evolución de registros por
-                  mes)</em>
-              </div>
-            </div>
-          </div>
-
-          <!-- 📑 Modal Detalle Cliente -->
-          <div class="modal fade" id="detalleCliente" tabindex="-1" aria-labelledby="detalleClienteLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-              <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                  <h5 class="modal-title" id="detalleClienteLabel"><i class="bi bi-person-badge"></i> Detalle del
-                    Cliente</h5>
-                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                  <div class="row mb-3">
-                    <div class="col-md-6">
-                      <p><strong>Nombre:</strong> Juan Pérez</p>
-                      <p><strong>Correo:</strong> juanperezgmail.com</p>
-                      <p><strong>Teléfono:</strong> +591 67891234</p>
-                    </div>
-                    <div class="col-md-6">
-                      <p><strong>Tipo:</strong> <span class="badge bg-success">Sistema</span></p>
-                      <p><strong>Fecha de registro:</strong> 05/09/2025</p>
-                      <p><strong>Pedidos realizados:</strong> 8</p>
-                    </div>
+              <h5 class="fw-bold mb-3"><i class="bi bi-graph-up-arrow"></i> Estadísticas Adicionales</h5>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="alert alert-info">
+                    <i class="bi bi-calculator"></i>
+                    <strong>Promedio de compras por cliente:</strong>
+                    {{totalesFiltradosClientes.promedio_compras_por_cliente | number:'1.2-2'}}
                   </div>
-                  <h6 class="fw-bold">Historial de pedidos recientes</h6>
-                  <table class="table table-bordered">
-                    <thead>
-                      <tr>
-                        <th># Pedido</th>
-                        <th>Fecha</th>
-                        <th>Total (Bs.)</th>
-                        <th>Estado</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>PED-00120</td>
-                        <td>03/10/2025</td>
-                        <td>180.00</td>
-                        <td><span class="badge bg-success">Entregado</span></td>
-                      </tr>
-                      <tr>
-                        <td>PED-00118</td>
-                        <td>28/09/2025</td>
-                        <td>95.00</td>
-                        <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
                 </div>
-                <div class="modal-footer">
-                  <button class="btn btn-secondary" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i>
-                    Cerrar</button>
+                <div class="col-md-6">
+                  <div class="alert alert-success">
+                    <i class="bi bi-currency-dollar"></i>
+                    <strong>Promedio de beneficio por cliente:</strong>
+                    {{totalesFiltradosClientes.promedio_beneficio_por_cliente | number:'1.2-2'}} Bs.
+                  </div>
                 </div>
               </div>
             </div>
@@ -275,10 +300,11 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
               <h2 class="fw-bold"><i class="bi bi-cash-coin me-2"></i>Reporte de Ventas</h2>
               <div>
-                <button class="btn btn-outline-primary me-2"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
                 <button class="btn btn-success me-2"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
-                <button class="btn btn-danger" (click)="ventasPDF(true)"><i class="bi bi-filetype-pdf"></i> Reporte PDF Resumido</button>
-                <button class="btn btn-danger" (click)="ventasPDF(false)"><i class="bi bi-filetype-pdf"></i> Reporte PDF Detallado</button>
+                <button class="btn btn-danger m2-2" (click)="ventasPDF(true)"><i class="bi bi-filetype-pdf"></i> Reporte PDF
+                  Resumido</button>
+                <button class="btn btn-danger" (click)="ventasPDF(false)"><i class="bi bi-filetype-pdf"></i> Reporte PDF
+                  Detallado</button>
 
               </div>
             </div>
@@ -286,62 +312,84 @@
             <!-- 🎯 Filtros -->
             <div class="card shadow-sm mb-4">
               <div class="card-body">
-                <form class="row g-3">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+                <div class="row g-3">
                   <div class="col-md-3">
-                    <label class="form-label">Origen de venta</label>
-                    <select class="form-select">
-                      <option value="todos">Todos</option>
-                      <option value="sistema">Ventas del sistema</option>
-                      <option value="app">Ventas por la app</option>
+                    <label class="form-label">Tipo de venta</label>
+                    <select class="form-select" [(ngModel)]="filtroVentas.tipo_venta">
+                      <option value="">Todos</option>
+                      <option value="Facturado">Facturado</option>
+                      <option value="Sin Factura">Sin Factura</option>
                     </select>
                   </div>
                   <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" [(ngModel)]="filtroVentas.estado">
+                      <option value="">Todos</option>
+                      <option value="Válida">Válida</option>
+                      <option value="Anulada">Anulada</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Tipo de pago</label>
+                    <select class="form-select" [(ngModel)]="filtroVentas.tipo_pago">
+                      <option value="">Todos</option>
+                      <option value="Efectivo">Efectivo</option>
+                      <option value="QR">QR</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" class="form-control" placeholder="Cliente, CI o Nro. Venta" [(ngModel)]="filtroVentas.busqueda">
+                  </div>
+                  <div class="col-md-3">
                     <label class="form-label">Desde</label>
-                    <input type="date" class="form-control">
+                    <input type="date" class="form-control" [(ngModel)]="filtroVentas.desde">
                   </div>
                   <div class="col-md-3">
                     <label class="form-label">Hasta</label>
-                    <input type="date" class="form-control">
+                    <input type="date" class="form-control" [(ngModel)]="filtroVentas.hasta">
                   </div>
-                  <div class="col-md-3">
-                    <label class="form-label">Buscar cliente</label>
-                    <input type="text" class="form-control" placeholder="Ej: Juan Pérez">
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosVentas()">
+                      <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
 
             <!-- 📊 Resumen general -->
-            <div class="row text-center mb-4">
+            <div class="row text-center mb-4" *ngIf="datosVentasReporte">
               <div class="col-md-3">
                 <div class="card border-primary shadow-sm">
                   <div class="card-body">
-                    <h6 class="text-muted">Total de ventas</h6>
-                    <h3 class="fw-bold text-primary">Bs. 18,450</h3>
+                    <h6><i class="bi bi-cash-stack"></i> Monto Total</h6>
+                    <h3 class="text-primary">{{totalesFiltradosVentas.monto_total_general | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card border-success shadow-sm">
                   <div class="card-body">
-                    <h6 class="text-muted">Ventas del sistema</h6>
-                    <h3 class="fw-bold text-success">Bs. 12,900</h3>
+                    <h6><i class="bi bi-check-circle"></i> Ventas Válidas</h6>
+                    <h3 class="text-success">{{totalesFiltradosVentas.ventas_validas}}</h3>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card border-info shadow-sm">
                   <div class="card-body">
-                    <h6 class="text-muted">Ventas por la app</h6>
-                    <h3 class="fw-bold text-info">Bs. 5,550</h3>
+                    <h6><i class="bi bi-wallet2"></i> Efectivo ({{totalesFiltradosVentas.cantidad_efectivo}})</h6>
+                    <h3 class="text-info">{{totalesFiltradosVentas.total_efectivo | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
                 <div class="card border-warning shadow-sm">
                   <div class="card-body">
-                    <h6 class="text-muted">Número total de ventas</h6>
-                    <h3 class="fw-bold text-warning">112</h3>
+                    <h6><i class="bi bi-qr-code"></i> QR ({{totalesFiltradosVentas.cantidad_qr}})</h6>
+                    <h3 class="text-warning">{{totalesFiltradosVentas.total_qr | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
@@ -350,58 +398,82 @@
             <!-- 📋 Tabla de ventas -->
             <div class="card shadow-sm mb-4">
               <div class="card-body">
+                <h5 class="card-title mb-3">
+                  <i class="bi bi-list-ul"></i> Detalle de Ventas
+                  <span class="badge bg-primary ms-2">{{ventasFiltradas.length}} ventas</span>
+                </h5>
                 <div class="table-responsive">
-                  <table class="table table-hover align-middle">
-                    <thead class="table-primary">
+                  <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-success">
                       <tr>
-                        <th># Venta</th>
+                        <th>#</th>
+                        <th>Nro. Venta</th>
                         <th>Cliente</th>
+                        <th>CI/NIT</th>
                         <th>Fecha</th>
-                        <th>Origen</th>
-                        <th>Total (Bs.)</th>
-                        <th>Método de pago</th>
+                        <th>Tipo Venta</th>
+                        <th>Descuento</th>
+                        <th>Total</th>
+                        <th>Tipo Pago</th>
                         <th>Estado</th>
-                        <th class="text-center">Acciones</th>
+                        <th>Registrado por</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>VNT-00123</td>
-                        <td>Juan Pérez</td>
-                        <td>15/10/2025</td>
-                        <td><span class="badge bg-success">Sistema</span></td>
-                        <td>350.00</td>
-                        <td>Efectivo</td>
-                        <td><span class="badge bg-success">Completada</span></td>
+                      <tr *ngFor="let venta of ventasFiltradas; let i = index"
+                        [ngClass]="{'table-danger': venta.estado_valor === 0}">
+                        <td>{{i + 1}}</td>
+                        <td><strong>{{venta.nro_venta}}</strong></td>
+                        <td>
+                          <i class="bi bi-person-fill text-primary"></i>
+                          {{venta.cliente.nombre_completo}}
+                        </td>
+                        <td>{{venta.cliente.ci_nit}}</td>
+                        <td>
+                          <span *ngIf="venta.fecha_registro">
+                            {{venta.fecha_registro | date:'dd/MM/yyyy HH:mm'}}
+                          </span>
+                        </td>
+                        <td>
+                          <span class="badge" 
+                            [ngClass]="{
+                              'bg-primary': venta.tipo_venta === 'Facturado',
+                              'bg-secondary': venta.tipo_venta === 'Sin Factura'
+                            }">
+                            {{venta.tipo_venta}}
+                          </span>
+                        </td>
+                        <td class="text-end">{{venta.descuento | number:'1.2-2'}} Bs.</td>
+                        <td class="text-end">
+                          <strong class="text-success">{{venta.total | number:'1.2-2'}} Bs.</strong>
+                        </td>
                         <td class="text-center">
-                          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleVenta"><i
-                              class="bi bi-eye"></i></button>
+                          <span class="badge" 
+                            [ngClass]="{
+                              'bg-info': venta.tipo_pago === 'Efectivo',
+                              'bg-warning': venta.tipo_pago === 'QR'
+                            }">
+                            {{venta.tipo_pago}}
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge" 
+                            [ngClass]="{
+                              'bg-success': venta.estado_valor === 1,
+                              'bg-danger': venta.estado_valor === 2
+                            }">
+                            {{venta.estado}}
+                          </span>
+                        </td>
+                        <td>
+                          <i class="bi bi-person-badge text-primary"></i>
+                          {{venta.usuario.nombre_completo}}
                         </td>
                       </tr>
-                      <tr>
-                        <td>VNT-00124</td>
-                        <td>María López</td>
-                        <td>15/10/2025</td>
-                        <td><span class="badge bg-info text-dark">App</span></td>
-                        <td>120.00</td>
-                        <td>Transferencia</td>
-                        <td><span class="badge bg-success">Completada</span></td>
-                        <td class="text-center">
-                          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleVenta"><i
-                              class="bi bi-eye"></i></button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>VNT-00125</td>
-                        <td>Carlos Ramos</td>
-                        <td>14/10/2025</td>
-                        <td><span class="badge bg-success">Sistema</span></td>
-                        <td>480.00</td>
-                        <td>Efectivo</td>
-                        <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-                        <td class="text-center">
-                          <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#detalleVenta"><i
-                              class="bi bi-eye"></i></button>
+                      <tr *ngIf="ventasFiltradas.length === 0">
+                        <td colspan="11" class="text-center py-4">
+                          <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                          <p class="text-muted mt-2">No se encontraron ventas</p>
                         </td>
                       </tr>
                     </tbody>
@@ -533,8 +605,8 @@
 
                   <div class="col-md-3">
                     <label for="busquedaProducto" class="form-label">Buscar Producto</label>
-                    <input type="text" id="busquedaProducto" class="form-control"
-                      placeholder="Nombre o código..." [(ngModel)]="filtroInventario.busqueda">
+                    <input type="text" id="busquedaProducto" class="form-control" placeholder="Nombre o código..."
+                      [(ngModel)]="filtroInventario.busqueda">
                   </div>
 
                   <div class="col-md-3 d-flex align-items-end">
@@ -564,7 +636,8 @@
                   <div class="card-body">
                     <h6><i class="bi bi-box-seam"></i> Total productos</h6>
                     <h3 class="text-primary">{{totalesFiltrados.total_productos}}</h3>
-                    <small class="text-muted">Activos: {{totalesFiltrados.productos_activos}} | Inactivos: {{totalesFiltrados.productos_inactivos}}</small>
+                    <small class="text-muted">Activos: {{totalesFiltrados.productos_activos}} | Inactivos:
+                      {{totalesFiltrados.productos_inactivos}}</small>
                   </div>
                 </div>
               </div>
@@ -589,7 +662,8 @@
                   <div class="card-body">
                     <h6><i class="bi bi-graph-up-arrow"></i> Ganancia Potencial</h6>
                     <h3 class="text-warning">{{totalesFiltrados.ganancia_potencial | number:'1.2-2'}} Bs.</h3>
-                    <small class="text-muted">Margen: {{totalesFiltrados.margen_ganancia_total_porcentaje | number:'1.2-2'}}%</small>
+                    <small class="text-muted">Margen: {{totalesFiltrados.margen_ganancia_total_porcentaje |
+                      number:'1.2-2'}}%</small>
                   </div>
                 </div>
               </div>
@@ -631,8 +705,7 @@
                         <td><span class="badge bg-secondary">{{prod.marca.nombre}}</span></td>
                         <td>{{prod.unidad_medida.abreviatura}}</td>
                         <td>
-                          <span class="badge"
-                            [ngClass]="{
+                          <span class="badge" [ngClass]="{
                               'bg-danger': prod.stock === 0,
                               'bg-warning text-dark': prod.stock > 0 && prod.stock <= prod.stock_minimo,
                               'bg-success': prod.stock > prod.stock_minimo
@@ -647,8 +720,7 @@
                           <span class="badge bg-primary">{{prod.margen_porcentaje | number:'1.2-2'}}%</span>
                         </td>
                         <td>
-                          <span class="badge"
-                            [ngClass]="prod.estado_valor === 1 ? 'bg-success' : 'bg-secondary'">
+                          <span class="badge" [ngClass]="prod.estado_valor === 1 ? 'bg-success' : 'bg-secondary'">
                             {{prod.estado}}
                           </span>
                         </td>
@@ -674,165 +746,285 @@
     </div>
   </div>
 </div>
-<!-- PEDIDOS -->
+<!-- negocio -->
 <div class="modal fade" id="pedidos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      <div class="modal-header bg-gradient" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <h1 class="modal-title fs-5 text-white" id="exampleModalLabel">
+          <i class="bi bi-graph-up-arrow me-2"></i>Estado de Resultados
+        </h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
         <div class="container">
-        <div class="container mt-4">
-  <h3 class="mb-4 text-primary"><i class="bi bi-receipt"></i> Reporte de Pedidos (App Móvil)</h3>
+          <div class="container mt-4">
 
-  <!-- Filtros -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
-      <form class="row g-3">
-        <div class="col-md-3">
-          <label for="estadoPedido" class="form-label">Estado del pedido</label>
-          <select id="estadoPedido" class="form-select">
-            <option selected>Todos</option>
-            <option>Pendiente</option>
-            <option>Confirmado</option>
-            <option>En entrega</option>
-            <option>Entregado</option>
-            <option>Cancelado</option>
-          </select>
-        </div>
+            <!-- Encabezado -->
+            <div class="text-center mb-4">
+              <h3 class="fw-bold text-primary">
+                <i class="bi bi-pie-chart-fill me-2"></i>Estado de Resultados - P&L
+              </h3>
+              <p class="text-muted" *ngIf="datosNegocioReporte?.filtros">
+                Período: {{datosNegocioReporte.filtros.periodo_texto}}
+              </p>
+            </div>
 
-        <div class="col-md-3">
-          <label for="cliente" class="form-label">Cliente</label>
-          <input type="text" id="cliente" class="form-control" placeholder="Nombre o CI">
-        </div>
+            <!-- Filtros -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+                <div class="row g-3">
+                  <div class="col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroNegocio.desde">
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroNegocio.hasta">
+                  </div>
+                  <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosNegocio()">
+                      <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                  </div>
+                  <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" (click)="reporteDatosNegocio()" class="btn btn-danger w-100">
+                      <i class="bi bi-filetype-pdf"></i> PDF
+                    </button>
+                  </div>
+                  <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-success w-100">
+                      <i class="bi bi-file-earmark-excel"></i> Excel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div class="col-md-3">
-          <label for="fechaInicio" class="form-label">Desde</label>
-          <input type="date" id="fechaInicio" class="form-control">
-        </div>
+            <!-- Resumen Principal -->
+            <div class="row mb-4" *ngIf="estadoResultados">
+              <div class="col-md-3">
+                <div class="card text-white shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                  <div class="card-body text-center">
+                    <i class="bi bi-cash-stack fs-2"></i>
+                    <h6 class="mt-2">Ingresos</h6>
+                    <h3 class="fw-bold">{{estadoResultados.ingresos.total | number:'1.2-2'}} Bs.</h3>
+                    <small>{{estadoResultados.ingresos.cantidad_ventas}} ventas</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-white shadow-lg" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                  <div class="card-body text-center">
+                    <i class="bi bi-box-seam fs-2"></i>
+                    <h6 class="mt-2">Costo de Ventas</h6>
+                    <h3 class="fw-bold">{{estadoResultados.costo_ventas.total | number:'1.2-2'}} Bs.</h3>
+                    <small>{{estadoResultados.costo_ventas.cantidad_items}} items</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-white shadow-lg" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                  <div class="card-body text-center">
+                    <i class="bi bi-receipt-cutoff fs-2"></i>
+                    <h6 class="mt-2">Gastos Operativos</h6>
+                    <h3 class="fw-bold">{{estadoResultados.gastos_operativos.total | number:'1.2-2'}} Bs.</h3>
+                    <small>{{estadoResultados.gastos_operativos.cantidad_gastos}} gastos</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-white shadow-lg" 
+                  [ngStyle]="{'background': estadoResultados.ganancia_neta.total >= 0 ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' : 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'}">
+                  <div class="card-body text-center">
+                    <i class="bi bi-graph-up-arrow fs-2"></i>
+                    <h6 class="mt-2">Ganancia Neta</h6>
+                    <h3 class="fw-bold">{{estadoResultados.ganancia_neta.total | number:'1.2-2'}} Bs.</h3>
+                    <small>{{estadoResultados.ganancia_neta.porcentaje | number:'1.2-2'}}%</small>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div class="col-md-3">
-          <label for="fechaFin" class="form-label">Hasta</label>
-          <input type="date" id="fechaFin" class="form-control">
-        </div>
+            <!-- Indicadores Financieros -->
+            <div class="card shadow-sm mb-4" *ngIf="indicadoresNegocio">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-speedometer2"></i> Indicadores Financieros</h5>
+              </div>
+              <div class="card-body">
+                <div class="row text-center">
+                  <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                      <h6 class="text-muted">Margen Bruto</h6>
+                      <h4 class="text-primary">{{indicadoresNegocio.margen_bruto_porcentaje | number:'1.2-2'}}%</h4>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                      <h6 class="text-muted">Margen Operativo</h6>
+                      <h4 [ngClass]="indicadoresNegocio.margen_operativo_porcentaje >= 0 ? 'text-success' : 'text-danger'">
+                        {{indicadoresNegocio.margen_operativo_porcentaje | number:'1.2-2'}}%
+                      </h4>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="p-3 border rounded">
+                      <h6 class="text-muted">Margen Neto</h6>
+                      <h4 [ngClass]="indicadoresNegocio.margen_neto_porcentaje >= 0 ? 'text-success' : 'text-danger'">
+                        {{indicadoresNegocio.margen_neto_porcentaje | number:'1.2-2'}}%
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-        <div class="col-md-3">
-          <label for="metodoPago" class="form-label">Método de pago</label>
-          <select id="metodoPago" class="form-select">
-            <option selected>Todos</option>
-            <option>Efectivo</option>
-            <option>Transferencia</option>
-            <option>QR</option>
-          </select>
-        </div>
+            <!-- Estado de Resultados Detallado -->
+            <div class="card shadow-sm mb-4" *ngIf="estadoResultados">
+              <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-journal-text"></i> Estado de Resultados Detallado</h5>
+              </div>
+              <div class="card-body">
+                <table class="table table-bordered">
+                  <tbody>
+                    <tr class="table-primary">
+                      <td class="fw-bold"><i class="bi bi-currency-exchange"></i> INGRESOS</td>
+                      <td class="text-end fw-bold">{{estadoResultados.ingresos.total | number:'1.2-2'}} Bs.</td>
+                    </tr>
+                    <tr>
+                      <td class="ps-4">(-) Costo de Ventas</td>
+                      <td class="text-end">{{estadoResultados.costo_ventas.total | number:'1.2-2'}} Bs.</td>
+                    </tr>
+                    <tr class="table-success">
+                      <td class="fw-bold"><i class="bi bi-check-circle"></i> GANANCIA BRUTA</td>
+                      <td class="text-end fw-bold">{{estadoResultados.ganancia_bruta.total | number:'1.2-2'}} Bs. ({{estadoResultados.ganancia_bruta.porcentaje | number:'1.2-2'}}%)</td>
+                    </tr>
+                    <tr>
+                      <td class="ps-4">(-) Gastos Operativos</td>
+                      <td class="text-end">{{estadoResultados.gastos_operativos.total | number:'1.2-2'}} Bs.</td>
+                    </tr>
+                    <tr class="table-warning">
+                      <td class="fw-bold"><i class="bi bi-activity"></i> GANANCIA OPERATIVA</td>
+                      <td class="text-end fw-bold">{{estadoResultados.ganancia_operativa.total | number:'1.2-2'}} Bs. ({{estadoResultados.ganancia_operativa.porcentaje | number:'1.2-2'}}%)</td>
+                    </tr>
+                    <tr>
+                      <td class="ps-4">(-) Impuestos</td>
+                      <td class="text-end">{{estadoResultados.impuestos.total | number:'1.2-2'}} Bs.</td>
+                    </tr>
+                    <tr [ngClass]="estadoResultados.ganancia_neta.total >= 0 ? 'table-info' : 'table-danger'">
+                      <td class="fw-bold"><i class="bi bi-trophy"></i> GANANCIA NETA</td>
+                      <td class="text-end fw-bold">{{estadoResultados.ganancia_neta.total | number:'1.2-2'}} Bs. ({{estadoResultados.ganancia_neta.porcentaje | number:'1.2-2'}}%)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-        <div class="col-md-3 d-flex align-items-end">
-          <button type="button" class="btn btn-primary w-100"><i class="bi bi-search"></i> Generar reporte</button>
-        </div>
+            <!-- Detalle de Gastos Operativos -->
+            <div class="card shadow-sm mb-4" *ngIf="estadoResultados?.gastos_operativos?.detalle?.length > 0">
+              <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-receipt"></i> Detalle de Gastos Operativos</h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-warning">
+                      <tr>
+                        <th>#</th>
+                        <th>Fecha</th>
+                        <th>Categoría</th>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Usuario</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let gasto of estadoResultados.gastos_operativos.detalle; let i = index">
+                        <td>{{i + 1}}</td>
+                        <td>{{gasto.fecha | date:'dd/MM/yyyy HH:mm'}}</td>
+                        <td>
+                          <span class="badge bg-warning text-dark">{{gasto.categoria}}</span>
+                        </td>
+                        <td>
+                          <span *ngIf="gasto.descripcion && gasto.descripcion.trim() !== ''">{{gasto.descripcion}}</span>
+                          <span *ngIf="!gasto.descripcion || gasto.descripcion.trim() === ''" class="text-muted fst-italic">Sin descripción</span>
+                        </td>
+                        <td class="text-end">
+                          <strong class="text-danger">{{gasto.monto | number:'1.2-2'}} Bs.</strong>
+                        </td>
+                        <td>
+                          <i class="bi bi-person-badge text-primary"></i>
+                          {{gasto.usuario?.empleado?.nombre || 'N/A'}}
+                        </td>
+                      </tr>
+                      <tr class="table-warning fw-bold">
+                        <td colspan="4" class="text-end">TOTAL GASTOS OPERATIVOS:</td>
+                        <td class="text-end">{{estadoResultados.gastos_operativos.total | number:'1.2-2'}} Bs.</td>
+                        <td></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
 
-        <div class="col-md-3 d-flex align-items-end">
-          <button type="button" class="btn btn-success w-100"><i class="bi bi-file-earmark-excel"></i> Exportar</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Resumen -->
-  <div class="row mb-4">
-    <div class="col-md-3">
-      <div class="card text-center border-primary shadow-sm">
-        <div class="card-body">
-          <h6>Total pedidos</h6>
-          <h3 class="text-primary">320</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center border-warning shadow-sm">
-        <div class="card-body">
-          <h6>Pendientes</h6>
-          <h3 class="text-warning">28</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center border-success shadow-sm">
-        <div class="card-body">
-          <h6>Entregados</h6>
-          <h3 class="text-success">260</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center border-danger shadow-sm">
-        <div class="card-body">
-          <h6>Cancelados</h6>
-          <h3 class="text-danger">32</h3>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Tabla de pedidos -->
-  <div class="card shadow-sm">
-    <div class="card-body">
-      <h5 class="card-title mb-3"><i class="bi bi-list-ul"></i> Detalle de pedidos</h5>
-      <div class="table-responsive">
-        <table class="table table-striped align-middle">
-          <thead class="table-primary">
-            <tr>
-              <th># Pedido</th>
-              <th>Cliente</th>
-              <th>Fecha</th>
-              <th>Total (Bs.)</th>
-              <th>Método de pago</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>PED-00123</td>
-              <td>Juan Pérez</td>
-              <td>14/10/2025</td>
-              <td>180.00</td>
-              <td>QR</td>
-              <td><span class="badge bg-warning text-dark">Pendiente</span></td>
-              <td>
-                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> Ver</button>
-              </td>
-            </tr>
-            <tr>
-              <td>PED-00124</td>
-              <td>Ana Rojas</td>
-              <td>13/10/2025</td>
-              <td>320.00</td>
-              <td>Efectivo</td>
-              <td><span class="badge bg-success">Entregado</span></td>
-              <td>
-                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> Ver</button>
-              </td>
-            </tr>
-            <tr>
-              <td>PED-00125</td>
-              <td>Carlos López</td>
-              <td>12/10/2025</td>
-              <td>150.00</td>
-              <td>Transferencia</td>
-              <td><span class="badge bg-danger">Cancelado</span></td>
-              <td>
-                <button class="btn btn-outline-primary btn-sm"><i class="bi bi-eye"></i> Ver</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
+            <!-- Detalle de Ingresos (Ventas) -->
+            <div class="card shadow-sm mb-4" *ngIf="estadoResultados?.ingresos?.detalle?.length > 0">
+              <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Detalle de Ventas</h5>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-success">
+                      <tr>
+                        <th>#</th>
+                        <th>Nro. Venta</th>
+                        <th>Fecha</th>
+                        <th>Cliente</th>
+                        <th>Monto Total</th>
+                        <th>Descuento</th>
+                        <th>Monto Neto</th>
+                        <th>Tipo Pago</th>
+                        <th>Usuario</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let venta of estadoResultados.ingresos.detalle; let i = index">
+                        <td>{{i + 1}}</td>
+                        <td><strong>{{venta.nro_venta}}</strong></td>
+                        <td>{{venta.fecha_registro | date:'dd/MM/yyyy HH:mm'}}</td>
+                        <td>{{venta.cliente?.nombre || 'N/A'}}</td>
+                        <td class="text-end">{{venta.monto_total | number:'1.2-2'}} Bs.</td>
+                        <td class="text-end">{{venta.descuento | number:'1.2-2'}} Bs.</td>
+                        <td class="text-end">
+                          <strong class="text-success">{{venta.monto_neto | number:'1.2-2'}} Bs.</strong>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge" [ngClass]="{
+                            'bg-success': venta.tipo_pago === 0,
+                            'bg-info': venta.tipo_pago === 1
+                          }">
+                            {{venta.tipo_pago === 0 ? 'Efectivo' : 'QR'}}
+                          </span>
+                        </td>
+                        <td>
+                          <i class="bi bi-person-badge text-primary"></i>
+                          {{venta.usuario?.empleado?.nombre || 'N/A'}}
+                        </td>
+                      </tr>
+                      <tr class="table-success fw-bold">
+                        <td colspan="6" class="text-end">TOTAL INGRESOS:</td>
+                        <td class="text-end">{{estadoResultados.ingresos.total | number:'1.2-2'}} Bs.</td>
+                        <td colspan="2"></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
 
         </div>
         <div class="modal-footer">
@@ -847,217 +1039,278 @@
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="bi bi-cart-check"></i> Reporte de Compras</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="container">
-       <div class="container mt-4">
-  <h3 class="mb-4 text-primary"><i class="bi bi-cart-check"></i> Reporte de Compras</h3>
+          <div class="container mt-4">
 
-  <!-- Filtros -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
-      <form class="row g-3">
-        <div class="col-md-3">
-          <label for="proveedor" class="form-label">Proveedor</label>
-          <input type="text" id="proveedor" class="form-control" placeholder="Nombre del proveedor">
-        </div>
+            <!-- Filtros -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+                <div class="row g-3">
+                  <div class="col-md-3">
+                    <label class="form-label">Proveedor</label>
+                    <div class="position-relative">
+                      <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Buscar proveedor"
+                        [(ngModel)]="filtroCompras.busqueda"
+                        (input)="filtrarProveedorModal($event)"
+                        (focus)="filtrarProveedorModal($event)"
+                        (blur)="ocultarListaProveedoresConRetraso()"
+                        #buscarProveedorInput>
 
-        <div class="col-md-3">
-          <label for="estadoCompra" class="form-label">Estado</label>
-          <select id="estadoCompra" class="form-select">
-            <option selected>Todos</option>
-            <option>Activa</option>
-            <option>Cancelada</option>
-            <option>Finalizada</option>
-          </select>
-        </div>
+                      <div class="productos-lista" *ngIf="mostrarListaProveedores && datosComprasReporte">
+                        <div
+                          *ngFor="let proveedor of todosProveedoresParaDropdown | slice:0:6"
+                          class="producto-item"
+                          (mousedown)="seleccionarProveedorFiltro(proveedor, buscarProveedorInput)">
+                          <i class="bi bi-shop text-warning"></i>
+                          <div class="producto-info">
+                            <strong>{{proveedor.nombre}}</strong>
+                            <small>Ciudad: {{proveedor.ciudad}} | Tel: {{proveedor.celular || 'N/A'}}</small>
+                          </div>
+                        </div>
+                        <div class="producto-item-empty" *ngIf="todosProveedoresParaDropdown.length === 0">
+                          <i class="bi bi-inbox"></i>
+                          <span>No hay proveedores</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-        <div class="col-md-3">
-          <label for="fechaInicio" class="form-label">Desde</label>
-          <input type="date" id="fechaInicio" class="form-control">
-        </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" [(ngModel)]="filtroCompras.estado">
+                      <option value="">Todos</option>
+                      <option value="Activa">Activa</option>
+                      <option value="Cancelada">Cancelada</option>
+                      <option value="Finalizada">Finalizada</option>
+                    </select>
+                  </div>
 
-        <div class="col-md-3">
-          <label for="fechaFin" class="form-label">Hasta</label>
-          <input type="date" id="fechaFin" class="form-control">
-        </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroCompras.desde">
+                  </div>
 
-        <div class="col-md-3">
-          <label for="usuario" class="form-label">Usuario que registró</label>
-          <input type="text" id="usuario" class="form-control" placeholder="Nombre de usuario">
-        </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroCompras.hasta">
+                  </div>
 
-        <div class="col-md-3 d-flex align-items-end">
-          <button (click)="generarReporteCompras(true)" type="button" class="btn btn-primary w-100"><i class="bi bi-search"></i>Reporte resumido</button>
-        </div>
-        <div class="col-md-3 d-flex align-items-end">
-          <button (click)="generarReporteCompras(false)" type="button" class="btn btn-primary w-100"><i class="bi bi-search"></i>Reporte detallado</button>
-        </div>
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosCompras()">
+                      <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                  </div>
 
-        <div class="col-md-3 d-flex align-items-end">
-          <button type="button" class="btn btn-success w-100"><i class="bi bi-file-earmark-excel"></i> Exportar</button>
-        </div>
-      </form>
-    </div>
-  </div>
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button (click)="generarReporteCompras(true)" type="button" class="btn btn-primary w-100">
+                      <i class="bi bi-file-earmark-text"></i> Reporte resumido
+                    </button>
+                  </div>
 
-  <!-- Resumen -->
-  <div class="row mb-4">
-    <div class="col-md-3">
-      <div class="card text-center border-primary shadow-sm">
-        <div class="card-body">
-          <h6>Total de compras</h6>
-          <h3 class="text-primary">45</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center border-success shadow-sm">
-        <div class="card-body">
-          <h6>Monto total</h6>
-          <h3 class="text-success">Bs. 12,450</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center border-warning shadow-sm">
-        <div class="card-body">
-          <h6>Proveedores activos</h6>
-          <h3 class="text-warning">8</h3>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card text-center border-danger shadow-sm">
-        <div class="card-body">
-          <h6>Compras canceladas</h6>
-          <h3 class="text-danger">2</h3>
-        </div>
-      </div>
-    </div>
-  </div>
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button (click)="generarReporteCompras(false)" type="button" class="btn btn-info w-100">
+                      <i class="bi bi-file-earmark-bar-graph"></i> Reporte detallado
+                    </button>
+                  </div>
 
-  <!-- Tabla de compras -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <h5 class="card-title mb-3"><i class="bi bi-list-ul"></i> Detalle de Compras</h5>
-      <div class="table-responsive">
-        <table class="table table-striped align-middle">
-          <thead class="table-primary">
-            <tr>
-              <th># Compra</th>
-              <th>Proveedor</th>
-              <th>Fecha</th>
-              <th>Total (Bs.)</th>
-              <th>Estado</th>
-              <th>Registrado por</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>COMP-00125</td>
-              <td>Lubricantes El Sol</td>
-              <td>10/10/2025</td>
-              <td>2,350.00</td>
-              <td><span class="badge bg-success">Finalizada</span></td>
-              <td>Admin</td>
-              <td>
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#detalleCompraModal">
-                  <i class="bi bi-eye"></i> Ver
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>COMP-00126</td>
-              <td>Auto Repuestos SRL</td>
-              <td>12/10/2025</td>
-              <td>4,200.00</td>
-              <td><span class="badge bg-warning text-dark">Activa</span></td>
-              <td>María P.</td>
-              <td>
-                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#detalleCompraModal">
-                  <i class="bi bi-eye"></i> Ver
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Detalle de Compra -->
-  <div class="modal fade" id="detalleCompraModal" tabindex="-1" aria-labelledby="detalleCompraLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white">
-          <h5 class="modal-title" id="detalleCompraLabel"><i class="bi bi-info-circle"></i> Detalle de Compra</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <strong>N° Compra:</strong> COMP-00125<br>
-              <strong>Proveedor:</strong> Lubricantes El Sol<br>
-              <strong>Fecha:</strong> 10/10/2025<br>
+                  <div class="col-md-3 d-flex align-items-end">
+                    <button type="button" class="btn btn-success w-100">
+                      <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="col-md-6">
-              <strong>Registrado por:</strong> Admin<br>
-              <strong>Estado:</strong> <span class="badge bg-success">Finalizada</span><br>
-              <strong>Monto total:</strong> Bs. 2,350.00
+
+            <!-- Resumen -->
+            <div class="row mb-4" *ngIf="datosComprasReporte">
+              <div class="col-md-3">
+                <div class="card text-center border-primary shadow-sm">
+                  <div class="card-body">
+                    <h6><i class="bi bi-cart-check"></i> Total de compras</h6>
+                    <h3 class="text-primary">{{totalesFiltradosCompras.total_compras}}</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center border-success shadow-sm">
+                  <div class="card-body">
+                    <h6><i class="bi bi-cash-coin"></i> Monto total</h6>
+                    <h3 class="text-success">{{totalesFiltradosCompras.monto_total | number:'1.2-2'}} Bs.</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center border-info shadow-sm">
+                  <div class="card-body">
+                    <h6><i class="bi bi-box-seam"></i> Total productos</h6>
+                    <h3 class="text-info">{{totalesFiltradosCompras.total_productos}}</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="card text-center border-warning shadow-sm">
+                  <div class="card-body">
+                    <h6><i class="bi bi-check-circle"></i> Compras activas</h6>
+                    <h3 class="text-warning">{{totalesFiltradosCompras.compras_activas}}</h3>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de compras -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h5 class="card-title mb-3">
+                  <i class="bi bi-list-ul"></i> Detalle de Compras
+                  <span class="badge bg-primary ms-2">{{comprasFiltradas.length}} compras</span>
+                </h5>
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-warning">
+                      <tr>
+                        <th>#</th>
+                        <th>Nro. Compra</th>
+                        <th>Proveedor</th>
+                        <th>Ciudad</th>
+                        <th>Fecha</th>
+                        <th>Cant. Productos</th>
+                        <th>Total Unidades</th>
+                        <th>Monto Total</th>
+                        <th>Estado</th>
+                        <th>Registrado por</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let compra of comprasFiltradas; let i = index">
+                        <td>{{i + 1}}</td>
+                        <td><strong>{{compra.nro_compra}}</strong></td>
+                        <td>
+                          <i class="bi bi-shop text-warning"></i>
+                          {{compra.proveedor.nombre}}
+                        </td>
+                        <td>{{compra.proveedor.ciudad}}</td>
+                        <td>
+                          <span *ngIf="compra.fecha_registro">
+                            {{compra.fecha_registro | date:'dd/MM/yyyy HH:mm'}}
+                          </span>
+                          <span *ngIf="!compra.fecha_registro" class="text-muted fst-italic">N/A</span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-info">{{compra.cantidad_productos}}</span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-secondary">{{compra.total_cantidad}}</span>
+                        </td>
+                        <td class="text-end">
+                          <strong class="text-success">{{compra.monto_total | number:'1.2-2'}} Bs.</strong>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge"
+                            [ngClass]="{
+                              'bg-success': compra.estado === 'Activa',
+                              'bg-danger': compra.estado === 'Cancelada',
+                              'bg-secondary': compra.estado === 'Finalizada'
+                            }">
+                            {{compra.estado}}
+                          </span>
+                        </td>
+                        <td>
+                          <i class="bi bi-person-fill text-primary"></i>
+                          {{compra.usuario.nombre_completo}}
+                        </td>
+                      </tr>
+                      <tr *ngIf="comprasFiltradas.length === 0">
+                        <td colspan="10" class="text-center py-4">
+                          <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                          <p class="text-muted mt-2">No se encontraron compras</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal Detalle de Compra -->
+            <div class="modal fade" id="detalleCompraModal" tabindex="-1" aria-labelledby="detalleCompraLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="detalleCompraLabel"><i class="bi bi-info-circle"></i> Detalle de Compra
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                      aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row mb-3">
+                      <div class="col-md-6">
+                        <strong>N° Compra:</strong> COMP-00125<br>
+                        <strong>Proveedor:</strong> Lubricantes El Sol<br>
+                        <strong>Fecha:</strong> 10/10/2025<br>
+                      </div>
+                      <div class="col-md-6">
+                        <strong>Registrado por:</strong> Admin<br>
+                        <strong>Estado:</strong> <span class="badge bg-success">Finalizada</span><br>
+                        <strong>Monto total:</strong> Bs. 2,350.00
+                      </div>
+                    </div>
+
+                    <div class="table-responsive">
+                      <table class="table table-bordered">
+                        <thead class="table-light">
+                          <tr>
+                            <th>Producto</th>
+                            <th>Precio unitario (Bs.)</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal (Bs.)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Aceite 10W40 Castrol</td>
+                            <td>80.00</td>
+                            <td>10</td>
+                            <td>800.00</td>
+                          </tr>
+                          <tr>
+                            <td>Filtro de aire Toyota</td>
+                            <td>50.00</td>
+                            <td>12</td>
+                            <td>600.00</td>
+                          </tr>
+                          <tr>
+                            <td>Bujías NGK</td>
+                            <td>95.00</td>
+                            <td>10</td>
+                            <td>950.00</td>
+                          </tr>
+                        </tbody>
+                        <tfoot class="table-light">
+                          <tr>
+                            <th colspan="3" class="text-end">Total:</th>
+                            <th>Bs. 2,350.00</th>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>Producto</th>
-                  <th>Precio unitario (Bs.)</th>
-                  <th>Cantidad</th>
-                  <th>Subtotal (Bs.)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Aceite 10W40 Castrol</td>
-                  <td>80.00</td>
-                  <td>10</td>
-                  <td>800.00</td>
-                </tr>
-                <tr>
-                  <td>Filtro de aire Toyota</td>
-                  <td>50.00</td>
-                  <td>12</td>
-                  <td>600.00</td>
-                </tr>
-                <tr>
-                  <td>Bujías NGK</td>
-                  <td>95.00</td>
-                  <td>10</td>
-                  <td>950.00</td>
-                </tr>
-              </tbody>
-              <tfoot class="table-light">
-                <tr>
-                  <th colspan="3" class="text-end">Total:</th>
-                  <th>Bs. 2,350.00</th>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
 
 
         </div>
@@ -1073,155 +1326,181 @@
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Gastos</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="container">
-   <div class="container mt-4">
-  <!-- Título -->
-  <div class="text-center mb-4">
-    <h3 class="fw-bold text-danger">
-      <i class="bi bi-cash-stack me-2"></i>Reporte de Gastos
-    </h3>
-    <p class="text-muted">Visualiza y analiza los gastos registrados en el sistema</p>
-  </div>
+          <div class="container mt-4">
+            <!-- Título -->
+            <div class="text-center mb-4">
+              <h3 class="fw-bold text-danger">
+                <i class="bi bi-cash-stack me-2"></i>Reporte de Gastos
+              </h3>
+              <p class="text-muted">Visualiza y analiza los gastos registrados en el sistema</p>
+            </div>
 
-  <!-- Filtros -->
-  <div class="card shadow-sm mb-4">
-    <div class="card-body">
-      <form class="row g-3">
-        <div class="col-md-3">
-          <label class="form-label fw-semibold">Desde</label>
-          <input type="date" class="form-control">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-semibold">Hasta</label>
-          <input type="date" class="form-control">
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-semibold">Categoría</label>
-          <select class="form-select">
-            <option selected>Todos</option>
-            <option>Servicios</option>
-            <option>Mantenimiento</option>
-            <option>Suministros</option>
-            <option>Otros</option>
-          </select>
-        </div>
-        <div class="col-md-3 d-flex align-items-end">
-          <button type="button" class="btn btn-danger w-100">
-            <i class="bi bi-search me-1"></i>Filtrar
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+            <!-- Filtros -->
+            <div class="card shadow-sm mb-4">
+              <div class="card-body">
+                <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
+                <div class="row g-3">
+                  <div class="col-md-3">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroGastos.desde">
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroGastos.hasta">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Categoría</label>
+                    <select class="form-select" [(ngModel)]="filtroGastos.categoria">
+                      <option value="">Todos</option>
+                      <option *ngFor="let cat of categoriasGastos" [value]="cat.id_categoria">{{cat.nombre}}</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Estado</label>
+                    <select class="form-select" [(ngModel)]="filtroGastos.estado">
+                      <option value="">Todos</option>
+                      <option value="Válido">Válido</option>
+                      <option value="Anulado">Anulado</option>
+                    </select>
+                  </div>
+                  <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosGastos()">
+                      <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  <!-- Resumen en cards -->
-  <div class="row g-3 mb-4">
-    <div class="col-md-3">
-      <div class="card text-white bg-danger shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-cash-coin fs-2"></i>
-          <h5 class="mt-2">Total Gastos</h5>
-          <h4 class="fw-bold">Bs 1,230.00</h4>
-        </div>
-      </div>
-    </div>
+            <!-- Resumen en cards -->
+            <div class="row g-3 mb-4" *ngIf="datosGastosReporte">
+              <div class="col-md-3">
+                <div class="card text-white bg-danger shadow-sm">
+                  <div class="card-body text-center">
+                    <i class="bi bi-cash-coin fs-2"></i>
+                    <h5 class="mt-2">Total Gastos</h5>
+                    <h4 class="fw-bold">{{totalesFiltradosGastos.monto_total_general | number:'1.2-2'}} Bs.</h4>
+                  </div>
+                </div>
+              </div>
 
-    <div class="col-md-3">
-      <div class="card text-white bg-warning shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-tools fs-2"></i>
-          <h5 class="mt-2">Mantenimiento</h5>
-          <h4 class="fw-bold">Bs 350.00</h4>
-        </div>
-      </div>
-    </div>
+              <div class="col-md-3">
+                <div class="card text-white bg-success shadow-sm">
+                  <div class="card-body text-center">
+                    <i class="bi bi-check-circle fs-2"></i>
+                    <h5 class="mt-2">Gastos Válidos ({{totalesFiltradosGastos.gastos_validos}})</h5>
+                    <h4 class="fw-bold">{{totalesFiltradosGastos.monto_total_validos | number:'1.2-2'}} Bs.</h4>
+                  </div>
+                </div>
+              </div>
 
-    <div class="col-md-3">
-      <div class="card text-white bg-info shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-lightning-charge fs-2"></i>
-          <h5 class="mt-2">Servicios</h5>
-          <h4 class="fw-bold">Bs 580.00</h4>
-        </div>
-      </div>
-    </div>
+              <div class="col-md-3">
+                <div class="card text-white bg-secondary shadow-sm">
+                  <div class="card-body text-center">
+                    <i class="bi bi-x-circle fs-2"></i>
+                    <h5 class="mt-2">Gastos Anulados ({{totalesFiltradosGastos.gastos_anulados}})</h5>
+                    <h4 class="fw-bold">{{totalesFiltradosGastos.monto_total_anulados | number:'1.2-2'}} Bs.</h4>
+                  </div>
+                </div>
+              </div>
 
-    <div class="col-md-3">
-      <div class="card text-white bg-success shadow-sm">
-        <div class="card-body text-center">
-          <i class="bi bi-person-lines-fill fs-2"></i>
-          <h5 class="mt-2">Usuario Activo</h5>
-          <h4 class="fw-bold">3 usuarios</h4>
-        </div>
-      </div>
-    </div>
-  </div>
+              <div class="col-md-3">
+                <div class="card text-white bg-info shadow-sm">
+                  <div class="card-body text-center">
+                    <i class="bi bi-receipt fs-2"></i>
+                    <h5 class="mt-2">Total Registros</h5>
+                    <h4 class="fw-bold">{{totalesFiltradosGastos.total_gastos}}</h4>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-  <!-- Tabla de detalle -->
-  <div class="card shadow-sm">
-    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-      <h5 class="mb-0"><i class="bi bi-list-ul me-2"></i>Detalle de Gastos</h5>
-      <div>
-        <button class="btn btn-light btn-sm me-2">
-          <i class="bi bi-file-earmark-excel-fill text-success"></i> Excel
-        </button>
-        <button class="btn btn-light btn-sm" (click)="reporteGastos()">
-          <i class="bi bi-file-earmark-pdf-fill text-danger"></i> PDF
-        </button>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-danger text-center">
-            <tr>
-              <th>#</th>
-              <th>Fecha</th>
-              <th>Categoría</th>
-              <th>Monto (Bs)</th>
-              <th>Descripción</th>
-              <th>Registrado por</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody class="text-center">
-            <tr>
-              <td>1</td>
-              <td>2025-10-12</td>
-              <td>Servicios</td>
-              <td>150.00</td>
-              <td>Pago de electricidad</td>
-              <td>Administrador</td>
-              <td><span class="badge bg-success">Activo</span></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>2025-10-13</td>
-              <td>Suministros</td>
-              <td>80.00</td>
-              <td>Compra de papelería</td>
-              <td>Usuario 1</td>
-              <td><span class="badge bg-danger">Anulado</span></td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>2025-10-14</td>
-              <td>Mantenimiento</td>
-              <td>200.00</td>
-              <td>Reparación de impresora</td>
-              <td>Usuario 2</td>
-              <td><span class="badge bg-success">Activo</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
+            <!-- Tabla de detalle -->
+            <div class="card shadow-sm">
+              <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                  <i class="bi bi-list-ul me-2"></i>Detalle de Gastos
+                  <span class="badge bg-light text-dark ms-2">{{gastosFiltrados.length}} gastos</span>
+                </h5>
+                <div>
+                  <button class="btn btn-light btn-sm me-2">
+                    <i class="bi bi-file-earmark-excel-fill text-success"></i> Excel
+                  </button>
+                  <button class="btn btn-light btn-sm" (click)="reporteGastos()">
+                    <i class="bi bi-file-earmark-pdf-fill text-danger"></i> PDF
+                  </button>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-danger">
+                      <tr>
+                        <th>#</th>
+                        <th>Mes</th>
+                        <th>Fecha</th>
+                        <th>Categoría</th>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Estado</th>
+                        <th>Registrado por</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let gasto of gastosFiltrados; let i = index"
+                        [ngClass]="{'table-secondary': gasto.estado_valor !== 1}">
+                        <td>{{i + 1}}</td>
+                        <td>
+                          <span class="badge bg-info">{{gasto.nombre_mes}}</span>
+                        </td>
+                        <td>
+                          <span *ngIf="gasto.fecha">
+                            {{gasto.fecha | date:'dd/MM/yyyy HH:mm'}}
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-warning text-dark">Cat. {{gasto.categoria}}</span>
+                        </td>
+                        <td>
+                          <span *ngIf="gasto.descripcion && gasto.descripcion.trim() !== ''">{{gasto.descripcion}}</span>
+                          <span *ngIf="!gasto.descripcion || gasto.descripcion.trim() === ''" class="text-muted fst-italic">Sin descripción</span>
+                        </td>
+                        <td class="text-end">
+                          <strong [ngClass]="gasto.estado_valor === 1 ? 'text-success' : 'text-danger'">
+                            {{gasto.monto | number:'1.2-2'}} Bs.
+                          </strong>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge" 
+                            [ngClass]="{
+                              'bg-success': gasto.estado_valor === 1,
+                              'bg-danger': gasto.estado_valor === 0 || gasto.estado_valor === 2
+                            }">
+                            {{gasto.estado}}
+                          </span>
+                        </td>
+                        <td>
+                          <i class="bi bi-person-badge text-primary"></i>
+                          {{gasto.usuario.nombre_completo}}
+                        </td>
+                      </tr>
+                      <tr *ngIf="gastosFiltrados.length === 0">
+                        <td colspan="8" class="text-center py-4">
+                          <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+                          <p class="text-muted mt-2">No se encontraron gastos</p>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
 
         </div>
         <div class="modal-footer">

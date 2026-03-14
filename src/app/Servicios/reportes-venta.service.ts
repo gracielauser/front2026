@@ -16,4 +16,13 @@ export class ReportesVentaService {
     responseType: 'blob' // 👈 clave para manejar PDF
   });
    }
+   datosNegocio(): Observable<any> {
+    console.log("en servicio datos negocio");
+    return this.xhttp.get<any>(`${environment.apiUrl}/api/reporte/resultados/datos`);
+  }
+  getResultados():Observable<Blob>{
+    return this.xhttp.post(`${environment.apiUrl}/api/reporte/resultados`,{},{
+    responseType: 'blob' // 👈 clave para manejar PDF
+  });
+   }
 }

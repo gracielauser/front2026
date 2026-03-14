@@ -53,4 +53,8 @@ export class VentaService {
       responseType: 'blob' // 👈 clave para manejar PDF
     });
 }
+datosVentas(): Observable<any> {
+  console.log("en servicio datos ventas");
+  return this.xhttp.get<any>(`${environment.apiUrl}/api/reporte-venta/reporteVentas-resumido/datos`);
+}
 }

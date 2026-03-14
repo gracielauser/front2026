@@ -28,4 +28,8 @@ export class GastoService {
       let url = environment.apiUrl+"/api/reporte/gastos";
       return this.xhttp.post(url, body, { responseType: 'blob' });
      }
+     datosGastos(body={}): Observable<any> {  
+      let url = environment.apiUrl+"/api/reporte/gastos/datos";
+      return this.xhttp.get(url);
+     }
 }

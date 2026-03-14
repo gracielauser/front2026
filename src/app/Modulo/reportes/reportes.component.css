@@ -1,73 +1,401 @@
 
+/* ==================== BOTONES PRINCIPALES ==================== */
 .btn-custom {
-  height: 120px;
-  font-size: 1.1rem;
+  height: 140px;
+  font-size: 1.2rem;
+  font-weight: 600;
   border-width: 3px;
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 25px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
+.btn-custom::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-custom:hover::before {
+  left: 100%;
+}
+
+.btn-custom:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.btn-custom i {
+  font-size: 3rem;
+  transition: transform 0.3s ease;
+}
+
+.btn-custom:hover i {
+  transform: scale(1.15) rotate(5deg);
+}
+
 .btn-clientes {
   border-color: #fd7e14;
   color: #fd7e14;
+  background: linear-gradient(135deg, #fff5f0, #ffffff);
 }
+
 .btn-clientes:hover {
-  background-color: #fd7e14;
+  background: linear-gradient(135deg, #fd7e14, #ff9d4d);
   color: #ffffff;
+  border-color: #fd7e14;
 }
+
 .btn-pedidos {
   border-color: #6f42c1;
   color: #6f42c1;
+  background: linear-gradient(135deg, #f5f0ff, #ffffff);
 }
+
 .btn-pedidos:hover {
-  background-color: #6f42c1;
+  background: linear-gradient(135deg, #6f42c1, #8e5dd8);
   color: #ffffff;
+  border-color: #6f42c1;
 }
-.btn-r {
-  border-color: #007bff;
-  color: #007bff;
-}
-.btn-reabastecer:hover {
-  background-color: #007bff;
-  color: #ffffff;
-}
+
 .btn-ventas {
   border-color: #28a745;
   color: #28a745;
+  background: linear-gradient(135deg, #f0fff4, #ffffff);
 }
+
 .btn-ventas:hover {
-  background-color: #28a745;
+  background: linear-gradient(135deg, #28a745, #34c759);
   color: #ffffff;
+  border-color: #28a745;
 }
-.btn-ventas {
-  border-color:   #28a745;
-  color:   #28a745;
-}
+
 .btn-compras {
   border-color: #ffc107;
-  color: #ffc107;
+  color: #e8a500;
+  background: linear-gradient(135deg, #fffbf0, #ffffff);
 }
+
 .btn-compras:hover {
-  background-color: #ffc107;
+  background: linear-gradient(135deg, #ffc107, #ffd454);
   color: #ffffff;
+  border-color: #ffc107;
 }
+
 .btn-inventario {
   border-color: #e83e8c;
   color: #e83e8c;
+  background: linear-gradient(135deg, #fff0f7, #ffffff);
 }
+
 .btn-inventario:hover {
-  background-color: #e83e8c;
+  background: linear-gradient(135deg, #e83e8c, #ff5ca3);
   color: #ffffff;
+  border-color: #e83e8c;
 }
+
 .btn-gastos {
   border-color: #17a2b8;
   color: #17a2b8;
+  background: linear-gradient(135deg, #f0fcff, #ffffff);
 }
+
 .btn-gastos:hover {
-  background-color: #17a2b8;
+  background: linear-gradient(135deg, #17a2b8, #1fc0db);
   color: #ffffff;
+  border-color: #17a2b8;
 }
+
 .icon-lg {
-  font-size: 2rem; /* Aumenta el tamaño del ícono */
+  font-size: 2rem;
+}
+
+/* ==================== LISTA BÚSQUEDA DESPLEGABLE ==================== */
+.productos-lista {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 2px solid #0891b2;
+  border-radius: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 2000;
+  box-shadow: 0 10px 40px rgba(8, 145, 178, 0.2);
+  margin-top: 0.5rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.producto-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.producto-item:hover {
+  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+  transform: translateX(5px);
+}
+
+.producto-item i {
+  color: #0891b2;
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.producto-item:hover i {
+  transform: scale(1.2);
+}
+
+.producto-info {
+  flex: 1;
+}
+
+.producto-info strong {
+  display: block;
+  color: #1e293b;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.producto-info small {
+  color: #64748b;
+  font-size: 0.85rem;
+  margin-right: 1rem;
+}
+
+.producto-item-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.producto-item-empty i {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.producto-item.text-muted {
+  cursor: default;
+  background: #f8fafc;
+  border-top: 2px solid #e2e8f0;
+  padding: 0.75rem;
+}
+
+.producto-item.text-muted:hover {
+  background: #f8fafc;
+  transform: none;
+}
+
+/* ==================== CARDS MEJORADAS ==================== */
+.card {
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+  border-radius: 12px 12px 0 0 !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* ==================== TABLAS MEJORADAS ==================== */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.table thead th {
+  border: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  padding: 1rem;
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.table tbody tr:hover {
+  background: linear-gradient(90deg, #f8f9fa, #ffffff);
+  transform: scale(1.01);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ==================== BADGES MEJORADOS ==================== */
+.badge {
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+/* ==================== BOTONES MEJORADOS ==================== */
+.btn {
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 0.6rem 1.2rem;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn i {
+  margin-right: 0.5rem;
+}
+
+/* ==================== INPUTS MEJORADOS ==================== */
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  padding: 0.7rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.01);
+}
+
+/* ==================== ANIMACIONES SUTILES ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card, .table-responsive {
+  animation: fadeIn 0.5s ease;
+}
+
+/* ==================== MODAL MEJORADO ==================== */
+.modal-content {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  border-radius: 15px 15px 0 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: none;
+  padding: 1.5rem 2rem;
+}
+
+.modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.modal-footer {
+  border-top: none;
+  padding: 1.5rem 2rem;
+}
+
+/* ==================== CARDS DE RESUMEN ==================== */
+.card.border-primary {
+  border-width: 2px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.card.border-primary:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.3);
+}
+
+.card.border-success:hover {
+  box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+}
+
+.card.border-info:hover {
+  box-shadow: 0 10px 30px rgba(23, 162, 184, 0.3);
+}
+
+.card.border-warning:hover {
+  box-shadow: 0 10px 30px rgba(255, 193, 7, 0.3);
+}
+
+.card.border-danger:hover {
+  box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+}
+
+/* ==================== SCROLLBAR PERSONALIZADO ==================== */
+.modal-body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }

@@ -31,4 +31,8 @@ export class ClienteService {
          responseType: 'blob' // 👈 clave para manejar PDF
        });
      }
+     datosClientes(): Observable<any> {
+      console.log("en servicio datos clientes");
+      return this.xhttp.get<any>(`${environment.apiUrl}/api/reporte/clientes/datos`);
+     }
 }

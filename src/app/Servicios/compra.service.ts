@@ -44,4 +44,7 @@ return this.xhttp.post(`${environment.apiUrl}/api/reporte-compra/compras-detalla
         }
 
      }
+     datosReporte(): Observable<any> {
+      return this.xhttp.get<any>(`${environment.apiUrl}/api/reporte-compra/compras-resumido/datos`);
+     }
 }
