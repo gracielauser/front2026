@@ -30,7 +30,7 @@
                  [(ngModel)]="nombre">
         </div>
 
-        <div class="filter-item">
+        <!-- <div class="filter-item">
           <label class="filter-label">
             <i class="bi bi-geo-alt"></i>
             Ciudad
@@ -39,7 +39,7 @@
             <option value="">Todas las ciudades</option>
             <option *ngFor="let c of ciudades" [value]="c">{{c}}</option>
           </select>
-        </div>
+        </div> -->
 
         <div class="filter-item">
           <label class="filter-label">
@@ -137,7 +137,7 @@
 <div class="modal fade" id="addcliente" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <div class="modal-header-clientes">
+      <div class="modal-header modal-header-clientes">
         <div class="d-flex align-items-center">
           <i class="bi me-2" [ngClass]="isViewMode ? 'bi-eye-fill' : (isEditMode ? 'bi-pencil-square' : 'bi-person-plus-fill')"></i>
           <h5 class="modal-title mb-0">{{modalTitle}}</h5>
@@ -252,13 +252,14 @@
           </div>
 
           <div class="modal-footer" *ngIf="!isViewMode">
+            <button (click)="limpiar()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+              <i class="bi bi-x-circle me-1"></i>Cancelar
+            </button>
             <button type="submit" class="btn btn-clientes-primary" [disabled]="clienteForm.invalid">
               <i class="bi me-1" [ngClass]="isEditMode ? 'bi-check-circle' : 'bi-save'"></i>
               {{isEditMode ? 'Actualizar' : 'Guardar'}}
             </button>
-            <button (click)="limpiar()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-              <i class="bi bi-x-circle me-1"></i>Cancelar
-            </button>
+
           </div>
 
           <!-- BOTONES EN MODO VER -->
@@ -280,8 +281,8 @@
 <div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content modal-confirmacion">
-      <div class="modal-header-warning">
-        <h5 class="modal-title mb-0">
+      <div class="modal-header modal-header-warning">
+          <h5 class="modal-title mb-0">
           <i class="bi bi-exclamation-triangle-fill me-2"></i>Confirmar accion
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>

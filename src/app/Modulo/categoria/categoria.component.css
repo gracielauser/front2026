@@ -379,15 +379,23 @@
 }
 
 .btn-action {
-  width: 36px;
+  min-width: 36px;
   height: 36px;
   border-radius: 8px;
   border: none;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.4rem;
+  padding: 0 0.75rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-action i {
   font-size: 1rem;
 }
 

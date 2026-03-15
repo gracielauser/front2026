@@ -126,7 +126,10 @@
                   <!-- <button *ngIf="com.estado == 1" class="btn-action btn-receive" (click)="Detalle(com); abrirModalRecepcion()" title="Recepcionar">
                     <i class="bi bi-box-seam-fill"></i>
                   </button> -->
-
+<button class="btn-action btn-edit" (click)="modificarCompra(com)" title="Modificar">
+                    <i class="bi bi-pencil-fill"></i>
+                    Modificar
+                  </button>
                   <!-- Anular (solo pendientes y recepcionadas) -->
                   <button *ngIf="com.estado == 1 || com.estado == 2" class="btn-action btn-cancel" (click)="anularCompra(com)" title="Anular">
                     <i class="bi bi-x-circle-fill"></i>
@@ -153,8 +156,8 @@
     <div class="modal-content modal-modern">
       <div class="modal-header modal-header-custom">
         <div class="modal-title-wrapper">
-          <i class="bi bi-cart-plus-fill"></i>
-          <h5 class="modal-title">Nueva Compra</h5>
+          <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-cart-plus-fill'"></i>
+          <h5 class="modal-title">{{modalTitleCompra}}</h5>
         </div>
         <button type="button" class="btn-close btn-close-white" (click)="cerrarModalAgregar()"></button>
       </div>
@@ -294,9 +297,10 @@
                   <thead>
                     <tr>
                       <th>Producto</th>
-                      <th style="width: 150px;">Precio Unit.</th>
-                      <th style="width: 120px;">Cantidad</th>
-                      <th style="width: 150px;">Subtotal</th>
+                      <th style="width: 130px;">P. Compra</th>
+                      <th style="width: 130px;">P. Venta</th>
+                      <th style="width: 100px;">Cantidad</th>
+                      <th style="width: 130px;">Subtotal</th>
                       <th style="width: 80px;">Acciones</th>
                     </tr>
                   </thead>
@@ -310,6 +314,12 @@
                         <input type="number" class="form-control form-control-sm"
                                [value]="det.precio_unitario" min="0.01" step="0.01"
                                (input)="actualizarPrecio($event, idx)"
+                               (keydown)="bloquearTeclasInvalidasPrecio($event)">
+                      </td>
+                      <td>
+                        <input type="number" class="form-control form-control-sm"
+                               [value]="det.precio_venta" min="0.01" step="0.01"
+                               (input)="actualizarPrecioVenta($event, idx)"
                                (keydown)="bloquearTeclasInvalidasPrecio($event)">
                       </td>
                       <td>
@@ -328,7 +338,7 @@
                       </td>
                     </tr>
                     <tr *ngIf="detallesCompra.length === 0">
-                      <td colspan="5" class="text-center text-muted py-4">
+                      <td colspan="6" class="text-center text-muted py-4">
                         <i class="bi bi-inbox fs-2 d-block mb-2"></i>
                         No hay productos agregados
                       </td>
@@ -336,7 +346,7 @@
                   </tbody>
                   <tfoot *ngIf="detallesCompra.length > 0">
                     <tr class="table-total">
-                      <td colspan="3" class="text-end"><strong>TOTAL:</strong></td>
+                      <td colspan="4" class="text-end"><strong>TOTAL:</strong></td>
                       <td colspan="2">
                         <strong class="text-primary fs-5">{{controlC['monto_total'].value | number:'1.2-2'}} Bs.</strong>
                       </td>
@@ -422,7 +432,8 @@
                 <tr>
                   <th>Nro</th>
                   <th>Producto</th>
-                  <th>Precio Unit.</th>
+                  <th>P. Compra</th>
+                  <th>P. Venta</th>
                   <th>Cantidad</th>
                   <th>Subtotal</th>
                 </tr>
@@ -435,13 +446,14 @@
                     <small class="d-block text-muted">{{d.producto.codigo}}</small>
                   </td>
                   <td>{{d.precio_unitario}} Bs.</td>
+                  <td>{{d.precio_venta || 'N/A'}} Bs.</td>
                   <td>{{d.cantidad}}</td>
                   <td><strong>{{d.sub_total | number:'1.2-2'}} Bs.</strong></td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr class="table-total">
-                  <td colspan="4" class="text-end"><strong>TOTAL:</strong></td>
+                  <td colspan="5" class="text-end"><strong>TOTAL:</strong></td>
                   <td><strong class="text-primary fs-5">{{detCompra?.monto_total | number:'1.2-2'}} Bs.</strong></td>
                 </tr>
               </tfoot>
@@ -721,7 +733,7 @@
           <i class="bi bi-box-seam-fill"></i>
           <h5 class="modal-title">Nuevo Producto Rápido</h5>
         </div>
-        <button type="button" class="btn-close-custom" (click)="cerrarModalAgregarProducto()">
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalAgregarProducto()">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
@@ -769,54 +781,6 @@
                   'is-invalid': controlProducto['codigo'].invalid && controlProducto['codigo'].touched
                 }">
               <div class="invalid-feedback">Código requerido (máx. 20 caracteres)</div>
-            </div>
-
-            <!-- Precio Compra -->
-            <div class="col-md-6">
-              <label class="form-label-custom">
-                Precio de Compra <span class="required-mark">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">Bs.</span>
-                <input
-                  type="number"
-                  formControlName="precio_compra"
-                  class="form-control form-control-modern"
-                  placeholder="0.00"
-                  min="0.01"
-                  step="0.01"
-                  [ngClass]="{
-                    'is-valid': controlProducto['precio_compra'].valid && controlProducto['precio_compra'].touched,
-                    'is-invalid': controlProducto['precio_compra'].invalid && controlProducto['precio_compra'].touched
-                  }">
-              </div>
-              <div class="invalid-feedback d-block" *ngIf="controlProducto['precio_compra'].invalid && controlProducto['precio_compra'].touched">
-                Precio requerido (mayor a 0)
-              </div>
-            </div>
-
-            <!-- Precio Venta -->
-            <div class="col-md-6">
-              <label class="form-label-custom">
-                Precio de Venta <span class="required-mark">*</span>
-              </label>
-              <div class="input-group">
-                <span class="input-group-text">Bs.</span>
-                <input
-                  type="number"
-                  formControlName="precio_venta"
-                  class="form-control form-control-modern"
-                  placeholder="0.00"
-                  min="0.01"
-                  step="0.01"
-                  [ngClass]="{
-                    'is-valid': controlProducto['precio_venta'].valid && controlProducto['precio_venta'].touched,
-                    'is-invalid': controlProducto['precio_venta'].invalid && controlProducto['precio_venta'].touched
-                  }">
-              </div>
-              <div class="invalid-feedback d-block" *ngIf="controlProducto['precio_venta'].invalid && controlProducto['precio_venta'].touched">
-                Precio requerido (mayor a 0)
-              </div>
             </div>
 
             <!-- Categoría -->

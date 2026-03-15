@@ -69,6 +69,8 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   page:number=1
   exito: boolean = true
   mensajeToast: string = ''
+  isEditMode: boolean = false;
+  modalTitleCompra: string = 'Nueva Compra';
   constructor(
         private ComSer: CompraService,
         private ProSer: ProveedorService,
@@ -173,9 +175,7 @@ export class ComprasComponent implements OnInit, AfterViewInit {
       id_categoria: '',
       sub_categoria: '',
       id_unidad_medida: 1,
-      id_marca: '',
-      precio_compra: '',
-      precio_venta: ''
+      id_marca: ''
     });
     this.subCategoriasCompra = [];
     if (this.modalProductoRapido) {
@@ -326,6 +326,8 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   // ==================== MÉTODOS PRINCIPALES ====================
 
   nuevaCompra(){
+    this.isEditMode = false;
+    this.modalTitleCompra = 'Nueva Compra';
     this.detallesCompra = [];
     this.nextNumber = this.apiCompra.length + 1;
     this.nroCompra = 'C' + this.nextNumber.toString().padStart(3, '0');
@@ -339,11 +341,13 @@ export class ComprasComponent implements OnInit, AfterViewInit {
     });
     this.abrirModalAgregar();
   }
-filtrarProducto(event: any){
-  const valor=event.target.value.trim().toLowerCase();
-  this.nombre = valor;
-  this.mostrarLista=valor.length>0;
-}
+
+  filtrarProducto(event: any){
+    const valor=event.target.value.trim().toLowerCase();
+    this.nombre = valor;
+    this.mostrarLista=valor.length>0;
+  }
+
   ngOnInit(): void {
     this.listarCompra()
     this.listarP()
@@ -362,6 +366,35 @@ filtrarProducto(event: any){
     })
   }
   compraParaAnular:any
+
+  modificarCompra(compra: any) {
+    this.isEditMode = true;
+    this.modalTitleCompra = 'Modificar Compra';
+
+    // Cargar datos de la compra en el formulario
+    this.compraForm.patchValue({
+      fecha_registro: compra.fecha_registro.split(' ')[0], // Solo la fecha sin hora
+      nro_compra: compra.nro_compra,
+      monto_total: compra.monto_total,
+      estado: compra.estado,
+      id_proveedor: compra.id_proveedor
+    });
+
+    // Cargar los detalles de la compra
+    this.detallesCompra = compra.det_compras.map((det: any) => ({
+      producto: det.producto,
+      precio_unitario: det.precio_unitario,
+      precio_venta: det.precio_venta || det.producto.precio_venta || 1,
+      cantidad: det.cantidad,
+      sub_total: det.sub_total
+    }));
+
+    // Calcular el total
+    this.CalcularTotal();
+
+    // Abrir el modal
+    this.abrirModalAgregar();
+  }
 
   anularCompra(compra:any){
     this.compraParaAnular=compra;
@@ -468,8 +501,6 @@ filtrarProducto(event: any){
     nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
     codigo: new FormControl('', [Validators.required, Validators.maxLength(20)]),
     descripcion: new FormControl('', [Validators.maxLength(50)]),
-    precio_compra: new FormControl('', [Validators.required, Validators.min(0.01)]),
-    precio_venta: new FormControl('', [Validators.required, Validators.min(0.01)]),
     id_categoria: new FormControl('', [Validators.required]),
     sub_categoria: new FormControl(''),
     id_unidad_medida: new FormControl('', [Validators.required]),
@@ -527,8 +558,8 @@ filtrarProducto(event: any){
       nombre: this.productoFormCompra.get('nombre')?.value,
       codigo: this.productoFormCompra.get('codigo')?.value,
       descripcion: this.productoFormCompra.get('descripcion')?.value,
-      precio_compra: this.productoFormCompra.get('precio_compra')?.value,
-      precio_venta: this.productoFormCompra.get('precio_venta')?.value,
+      precio_compra: 1, // Valor por defecto, se definirá en el detalle
+      precio_venta: 1, // Valor por defecto, se definirá en el detalle
       id_categoria: idCategoriaFinal,
       categorium: this.apiCategorias.find(c => c.id_categoria == idCategoriaFinal) || null,
       id_unidad_medida: this.productoFormCompra.get('id_unidad_medida')?.value,
@@ -544,8 +575,9 @@ filtrarProducto(event: any){
     // Añadir automáticamente a la tabla de detalles
     const detalle: any = {
       cantidad: 1,
-      precio_unitario: productoNuevo.precio_compra,
-      sub_total: productoNuevo.precio_compra * 1,
+      precio_unitario: 1, // Se definirá por el usuario en el detalle
+      precio_venta: 1, // Se definirá por el usuario en el detalle
+      sub_total: 1,
       producto: productoNuevo,
       compra: null,
     };
@@ -812,6 +844,7 @@ agregarProductoATabla(producto: any, input:HTMLInputElement) {
     this.detallesCompra.push({
       producto: producto,
       precio_unitario: producto.precio_compra || 1,
+      precio_venta: producto.precio_venta || 1,
       cantidad: 1,
       sub_total: producto.precio_compra || 1
     });
@@ -828,6 +861,11 @@ actualizarPrecio(event: any, index: number) {
   const nuevoPrecio = Number(event.target.value);
   this.detallesCompra[index].precio_unitario = nuevoPrecio;
   this.actualizarSubtotal(index);
+}
+
+actualizarPrecioVenta(event: any, index: number) {
+  const nuevoPrecioVenta = Number(event.target.value);
+  this.detallesCompra[index].precio_venta = nuevoPrecioVenta;
 }
 actualizarCantidad(event: any, index: number) {
   const nuevaCantidad = Number(event.target.value);
