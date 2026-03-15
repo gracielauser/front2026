@@ -179,7 +179,7 @@ catalogoPDF(){
 
   cargarDatosProducto(producto: any) {
     this.isEditMode = true
-    this.modalTitle = 'Editar Producto'
+    this.modalTitle = 'Modificar Producto'
     this.idProducto = producto.id_producto
 
     // Configurar categoría y subcategoría

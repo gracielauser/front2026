@@ -23,7 +23,7 @@ export class RolesComponent {
   mensajeExito: string = '';
   exito: boolean = false;
   isEditMode: boolean = false;
-  modalTitle: string = 'Adicionar Rol';
+  modalTitle: string = 'Nuevo Rol';
   rolModel: any = null;
   formSubmitted: boolean = false;
 

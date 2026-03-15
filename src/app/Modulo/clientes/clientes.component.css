@@ -439,33 +439,36 @@
 }
 
 .modal-header-clientes {
-  background: linear-gradient(135deg, var(--clientes-primary), var(--clientes-primary-dark));
-  color: white;
+  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+  color: white !important;
   border-bottom: none;
   border-radius: 16px 16px 0 0;
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem;
 }
 
 .modal-header-clientes h5 {
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  color: white !important;
 }
 
 .modal-header-clientes i {
-  font-size: 1.3rem;
+  font-size: 1.5rem;
+  color: white !important;
 }
 
-::ng-deep .modal-header-clientes .btn-close {
+.modal-header-clientes .btn-close {
   filter: brightness(0) invert(1);
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
-::ng-deep .modal-header-clientes .btn-close:hover {
+.modal-header-clientes .btn-close:hover {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 ::ng-deep .modal-body {
@@ -527,18 +530,16 @@
 
 ::ng-deep .modal-body .valid-feedback {
   color: var(--clientes-success);
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
 }
 
 ::ng-deep .modal-body .invalid-feedback {
   color: var(--clientes-danger);
-  font-size: 0.8rem;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 0.25rem;
 }
 
 .btn-clientes-primary {
@@ -933,24 +934,26 @@
 }
 
 /* ========================================
-   MODAL HEADER PERSONALIZADO
+   MODAL HEADER PERSONALIZADO (Duplicado - Mantener sincronizado)
    ======================================== */
 .modal-header-clientes {
-  background: linear-gradient(135deg, var(--clientes-primary) 0%, var(--clientes-primary-hover) 100%);
-  color: white;
+  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+  color: white !important;
   border: none;
-  padding: 1.25rem 1.5rem;
+  padding: 1.5rem 2rem;
   border-radius: 16px 16px 0 0;
 }
 
 .modal-header-clientes h5 {
-  font-weight: 700;
+  font-weight: 600;
   font-size: 1.25rem;
   margin: 0;
+  color: white !important;
 }
 
 .modal-header-clientes i {
   font-size: 1.5rem;
+  color: white !important;
 }
 
 ::ng-deep .modal-content {
@@ -1248,6 +1251,7 @@
 
   ::ng-deep .modal-header-clientes h5 {
     font-size: 1.1rem;
+    color: white !important;
   }
 
   ::ng-deep .modal-body {

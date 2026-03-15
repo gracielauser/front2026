@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 
 import * as bootstrap from 'bootstrap';
 import { ClienteService } from '../../Servicios/cliente.service';
@@ -27,7 +27,7 @@ export class ClientesComponent implements OnInit {
   exito: boolean = false
   isEditMode: boolean = false
   isViewMode: boolean = false
-  modalTitle: string = 'Adicionar Cliente'
+  modalTitle: string = 'Nuevo Cliente'
   idCliente: number = 0
   cliSeleccionado: any = null
   estadoTemporal: number = 0
@@ -36,6 +36,44 @@ export class ClientesComponent implements OnInit {
   constructor(
     private cliSer: ClienteService
   ) { }
+
+  // Validador personalizado para campos opcionales
+  optionalMinLength(minLength: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) {
+        return null; // Si está vacío, es válido (porque es opcional)
+      }
+      return control.value.length >= minLength ? null : { minlength: { requiredLength: minLength, actualLength: control.value.length } };
+    };
+  }
+
+  optionalMaxLength(maxLength: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) {
+        return null; // Si está vacío, es válido (porque es opcional)
+      }
+      return control.value.length <= maxLength ? null : { maxlength: { requiredLength: maxLength, actualLength: control.value.length } };
+    };
+  }
+
+  optionalEmail(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) {
+        return null; // Si está vacío, es válido (porque es opcional)
+      }
+      return Validators.email(control);
+    };
+  }
+
+  optionalPattern(pattern: string | RegExp): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) {
+        return null; // Si está vacío, es válido (porque es opcional)
+      }
+      return Validators.pattern(pattern)(control);
+    };
+  }
+
   mostrarAlerta(exito: boolean, mensaje: string) {
     this.exito = exito;
     this.mensajeExito = mensaje;
@@ -55,14 +93,14 @@ export class ClientesComponent implements OnInit {
   }
 
   clienteForm = new UntypedFormGroup({
-    nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
-    ap_paterno: new FormControl('', [ Validators.minLength(3), Validators.maxLength(40)]),
-    ap_materno: new FormControl('', [Validators.minLength(3), Validators.maxLength(40)]),
-    direccion: new FormControl('', [Validators.minLength(5), Validators.maxLength(40)]),
-    ci_nit: new FormControl('', [Validators.minLength(5), Validators.maxLength(15)]),
+    nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.pattern('^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$')]),
+    ap_paterno: new FormControl('', [this.optionalMinLength(3), this.optionalMaxLength(40), this.optionalPattern('^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$')]),
+    ap_materno: new FormControl('', [this.optionalMinLength(3), this.optionalMaxLength(40), this.optionalPattern('^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$')]),
+    direccion: new FormControl('', [this.optionalMinLength(5), this.optionalMaxLength(40)]),
+    ci_nit: new FormControl('', [this.optionalMinLength(5), this.optionalMaxLength(15)]),
     estado: new FormControl('1'),
-    celular: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]),
-    email: new FormControl('', [Validators.email, Validators.minLength(5), Validators.maxLength(40)]),
+    celular: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15), Validators.pattern('^[0-9]+$')]),
+    email: new FormControl('', [this.optionalEmail(), this.optionalMinLength(5), this.optionalMaxLength(40)]),
     ciudad: new FormControl('Tarija'),
     tipo_documento: new FormControl('1'),
     fecha_registro: new FormControl(this.obtenerFechaHoraActual()),
@@ -117,6 +155,9 @@ export class ClientesComponent implements OnInit {
       fecha_registro: cliente.fecha_registro
     });
     this.clienteForm.enable();
+    // Limpiar estado de validaciones
+    this.clienteForm.markAsPristine();
+    this.clienteForm.markAsUntouched();
   }
 
   verDatosCliente(cliente: any) {
@@ -177,10 +218,13 @@ export class ClientesComponent implements OnInit {
     });
     this.isEditMode = false;
     this.isViewMode = false;
-    this.modalTitle = 'Adicionar Cliente';
+    this.modalTitle = 'Nuevo Cliente';
     this.clienteModel = null;
     this.idCliente = 0;
     this.clienteForm.enable();
+    // Limpiar estado de validaciones
+    this.clienteForm.markAsPristine();
+    this.clienteForm.markAsUntouched();
   }
 
   cerrarModal() {

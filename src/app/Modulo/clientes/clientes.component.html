@@ -176,7 +176,6 @@
             <label class="form-label">Nombre <span class="text-danger">*</span></label>
             <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
               maxlength="40"
-              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
               [ngClass]="{
                 'is-valid': control['nombre'].valid && (control['nombre'].dirty||control['nombre'].touched),
                 'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)
@@ -189,7 +188,6 @@
             <label class="form-label">Apellido Paterno</label>
             <input type="text" formControlName="ap_paterno" class="form-control" placeholder="Apellido paterno"
               maxlength="40"
-              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
               [ngClass]="{
                 'is-valid': control['ap_paterno'].valid && (control['ap_paterno'].dirty||control['ap_paterno'].touched),
                 'is-invalid': control['ap_paterno'].invalid && (control['ap_paterno'].dirty||control['ap_paterno'].touched)
@@ -202,7 +200,6 @@
             <label class="form-label">Apellido Materno</label>
             <input type="text" formControlName="ap_materno" class="form-control" placeholder="Apellido materno"
               maxlength="40"
-              pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
               [ngClass]="{
                 'is-valid': control['ap_materno'].valid && (control['ap_materno'].dirty||control['ap_materno'].touched),
                 'is-invalid': control['ap_materno'].invalid && (control['ap_materno'].dirty||control['ap_materno'].touched)
@@ -215,7 +212,6 @@
             <label class="form-label">Celular <span class="text-danger">*</span></label>
             <input type="text" formControlName="celular" class="form-control" placeholder="Número de celular"
               maxlength="15"
-              pattern="^[0-9]+$"
               [ngClass]="{
                 'is-valid': control['celular'].valid && (control['celular'].dirty||control['celular'].touched),
                 'is-invalid': control['celular'].invalid && (control['celular'].dirty||control['celular'].touched)
