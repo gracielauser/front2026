@@ -6,7 +6,7 @@
       </div>
       <div>
         <h1 class="header-title">Gestión de Empleados</h1>
-        <p class="header-subtitle">Administra el personal de tu empresa</p>
+        <p class="header-subtitle">Administra los empleados de tu empresa</p>
       </div>
       <div class="filter-item align-self-end ms-auto">
         <button class="btn-nuevo" (click)="openModalAdd()" data-bs-toggle="modal" data-bs-target="#empleadoModal">
@@ -27,7 +27,7 @@
             Buscar empleado
           </label>
           <input type="text" [(ngModel)]="nombre" class="form-control filter-input"
-                 placeholder="Nombre o CI">
+                 placeholder="Buscar por nombre o apellidos">
         </div>
 
         <div class="filter-item">
@@ -39,19 +39,6 @@
             <option value="1">Activos</option>
             <option value="2">Inactivos</option>
             <option value="">Todos</option>
-          </select>
-        </div>
-
-        <div class="filter-item">
-          <label class="filter-label">
-            <i class="bi bi-gender-ambiguous"></i>
-            Género
-          </label>
-          <select class="form-select filter-select" [(ngModel)]="genero">
-            <option value="">Todos</option>
-            <option value="1">Masculino</option>
-            <option value="2">Femenino</option>
-            <option value="3">Otro</option>
           </select>
         </div>
       </div>
@@ -67,11 +54,11 @@
             <tr>
               <th>Nro</th>
               <th>Foto</th>
-              <th>CI</th>
+              <!-- <th>CI</th> -->
               <th>Nombres</th>
               <th>Apellidos</th>
               <th>Celular</th>
-              <th>Género</th>
+              <!-- <th>Género</th> -->
               <th>Salario</th>
               <th>Estado</th>
               <th>Acciones</th>
@@ -91,9 +78,9 @@
                        (error)="($any($event.target)).src='assets/image-not-found.png'">
                 </div>
               </td>
-              <td>
-                <span class="employee-ci">{{emp.ci}}</span>
-              </td>
+                <!-- <td>
+                  <span class="employee-ci">{{emp.ci}}</span>
+                </td> -->
               <td>
                 <span class="employee-name">{{emp.nombre}}</span>
               </td>
@@ -106,12 +93,12 @@
                   {{emp.celular}}
                 </span>
               </td>
-              <td>
+              <!-- <td>
                 <span class="badge badge-gender" [ngClass]="'badge-gender-' + emp.genero">
                   <i [class]="'bi ' + getGeneroIcon(emp.genero)"></i>
                   {{getGeneroText(emp.genero)}}
                 </span>
-              </td>
+              </td> -->
               <td>
                 <span class="employee-salary">
                   {{emp.salario}} <small>Bs.</small>

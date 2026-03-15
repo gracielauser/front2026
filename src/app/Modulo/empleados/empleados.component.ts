@@ -289,7 +289,7 @@ ngAfterViewInit() {
   idModificar: number = 0;//este id va ser temporal solo para modificar
   modificarDatos(emp:any){//este metodo solo pone loas datos que recibe en el formulario
     this.isEditMode = true;
-    this.modalTitle = 'Editar Empleado';
+    this.modalTitle = 'Modificar Empleado';
     this.idModificar = emp.id_empleado;//aqui guardo el id del empleado que voy a modificar
     this.ciDuplicado = null; // Limpiar alerta de CI duplicado
     this.ciOriginal = emp.ci; // 👈 Guardar CI original del empleado
