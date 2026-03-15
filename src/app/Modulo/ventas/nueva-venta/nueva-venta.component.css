@@ -53,7 +53,7 @@
 .nueva-venta-window {
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #dee2e6;
   padding: 2rem;
   overflow-y: auto;
   display: flex;

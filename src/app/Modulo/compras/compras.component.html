@@ -126,12 +126,12 @@
                   <!-- <button *ngIf="com.estado == 1" class="btn-action btn-receive" (click)="Detalle(com); abrirModalRecepcion()" title="Recepcionar">
                     <i class="bi bi-box-seam-fill"></i>
                   </button> -->
-<button class="btn-action btn-edit" (click)="modificarCompra(com)" title="Modificar">
+<button class="btn-action btn-edit" *ngIf="com.estado == 1" (click)="modificarCompra(com)" title="Modificar">
                     <i class="bi bi-pencil-fill"></i>
                     Modificar
                   </button>
                   <!-- Anular (solo pendientes y recepcionadas) -->
-                  <button *ngIf="com.estado == 1 || com.estado == 2" class="btn-action btn-cancel" (click)="anularCompra(com)" title="Anular">
+                  <button *ngIf="com.estado == 1" class="btn-action btn-cancel" (click)="anularCompra(com)" title="Anular">
                     <i class="bi bi-x-circle-fill"></i>
                     Anular
                   </button>

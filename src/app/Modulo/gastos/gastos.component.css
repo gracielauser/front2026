@@ -23,7 +23,7 @@
 
 .gastos-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #dee2e6;
   padding: 2rem;
   animation: fadeIn 0.5s ease;
 }

@@ -21,9 +21,7 @@
 
 /* CONTENEDOR PRINCIPAL */
 #home {
-  background-image:
-    linear-gradient(135deg, rgba(168, 183, 245, 0.15), rgba(196, 181, 232, 0.15)),
-    url('../../../assets/fondo.jpg');
+  background: #dee2e6;
   width: 100%;
   min-height: 100vh;
   background-size: cover;

@@ -1,4 +1,14 @@
 
+/* ===========================
+   REPORTES - ESTILOS PROFESIONALES
+   =========================== */
+
+.container-fluid {
+  background: #dee2e6;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
 /* ==================== BOTONES PRINCIPALES ==================== */
 .btn-custom {
   height: 140px;
