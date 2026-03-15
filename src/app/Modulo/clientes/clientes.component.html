@@ -232,14 +232,14 @@
             <div class="invalid-feedback">Email válido, mínimo 5, máximo 40 caracteres.</div>
           </div>
           <!-- CIUDAD -->
-          <div class="col-md-6">
+          <!-- <div class="col-md-6">
             <label class="form-label">Ciudad</label>
             <select formControlName="ciudad" class="form-select">
               <option *ngFor="let c of ciudades" [value]="c">{{c}}</option>
             </select>
-          </div>
+          </div> -->
           <!-- DIRECCION -->
-          <div class="col-md-12">
+          <!-- <div class="col-md-12">
             <label class="form-label">Dirección</label>
             <input type="text" formControlName="direccion" class="form-control" placeholder="Ingrese la dirección"
               maxlength="40"
@@ -249,7 +249,7 @@
               }">
             <div class="valid-feedback">Correcto.</div>
             <div class="invalid-feedback">Mínimo 5, máximo 40 caracteres.</div>
-          </div>
+          </div> -->
 
           <div class="modal-footer" *ngIf="!isViewMode">
             <button (click)="limpiar()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">

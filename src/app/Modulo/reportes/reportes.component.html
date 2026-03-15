@@ -435,7 +435,7 @@
                           </span>
                         </td>
                         <td>
-                          <span class="badge" 
+                          <span class="badge"
                             [ngClass]="{
                               'bg-primary': venta.tipo_venta === 'Facturado',
                               'bg-secondary': venta.tipo_venta === 'Sin Factura'
@@ -448,7 +448,7 @@
                           <strong class="text-success">{{venta.total | number:'1.2-2'}} Bs.</strong>
                         </td>
                         <td class="text-center">
-                          <span class="badge" 
+                          <span class="badge"
                             [ngClass]="{
                               'bg-info': venta.tipo_pago === 'Efectivo',
                               'bg-warning': venta.tipo_pago === 'QR'
@@ -457,7 +457,7 @@
                           </span>
                         </td>
                         <td class="text-center">
-                          <span class="badge" 
+                          <span class="badge"
                             [ngClass]="{
                               'bg-success': venta.estado_valor === 1,
                               'bg-danger': venta.estado_valor === 2
@@ -467,7 +467,7 @@
                         </td>
                         <td>
                           <i class="bi bi-person-badge text-primary"></i>
-                          {{venta.usuario.nombre_completo}}
+                          {{venta?.usuario?.nombre_completo}}
                         </td>
                       </tr>
                       <tr *ngIf="ventasFiltradas.length === 0">
@@ -835,7 +835,7 @@
                 </div>
               </div>
               <div class="col-md-3">
-                <div class="card text-white shadow-lg" 
+                <div class="card text-white shadow-lg"
                   [ngStyle]="{'background': estadoResultados.ganancia_neta.total >= 0 ? 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' : 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)'}">
                   <div class="card-body text-center">
                     <i class="bi bi-graph-up-arrow fs-2"></i>
@@ -1476,7 +1476,7 @@
                           </strong>
                         </td>
                         <td class="text-center">
-                          <span class="badge" 
+                          <span class="badge"
                             [ngClass]="{
                               'bg-success': gasto.estado_valor === 1,
                               'bg-danger': gasto.estado_valor === 0 || gasto.estado_valor === 2

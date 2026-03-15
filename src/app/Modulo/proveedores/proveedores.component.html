@@ -182,16 +182,18 @@
              setTimeout(()=>document.getElementById('celular_max').style.display='none',2000);
              this.value=this.value.slice(0,8);
            }
-           if( this.value.length<8){
+
+           if(this.value.length>0 && this.value.length<8){
              document.getElementById('celular_min').style.display='block';
              setTimeout(()=>document.getElementById('celular_min').style.display='none',2000);
            }
+
          " [ngClass]="{
         'is-valid': control['celular'].valid && control['celular'].value?.length > 7 && control['celular'].value?.length <= 8
            &&(control['celular'].dirty||control['celular'].touched),
          'is-invalid': control['celular'].invalid && (control['celular'].dirty||control['celular'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div *ngIf="control['celular'].errors?.['required']" class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
             <div id="celularML" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.</div>
             <div id="celular_max" class="invalid-feedback" style="display:none;">El numero de celular no puede tener más
               de 8
