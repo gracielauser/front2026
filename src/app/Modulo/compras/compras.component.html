@@ -112,7 +112,7 @@
                   'badge-recibido': com.estado == 1,
                   'badge-cancelado': com.estado == 2,
                 }">
-                  {{ com.estado == 1 ? 'RECEPCIONADA' : (com.estado == 2 ? 'ANULADA' : 'Desconocido') }}
+                  {{ com.estado == 1 ? 'RECEPCIONADA' : (com.estado != 1 ? 'ANULADA' : 'Desconocido') }}
                 </span>
               </td>
               <td>
@@ -397,8 +397,8 @@
             <span>{{detCompra?.proveedor.nombre}} | {{detCompra?.proveedor.celular}}</span>
           </div>
           <div class="detalle-info-item">
-            <label>Usuario:</label>
-            <span>{{detCompra?.usuario.usuario}}</span>
+            <label>Usuario vendedor:</label>
+            <span>{{detCompra?.usuario_registro?.usuario}}</span>
           </div>
           <div class="detalle-info-item">
             <label>Fecha Registro:</label>
@@ -411,12 +411,16 @@
               'badge-anulada': detCompra?.estado == 2,
               'badge-cancelado': detCompra?.estado == 3
             }">
-              {{ detCompra?.estado == 1 ? 'Recepcionada' : (detCompra?.estado == 2 ? 'Anulada' : 'Desconocido') }}
+              {{ detCompra?.estado == 1 ? 'Recepcionada' : (detCompra?.estado !=1 ? 'Anulada' : 'Desconocido') }}
             </span>
           </div>
           <div class="detalle-info-item" *ngIf="detCompra?.estado == 2">
             <label>Fecha Recepción:</label>
             <span class="text-success fw-bold">{{detCompra?.fecha_recepcion}}</span>
+          </div>
+            <div *ngIf="detCompra?.estado!=1" class="detalle-info-item">
+            <label>Usuario anulador:</label>
+            <span>{{detCompra?.usuario_anulador?.usuario}}</span>
           </div>
         </div>
 

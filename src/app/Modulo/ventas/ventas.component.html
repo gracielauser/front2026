@@ -392,8 +392,8 @@
               <div class="compact-content">
                 <span class="compact-label">Vendedor</span>
                 <span class="compact-value">
-                  {{ DetVenta?.usuario?.empleado?.nombre }}
-                  {{ DetVenta?.usuario?.empleado?.ap_paterno }}
+                  {{ DetVenta?.usuario_registro?.empleado?.nombre }}
+                  {{ DetVenta?.usuario_registro?.empleado?.ap_paterno }}
                 </span>
               </div>
             </div>
@@ -409,7 +409,7 @@
               <div class="compact-content">
                 <span class="compact-label">Estado</span>
                 <span class="compact-value" [class.text-success]="DetVenta?.estado == 1" [class.text-danger]="DetVenta?.estado == 2">
-                  {{ DetVenta?.estado == 1 ? 'Válido' : 'Anulado' }}
+                  {{ DetVenta?.estado == 1 ? 'Válido' : 'Anulado por: ' + DetVenta?.usuario_anulador?.empleado?.nombre + ' ' + DetVenta?.usuario_anulador?.empleado?.ap_paterno }}
                 </span>
               </div>
             </div>
