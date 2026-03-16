@@ -109,7 +109,7 @@
               <td>
                 <span class="badge-estado" [ngClass]="{
                   'badge-recibido': com.estado == 1,
-                  'badge-cancelado': com.estado == 2,
+                  'badge-cancelado': com.estado != 1,
                 }">
                   {{ com.estado == 1 ? 'RECEPCIONADA' : (com.estado != 1 ? 'ANULADA' : 'Desconocido') }}
                 </span>
