@@ -86,10 +86,7 @@ this.mensajeExito = data.mensaje;
 }
 gastoSeleccionado: any = null;
   showModal( gasto: any) {
-    // Guardamos referencia al cliente y estado temporal
     this.gastoSeleccionado = gasto;
-    const modal = new bootstrap.Modal(document.getElementById('estadoModal')!);
-    modal.show();
   }
   cancelarCambio() {
     this.gastoSeleccionado = null;
@@ -116,5 +113,5 @@ gastoSeleccionado: any = null;
       toast.show();
     }
   }
- 
+
 }
