@@ -33,8 +33,9 @@
   background: #dee2e6;
   min-height: calc(100vh - 90px);
   flex: 1;
-  margin-left: 280px;
-  width: calc(100% - 280px) !important;
+  margin-left: 270px;
+  margin-top: 80px;
+  width: calc(100% - 270px) !important;
 }
 
 /* OVERLAY */
