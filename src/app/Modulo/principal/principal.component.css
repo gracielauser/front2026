@@ -73,21 +73,47 @@ body {
         .table-container {
             background: white;
             border-radius: 8px;
-            padding:0px 20px;
+            padding:20px;
+            margin: 0 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
+        .table thead{
+            background: linear-gradient(135deg, #0468A0, #049093) !important;
+            color: white;
+        }
         .table th {
-            background-color: #f8f9fa;
+            background-color: transparent;
             border-top: none;
             font-weight: 600;
-            color: #495057;
+            color: white;
             padding: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.875rem;
         }
 
         .table td {
             padding: 12px;
             vertical-align: middle;
+        }
+.table-title{
+   margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0468A0, #049093);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+        /* Badge para el número de fila - color naranja como gastos del mes */
+        .badge-number-orange {
+            background: #673ab7;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: inline-block;
         }
 
         .badge-minimal {

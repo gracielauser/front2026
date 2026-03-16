@@ -202,7 +202,7 @@
             </div>
             <!-- Table - PRODUCTOS CON STOCK BAJO - Permiso 6 -->
             <div class="table-container" *ngIf="tienePermiso(6)">
-                <h5 class="mb-3">PRODUCTOS CON STOCK BAJO</h5>
+                <h1 class="mb-3 table-title">Productos de bajo stock</h1>
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -219,7 +219,7 @@
                         </thead>
                         <tbody>
                             <tr *ngFor="let producto of productosStockBajo | paginate: { itemsPerPage: 15, currentPage: page }; let i=index">
-                                <td>{{(page - 1) * 15 + i + 1}}</td>
+                                <td><span class="badge-number-orange">{{(page - 1) * 15 + i + 1}}</span></td>
                                 <td>{{producto.codigo}}</td>
                                 <td>{{producto.nombre}}</td>
                                 <td>{{producto.marca?.nombre || 'N/A'}}</td>
