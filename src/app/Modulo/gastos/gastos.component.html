@@ -44,14 +44,15 @@
           </label>
           <select class="form-select filter-select" [(ngModel)]="categoria">
             <option value="">Todos</option>
-            <option value="1">Servicios básicos</option>
-            <option value="2">Alquiler</option>
-            <option value="3">Alimentos</option>
-            <option value="4">Transporte</option>
-            <option value="5">Sueldos</option>
-            <option value="6">Limpieza</option>
-            <option value="7">Internet</option>
-            <option value="8">Otros</option>
+            <option value="Servicios básicos">Servicios básicos</option>
+            <option value="Alquiler">Alquiler</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Transporte">Transporte</option>
+            <option value="Sueldos">Sueldos</option>
+            <option value="Limpieza">Limpieza</option>
+            <option value="Internet">Internet</option>
+            <option value="Articulos para operacion de tienda">Articulos para operacion de tienda</option>
+            <option value="Otros">Otros</option>
           </select>
         </div>
       </div>
@@ -68,6 +69,7 @@
               <th>Monto</th>
               <th>Categoría</th>
               <th>Descripción</th>
+              <th>Gastado Por</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -84,18 +86,14 @@
                 <span class="monto-badge">{{gasto.monto}} Bs.</span>
               </td>
               <td>
-                <span class="categoria-badge">{{gasto.categoria==1? 'Servicios básicos' :
-                  gasto.categoria==2? 'Alquiler' :
-                  gasto.categoria==3? 'Alimentos' :
-                  gasto.categoria==4? 'Transporte' :
-                  gasto.categoria==5? 'Sueldos' :
-                  gasto.categoria==6? 'Limpieza' :
-                  gasto.categoria==7? 'Internet' :
-                  (gasto.categoria==8? 'Articulos para operacion de tienda' :
-                  'Otros')}}</span>
+                <span class="categoria-badge">{{gasto.categoria}}</span>
               </td>
               <td>
                 <span class="descripcion-text">{{gasto.descripcion}}</span>
+              </td>
+              <td>
+                <i class="bi bi-person-circle me-1" style="color: var(--gastos-primary);"></i>
+                {{gasto.usuario?.empleado?.nombre}} {{gasto.usuario?.empleado?.ap_paterno}} {{gasto.usuario?.empleado?.ap_materno}}
               </td>
               <td>
                 <button class="btn-action btn-cancel" data-bs-toggle="modal" data-bs-target="#anular"
@@ -162,15 +160,15 @@
          'is-valid': control['categoria'].valid && (control['categoria'].dirty||control['categoria'].touched),
          'is-invalid': control['categoria'].invalid && (control['categoria'].dirty||control['categoria'].touched)}">
               <option disabled value="">Seleccione...</option>
-              <option value="1">Servicios básicos</option>
-              <option value="2">Alquiler</option>
-              <option value="3">Alimentos</option>
-              <option value="4">Transporte</option>
-              <option value="5">Sueldos</option>
-              <option value="6">Limpieza</option>
-              <option value="7">Internet</option>
-              <option value="8">Articulos para operacion de tienda</option>
-              <option value="9">Otros</option>
+              <option value="Servicios básicos">Servicios básicos</option>
+              <option value="Alquiler">Alquiler</option>
+              <option value="Alimentos">Alimentos</option>
+              <option value="Transporte">Transporte</option>
+              <option value="Sueldos">Sueldos</option>
+              <option value="Limpieza">Limpieza</option>
+              <option value="Internet">Internet</option>
+              <option value="Articulos para operacion de tienda">Articulos para operacion de tienda</option>
+              <option value="Otros">Otros</option>
             </select>
             <div class="valid-feedback">Correcto.</div>
             <div class="invalid-feedback">Este campo es obligatorio.</div>

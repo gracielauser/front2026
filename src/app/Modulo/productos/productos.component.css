@@ -202,7 +202,7 @@
   background: linear-gradient(135deg, var(--productos-success), #059669);
 }
 .btn-catalogo{
-  background: linear-gradient(135deg, var(--productos-success), #053f96);
+  background: linear-gradient(135deg, #053f96, #053f96);
   margin-bottom: 5px;
 }
 
