@@ -199,7 +199,7 @@ export class RolesComponent {
     this.rolForm.markAsPristine();
     this.permisos = [];
     this.isEditMode = false;
-    this.modalTitle = 'Adicionar Rol';
+    this.modalTitle = 'Nuevo Rol';
     this.rolModel = null;
     this.formSubmitted = false;
   }
