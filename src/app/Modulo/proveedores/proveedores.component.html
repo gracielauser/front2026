@@ -193,7 +193,7 @@
            &&(control['celular'].dirty||control['celular'].touched),
          'is-invalid': control['celular'].invalid && (control['celular'].dirty||control['celular'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div *ngIf="control['celular'].errors?.['required']" class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div *ngIf="control['celular'].invalid && control['celular'].touched" class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
             <div id="celularML" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.</div>
             <div id="celular_max" class="invalid-feedback" style="display:none;">El numero de celular no puede tener más
               de 8
@@ -239,7 +239,8 @@
             <select class="form-select" formControlName="ciudad" id="ciudad" required [ngClass]="{
          'is-valid': control['ciudad'].valid && (control['ciudad'].dirty||control['ciudad'].touched),
          'is-invalid': control['ciudad'].invalid && (control['ciudad'].dirty||control['ciudad'].touched)}">
-              <option value="Tarija" selected>Tarija</option>
+              <option value="" disabled selected>Seleccione una ciudad</option>
+              <option value="Tarija">Tarija</option>
               <option>La Paz</option>
               <option>Santa Cruz</option>
               <option>Potósi</option>
@@ -250,7 +251,7 @@
               <option>Cochabamba</option>
             </select>
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio.</div>
+            <div *ngIf="control['ciudad'].invalid && control['ciudad'].touched" class="invalid-feedback">Este campo es obligatorio.</div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -299,7 +300,7 @@
          'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
          'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div *ngIf="control['nombre'].invalid && control['nombre'].touched" class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
             <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
             </div>
             <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
@@ -354,7 +355,7 @@
            &&(control['celular'].dirty||control['celular'].touched),
          'is-invalid': control['celular'].invalid && (control['celular'].dirty||control['celular'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
+            <div *ngIf="control['celular'].invalid && control['celular'].touched" class="invalid-feedback">Este campo es obligatorio y solo acepta números.</div>
             <div id="celularML" class="invalid-feedback" style="display:none;">No se aceptan letras, solo números.</div>
             <div id="celular_max" class="invalid-feedback" style="display:none;">El numero de celular no puede tener más
               de 8
@@ -411,7 +412,7 @@
               <option>Cochabamba</option>
             </select>
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio.</div>
+            <div *ngIf="control['ciudad'].invalid && control['ciudad'].touched" class="invalid-feedback">Este campo es obligatorio.</div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

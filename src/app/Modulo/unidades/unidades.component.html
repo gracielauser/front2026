@@ -137,7 +137,7 @@
          'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
          'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div *ngIf="control['nombre'].invalid && control['nombre'].touched" class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
             <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
             </div>
             <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
@@ -166,7 +166,7 @@
          'is-valid': control['abreviatura'].valid && control['abreviatura'].value?.length>=2 && (control['abreviatura'].dirty||control['abreviatura'].touched),
          'is-invalid': control['abreviatura'].invalid && (control['abreviatura'].dirty||control['abreviatura'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div *ngIf="control['abreviatura'].invalid && control['abreviatura'].touched" class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
             <div id="msgNumerosA" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
             </div>
             <div id="msgMaxLetrasA" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
@@ -220,7 +220,7 @@
          'is-valid': control['nombre'].valid && control['nombre'].value?.length>=3 && (control['nombre'].dirty||control['nombre'].touched),
          'is-invalid': control['nombre'].invalid && (control['nombre'].dirty||control['nombre'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div *ngIf="control['nombre'].invalid && control['nombre'].touched" class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
             <div id="msgNumeros" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
             </div>
             <div id="msgMaxLetras" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
@@ -249,7 +249,7 @@
          'is-valid': control['abreviatura'].valid && control['abreviatura'].value?.length>=2 && (control['abreviatura'].dirty||control['abreviatura'].touched),
          'is-invalid': control['abreviatura'].invalid && (control['abreviatura'].dirty||control['abreviatura'].touched)}">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
+            <div *ngIf="control['abreviatura'].invalid && control['abreviatura'].touched" class="invalid-feedback">Este campo es obligatorio y solo acepta letras.</div>
             <div id="msgNumerosA" class="invalid-feedback" style="display:none;">No se aceptan números, solo letras.
             </div>
             <div id="msgMaxLetrasA" class="invalid-feedback" style="display:none;">El Nombre no puede tener más de 15
