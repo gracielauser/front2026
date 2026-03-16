@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../Servicios/producto.service';
 import { CompraService } from '../../Servicios/compra.service';
 import { VentaService } from '../../Servicios/venta.service';
@@ -7,11 +8,12 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import * as echarts from 'echarts';
 import type { EChartsOption } from 'echarts';
 import { PedidoService } from '../../Servicios/pedido.service';
+import { NombrePipe } from '../../Filtros/nombre.pipe';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgxEchartsModule],
+  imports: [CommonModule, NgxEchartsModule, FormsModule, NombrePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -22,6 +24,7 @@ export class DashboardComponent implements OnInit {
   apiVentas: any[] = [];
   apiPedidos: any[] = [];
   productoSeleccionado: any = null;
+  buscarProducto: string = '';
 
   // Opciones de los gráficos
   chartOption1!: EChartsOption;  // Gráfico de Rentabilidad por Mes (Line + Bar)
@@ -105,18 +108,18 @@ cargarPedidos(): void {
     // }
   }
 
-  // Gráfico 1: Últimos 3 meses (2 anteriores + mes actual)
+  // Gráfico 1: Últimos 6 meses (5 anteriores + mes actual)
   generarGraficoRentabilidad(): void {
     const fechaActual = new Date();
     const mesActual = fechaActual.getMonth(); // 0-11
     const yearActual = fechaActual.getFullYear();
 
-    // Calcular los 3 últimos meses
+    // Calcular los 6 últimos meses
     const meses3 = [];
     const nombresMeses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
                           'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-    for (let i = 2; i >= 0; i--) {
+    for (let i = 5; i >= 0; i--) {
       let mes = mesActual - i;
       let year = yearActual;
 
@@ -175,7 +178,7 @@ cargarPedidos(): void {
 
     this.chartOption1 = {
       title: {
-        text: 'Rentabilidad: Últimos 3 Meses',
+        text: 'Rentabilidad: Últimos 6 Meses',
         subtext: 'Comparación Mensual de Ingresos, Egresos y Ganancias',
         left: 'center',
         top: 10,
@@ -940,7 +943,7 @@ cargarPedidos(): void {
     const gananciaTotal = ingresoTotal - costoTotal;
     const margenPorcentaje = costoTotal > 0 ? ((gananciaTotal / costoTotal) * 100) : 0;
 
-    // Gráfico tipo Gauge + Radar combinado
+    // Gráfico tipo Gauge + Barras (sin Radar)
     this.chartOptionProducto = {
       title: {
         text: `Análisis de "${producto.nombre}"`,
@@ -968,38 +971,9 @@ cargarPedidos(): void {
         left: 'center',
         data: ['Movimiento', 'Rentabilidad', 'Stock']
       },
-      radar: {
-        center: ['75%', '35%'],
-        radius: '45%',
-        indicator: [
-          { name: 'Vendido', max: Math.max(totalVendido * 1.5, 100) },
-          { name: 'Comprado', max: Math.max(totalComprado * 1.5, 100) },
-          { name: 'Stock', max: Math.max(producto.stock * 1.5, 100) },
-          { name: 'Ingresos Bs.', max: Math.max(ingresoTotal * 1.2, 1000) },
-          { name: 'Costos Bs.', max: Math.max(costoTotal * 1.2, 1000) }
-        ],
-        shape: 'polygon',
-        splitNumber: 5,
-        splitLine: {
-          lineStyle: {
-            color: ['#ddd', '#ddd', '#ddd', '#ddd', '#ddd']
-          }
-        },
-        splitArea: {
-          show: true,
-          areaStyle: {
-            color: ['rgba(250, 250, 250, 0.3)', 'rgba(200, 200, 200, 0.1)']
-          }
-        },
-        axisLine: {
-          lineStyle: {
-            color: '#999'
-          }
-        }
-      } as any,
       grid: [
-        { left: '5%', top: '60%', width: '40%', height: '35%' },
-        { right: '5%', top: '60%', width: '40%', height: '35%' }
+        { left: '5%', top: '50%', width: '40%', height: '42%' },
+        { right: '5%', top: '50%', width: '45%', height: '42%' }
       ],
       xAxis: [
         { gridIndex: 0, type: 'category', data: ['Comprado', 'Vendido', 'En Stock'] },
@@ -1075,34 +1049,6 @@ cargarPedidos(): void {
             }
           ]
         } as any,
-        // Radar para métricas del producto
-        {
-          name: 'Métricas',
-          type: 'radar',
-          data: [
-            {
-              value: [
-                totalVendido,
-                totalComprado,
-                totalPedidos,
-                producto.stock,
-                ingresoTotal,
-                costoTotal
-              ],
-              name: 'Rendimiento',
-              areaStyle: {
-                color: new echarts.graphic.RadialGradient(0.5, 0.5, 1, [
-                  { offset: 0, color: 'rgba(91, 207, 255, 0.8)' },
-                  { offset: 1, color: 'rgba(91, 207, 255, 0.1)' }
-                ])
-              },
-              lineStyle: {
-                color: '#5bcfff',
-                width: 2
-              }
-            }
-          ]
-        },
         // Gráfico de barras: Cantidades
         {
           name: 'Cantidad',
