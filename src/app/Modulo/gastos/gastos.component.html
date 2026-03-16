@@ -98,9 +98,10 @@
                 <span class="descripcion-text">{{gasto.descripcion}}</span>
               </td>
               <td>
-                <button class="btn-anular" data-bs-toggle="modal" data-bs-target="#anular"
+                <button class="btn-action btn-cancel" data-bs-toggle="modal" data-bs-target="#anular"
                         (click)="showModal(gasto)">
-                  <i class="bi bi-trash"></i> Anular
+                  <i class="bi bi-x-circle-fill"></i>
+                  Anular
                 </button>
               </td>
             </tr>
@@ -217,24 +218,35 @@
 </div>
  <!-- Modal Anular -->
 <div class="modal fade" id="anular" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog ">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fs-5">Anular gasto</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content modal-confirmation">
+      <div class="modal-header modal-header-warning">
+        <div class="modal-title-wrapper">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <h5 class="modal-title">Anular Gasto</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
-        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
-        <span>
-          ¿Estás seguro de  anular el gasto seleccionado?
-        </span>
+      <div class="modal-body text-center py-4">
+        <i class="bi bi-x-circle-fill text-danger" style="font-size: 4rem;"></i>
+        <p class="mt-3 mb-0 fs-5">
+          ¿Está seguro de anular el gasto de<br>
+          <strong>Bs. {{gastoSeleccionado?.monto}}</strong><br>
+          realizado por <strong>{{gastoSeleccionado?.usuario?.empleado?.nombre}} {{gastoSeleccionado?.usuario?.empleado?.ap_paterno}}</strong>?
+        </p>
+        <p class="text-muted mt-2">Esta acción no se puede deshacer</p>
       </div>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary"
-          data-bs-dismiss="modal" (click)="cancelarCambio()">Cancelar</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="guardarCambio()">Confimar</button>
-
+      <div class="modal-footer modal-footer-custom">
+        <button type="button" class="btn-cancelar"
+          data-bs-dismiss="modal" (click)="cancelarCambio()">
+          <i class="bi bi-x-circle"></i>
+          Cancelar
+        </button>
+        <button type="button" class="btn-confirmar btn-danger" data-bs-dismiss="modal" (click)="guardarCambio()">
+          <i class="bi bi-trash-fill"></i>
+          Confirmar
+        </button>
       </div>
     </div>
   </div>

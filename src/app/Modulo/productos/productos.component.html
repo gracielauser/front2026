@@ -189,7 +189,7 @@
 
 <!-- Modal Unificado de Producto -->
 <div class="modal fade" id="modalProducto" #modalProducto tabindex="-1">
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content modal-modern">
       <div class="modal-header modal-header-custom">
         <div class="modal-title-wrapper">
@@ -420,7 +420,7 @@
             </div>
 
             <!-- Foto -->
-            <div class="col-md-12">
+            <div class="col-md-6">
               <label class="form-label-custom">
                 Foto del Producto
               </label>
@@ -486,12 +486,14 @@
         </div>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body text-center">
-        <p class="confirmation-text">
+      <div class="modal-body text-center py-4">
+        <div class="icono-confirmacion mb-3">
+          <i class="bi bi-exclamation-circle"></i>
+        </div>
+        <p class="mb-0 fs-5">
           ¿Estás seguro de <strong>{{estadoTemporal == 1 ? 'activar' : 'desactivar'}}</strong> este producto?
         </p>
-          <p>Este producto {{ estadoTemporal == 1 ? 'ahora' : 'ya no' }} estará disponible para compras ni ventas</p>
-
+        <p class="text-muted small mb-0 mt-2">Este producto {{ estadoTemporal == 1 ? 'ahora' : 'ya no' }} estará disponible para compras ni ventas</p>
       </div>
       <div class="modal-footer modal-footer-custom">
         <button type="button" class="btn-cancelar" data-bs-dismiss="modal" (click)="cancelarCambio()">

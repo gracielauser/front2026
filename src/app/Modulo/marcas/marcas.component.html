@@ -270,18 +270,20 @@
 </div>
 <!-- Modal único -->
 <div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog ">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header modal-header-warning">
         <h5 class="modal-title fs-5">Confirmar accion</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body d-flex flex-column justify-content-center align-items-center text-center">
-        <i class="bi bi-exclamation-circle fs-1 mb-2"></i>
-        <span>
-          ¿Estás seguro de <span class="fw-bold">{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</span> la
+      <div class="modal-body text-center py-4">
+        <div class="icono-confirmacion mb-3">
+          <i class="bi bi-exclamation-circle"></i>
+        </div>
+        <p class="mb-0 fs-5">
+          ¿Estás seguro de <strong>{{ estadoTemporal == 1 ? 'activar' : 'desactivar' }}</strong> la
           marca?
-        </span>
+        </p>
       </div>
 
       <div class="modal-footer">

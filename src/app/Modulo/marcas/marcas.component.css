@@ -550,6 +550,23 @@
    TOASTS
    =========================== */
 
+/* Icono de confirmación */
+.icono-confirmacion {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icono-confirmacion i {
+  font-size: 3rem;
+  color: #f59e0b;
+}
+
 .toast-custom-green {
   background: linear-gradient(135deg, var(--marcas-success), #059669);
   color: white;

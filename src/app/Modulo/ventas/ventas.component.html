@@ -275,11 +275,11 @@
                     </button>
                     <button
                       *ngIf="ven.estado != 2"
-                      class="action-btn btn-delete-modern"
+                      class="btn-action btn-cancel"
                       (click)="anularVenta(ven)"
                       title="Anular venta"
                     >
-                      <i class="bi bi-trash-fill"></i>
+                      <i class="bi bi-x-circle-fill"></i>
                       Anular
                     </button>
                     <div *ngIf="ven.estado == 2" class="status-anulado">
@@ -497,44 +497,33 @@
   </div>
 </div>
 
-<!-- MODAL ANULAR - Ultra Modernizado -->
-<div class="modal fade" #modalAnular tabindex="-1" aria-hidden="true">
+<!-- MODAL ANULAR -->
+<div class="modal fade" #modalAnular tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content modal-ultra-modern">
-      <div class="modal-header-ultra modal-header-warning">
-        <div class="modal-header-left">
-          <div class="modal-icon-animated">
-            <div class="icon-bg-pulse warning"></div>
-            <i class="bi bi-exclamation-triangle-fill"></i>
-          </div>
-          <div class="modal-title-ultra">
-            <h2>Anular Venta</h2>
-            <p>Esta acción no se puede deshacer</p>
-          </div>
+    <div class="modal-content modal-confirmation">
+      <div class="modal-header modal-header-warning">
+        <div class="modal-title-wrapper">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <h5 class="modal-title">Anular Venta</h5>
         </div>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" (click)="cerrarModalAnular()"></button>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalAnular()"></button>
       </div>
-
-      <div class="modal-body-ultra modal-body-center">
-        <div class="warning-ultra-content">
-          <div class="warning-ultra-icon">
-            <i class="bi bi-exclamation-circle-fill"></i>
-          </div>
-          <h3 class="warning-ultra-title">¿Confirmar anulación?</h3>
-          <p class="warning-ultra-text">
-            Estás a punto de anular esta venta. Esta acción es irreversible y afectará el inventario.
-          </p>
-        </div>
+      <div class="modal-body text-center py-4">
+        <i class="bi bi-x-circle-fill text-danger" style="font-size: 4rem;"></i>
+        <p class="mt-3 mb-0 fs-5">
+          ¿Está seguro de anular la venta<br>
+          <strong>{{ventaParaAnular?.nro_venta}}</strong>?
+        </p>
+        <p class="text-muted mt-2">Esta acción no se puede deshacer</p>
       </div>
-
-      <div class="modal-footer-ultra">
-        <button class="btn-ultra btn-ultra-cancel" (click)="cerrarModalAnular()">
+      <div class="modal-footer modal-footer-custom">
+        <button type="button" class="btn-cancelar" (click)="cerrarModalAnular()">
           <i class="bi bi-x-circle"></i>
-          <span>Cancelar</span>
+          Cancelar
         </button>
-        <button class="btn-ultra btn-ultra-danger" (click)="confirmarAnular()">
-          <i class="bi bi-check-circle-fill"></i>
-          <span>Confirmar</span>
+        <button type="button" class="btn-confirmar btn-danger" (click)="confirmarAnular()">
+          <i class="bi bi-trash-fill"></i>
+          Confirmar
         </button>
       </div>
     </div>

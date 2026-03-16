@@ -987,30 +987,21 @@
   margin: 0 auto;
 }
 
-.warning-ultra-icon {
-  width: 100px;
-  height: 100px;
-  background: linear-gradient(135deg, #fef3c7, #fde68a);
+/* Icono de confirmación */
+.icono-confirmacion {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto;
   border-radius: 50%;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 3.5rem;
-  color: #f59e0b;
-  animation: pulse 2s ease-in-out infinite;
 }
 
-.warning-ultra-icon i {
-  font-size: 3.5rem;
+.icono-confirmacion i {
+  font-size: 3rem;
   color: #f59e0b;
-}
-
-.warning-ultra-title {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #111827;
-  margin: 0 0 1rem 0;
 }
 
 .warning-ultra-text {
