@@ -2360,6 +2360,121 @@
 }
 
 /* Filas de tabla clickeables */
+
+/* ===================================
+   MODAL CONFIRMAR CIERRE
+   =================================== */
+.modal-confirmation-cierre {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.modal-header-warning-cierre {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  border: none;
+  padding: 1.25rem 1.5rem;
+}
+
+.modal-title-wrapper-cierre {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: white;
+}
+
+.modal-title-wrapper-cierre i {
+  font-size: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+.modal-title-wrapper-cierre h5 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.icono-confirmacion-cierre {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.15));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: scaleIn 0.3s ease-out;
+}
+
+.icono-confirmacion-cierre i {
+  font-size: 2.5rem;
+  color: #ef4444;
+}
+
+.modal-footer-custom-cierre {
+  border-top: 1px solid #e5e7eb;
+  padding: 1rem 1.5rem;
+  gap: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-cancelar-cierre,
+.btn-confirmar-cierre {
+  padding: 0.625rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-cancelar-cierre {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  color: white;
+}
+
+.btn-cancelar-cierre:hover {
+  background: linear-gradient(135deg, #4b5563, #374151);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+}
+
+.btn-confirmar-cierre {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.btn-confirmar-cierre:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
 .producto-ultra-row.clickable-row {
   cursor: pointer;
   transition: all 0.3s ease;

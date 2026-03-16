@@ -16,8 +16,7 @@
         <img src="assets/sin.png" alt="Reporte" style="width: 20px; height: 20px;">
         Reporte ventas
       </button>
-      <button class="btn-close-ultra" (click)="Cancelar()">
-        <i class="bi bi-x-lg"></i>
+      <button class="btn-close-ultra btn-close btn-close-white" data-bs-toggle="modal" data-bs-target="#modalConfirmarCierre">
       </button>
     </div>
 
@@ -431,7 +430,8 @@
     <button
       type="button"
       class="btn-ultra btn-ultra-cancel"
-      (click)="Cancelar()"
+      data-bs-toggle="modal"
+      data-bs-target="#modalConfirmarCierre"
     >
       <i class="bi bi-x-circle"></i>
       <span>Cancelar</span>
@@ -457,6 +457,42 @@
       <div class="btn-ultra-glow"></div>
     </button>
   </div>
+  </div>
+</div>
+
+<!-- Modal Confirmar Cierre -->
+<div class="modal fade" id="modalConfirmarCierre" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content modal-confirmation-cierre">
+      <div class="modal-header modal-header-warning-cierre">
+        <div class="modal-title-wrapper-cierre">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <h5 class="modal-title">Confirmar Cierre</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <div class="icono-confirmacion-cierre mb-3">
+          <i class="bi bi-x-circle-fill"></i>
+        </div>
+        <p class="mb-0">
+          ¿Está seguro de cerrar esta vista?
+        </p>
+        <p class="text-muted mt-2 small" *ngIf="productosVender.length > 0">
+          Se perderán todos los datos ingresados
+        </p>
+      </div>
+      <div class="modal-footer modal-footer-custom-cierre">
+        <button type="button" class="btn-cancelar-cierre" data-bs-dismiss="modal">
+          <i class="bi bi-arrow-left"></i>
+          Volver
+        </button>
+        <button type="button" class="btn-confirmar-cierre" data-bs-dismiss="modal" (click)="confirmarCierre()">
+          <i class="bi bi-check-circle"></i>
+          Confirmar
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -590,7 +626,7 @@
               <i class="bi me-1" [ngClass]="isEditModeCliente ? 'bi-check-circle' : 'bi-save'"></i>
               {{isEditModeCliente ? 'Actualizar' : 'Guardar'}}
             </button>
-            
+
           </div>
         </form>
       </div>

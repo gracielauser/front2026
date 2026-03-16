@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import * as bootstrap from 'bootstrap';
 import { Cliente } from '../../../Modelos/cliente';
 import { Producto } from '../../../Modelos/producto';
@@ -87,7 +88,8 @@ export class NuevaVentaComponent implements OnInit {
     private ventaSer: VentaService,
     private proSer: ProductoService,
     private cliSer: ClienteService,
-    private CatSer: CategoriaService
+    private CatSer: CategoriaService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -110,7 +112,7 @@ export class NuevaVentaComponent implements OnInit {
 
     this.proSer.getListaProductos().subscribe(data => {
       this.apiProductos = data.filter((pro: any) => pro.estado == 1);
-      
+
       // Cargar productos del sessionStorage después de obtener la lista completa
       this.cargarCarritoDesdeStorage();
     });
@@ -130,7 +132,7 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   // ===== MÉTODOS DE PERSISTENCIA EN SESSIONSTORAGE =====
-  
+
   /**
    * Guarda los IDs de los productos en el carrito en sessionStorage
    */
@@ -145,7 +147,7 @@ export class NuevaVentaComponent implements OnInit {
    */
   private cargarCarritoDesdeStorage(): void {
     const idsGuardados = sessionStorage.getItem(this.CARRITO_STORAGE_KEY);
-    
+
     if (!idsGuardados) {
       return;
     }
@@ -153,10 +155,10 @@ export class NuevaVentaComponent implements OnInit {
     try {
       const idsProductos: number[] = JSON.parse(idsGuardados);
       const productosSinStock: string[] = [];
-      
+
       idsProductos.forEach(idProducto => {
         const producto = this.apiProductos.find(p => p.id_producto === idProducto);
-        
+
         if (producto) {
           if (producto.stock > 0) {
             // Agregar producto al carrito sin validación de stock (ya validado)
@@ -183,7 +185,7 @@ export class NuevaVentaComponent implements OnInit {
         const mensaje = productosSinStock.length === 1
           ? `⚠️ El producto "${productosSinStock[0]}" ya no tiene stock disponible y no se agregó al carrito.`
           : `⚠️ Los siguientes productos ya no tienen stock disponible y no se agregaron al carrito:\n${productosSinStock.join(', ')}`;
-        
+
         this.mostrarAlerta(false, mensaje);
       }
 
@@ -245,7 +247,7 @@ export class NuevaVentaComponent implements OnInit {
         const nombre = (producto.nombre || '').toLowerCase();
         const codigo = (producto.codigo || '').toLowerCase();
         const marca = (producto.marca?.nombre || '').toLowerCase();
-        
+
         return nombre.includes(termino) ||
                codigo.includes(termino) ||
                marca.includes(termino);
@@ -377,7 +379,7 @@ export class NuevaVentaComponent implements OnInit {
       this.productosVentaSubtotales.push(pro.precio_venta * 1);
     }
     this.calcularTotal();
-    
+
     // Guardar en sessionStorage
     this.guardarCarritoEnStorage();
   }
@@ -492,17 +494,17 @@ export class NuevaVentaComponent implements OnInit {
 
   validarSubtotal(i: number, event: any) {
     const valor = Number(event.target.value);
-    
+
     // Actualizar el subtotal temporalmente para calcular el total
     const subtotalAnterior = this.productosVentaSubtotales[i];
     this.productosVentaSubtotales[i] = valor;
-    
+
     // Calcular el total original (precio_venta × cantidad para todos los productos)
     let totalOriginal = 0;
     for (let j = 0; j < this.productosVender.length; j++) {
       totalOriginal += this.productosVender[j].precio_venta * this.productosVentaCantidades[j];
     }
-    
+
     // Calcular total con descuentos (suma de subtotales - descuento)
     let totalConDescuentos = 0;
     for (let j = 0; j < this.productosVentaSubtotales.length; j++) {
@@ -510,10 +512,10 @@ export class NuevaVentaComponent implements OnInit {
     }
     const descuento = Number(this.ventaForm.get('descuento')?.value) || 0;
     const totalFinal = totalConDescuentos - descuento;
-    
+
     // El total final no puede ser menor a la mitad del total original
     const minimoPermitido = totalOriginal / 2;
-    
+
     if (totalFinal < minimoPermitido) {
       // Calcular el subtotal mínimo permitido para este item
       // minimoPermitido = totalConDescuentos - descuento
@@ -526,13 +528,13 @@ export class NuevaVentaComponent implements OnInit {
         }
       }
       const subtotalMinimo = minimoPermitido + descuento - sumaOtrosSubtotales;
-      
+
       this.mostrarAlerta(false, `⚠️ El subtotal ingresado hace que el total a pagar sea menor a la mitad del total original (Bs ${minimoPermitido.toFixed(2)}). Se ajustó al mínimo permitido.`);
       // Poner en el mínimo permitido
       this.productosVentaSubtotales[i] = subtotalMinimo > 0 ? subtotalMinimo : 0.01;
       event.target.value = this.productosVentaSubtotales[i].toFixed(2);
     }
-    
+
     this.calcularTotal();
   }
 
@@ -550,7 +552,7 @@ export class NuevaVentaComponent implements OnInit {
 
   validarDescuento(e: any) {
     const descuentoIngresado = Number(e.target.value) || 0;
-    
+
     // Validar que no sea negativo
     if (descuentoIngresado < 0) {
       this.mostrarAlerta(false, `⚠️ El descuento no puede ser negativo.`);
@@ -560,7 +562,7 @@ export class NuevaVentaComponent implements OnInit {
       });
       return;
     }
-    
+
     // Calcular el total original (precio_venta × cantidad)
     let totalOriginal = 0;
     for (let i = 0; i < this.productosVender.length; i++) {
@@ -576,7 +578,7 @@ export class NuevaVentaComponent implements OnInit {
     // El total final no puede ser menor a la mitad del total original
     const totalFinal = sumaSubtotales - descuentoIngresado;
     const minimoPermitido = totalOriginal / 2;
-    
+
     if (totalFinal < minimoPermitido) {
       this.mostrarAlerta(false, `⚠️ El descuento aplicado hace que el total a pagar sea menor a la mitad del total original (Bs ${minimoPermitido.toFixed(2)}). El descuento se restableció a 0.`);
       e.target.value = '0';
@@ -592,7 +594,7 @@ export class NuevaVentaComponent implements OnInit {
     this.productosVentaPrecios.splice(i, 1);
     this.productosVentaSubtotales.splice(i, 1);
     this.calcularTotal();
-    
+
     // Actualizar sessionStorage
     this.guardarCarritoEnStorage();
   }
@@ -793,6 +795,17 @@ export class NuevaVentaComponent implements OnInit {
       fecha_registro: cliente.fecha_registro
     });
     this.clienteForm.enable();
+  }
+
+  confirmarCierre() {
+    this.restaurarEstado();
+    // Intentar cerrar la pestaña actual
+    window.close();
+    // Si window.close() no funciona (por restricciones de seguridad),
+    // navegar de vuelta al módulo de ventas
+    setTimeout(() => {
+      this.router.navigate(['/home/ventas']);
+    }, 100);
   }
 
   guardarModificacionCliente() {
