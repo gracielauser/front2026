@@ -179,7 +179,7 @@ cargarPedidos(): void {
     this.chartOption1 = {
       title: {
         text: 'Rentabilidad: Últimos 6 Meses',
-        subtext: 'Comparación Mensual de Ingresos, Egresos y Ganancias',
+        subtext: 'Comparación Mensual de Ingresos, Egresos y restantes',
         left: 'center',
         top: 10,
         textStyle: {
@@ -209,7 +209,7 @@ cargarPedidos(): void {
         }
       },
       legend: {
-        data: ['Ventas', 'Compras', 'Ganancia Neta'],
+        data: ['Ventas', 'Compras', 'Restante'],
         top: 60,
         textStyle: {
           fontSize: 12
@@ -270,7 +270,7 @@ cargarPedidos(): void {
           }
         },
         {
-          name: 'Ganancia Neta',
+          name: 'Restante',
           type: 'line',
           data: ganancias,
           smooth: true,
