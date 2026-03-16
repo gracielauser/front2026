@@ -443,7 +443,7 @@
 }
 
 .modal-header-clientes {
-  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+    background: linear-gradient(135deg, #0468A0, #049093) !important;
   color: white !important;
   border-bottom: none;
   border-radius: 16px 16px 0 0;
@@ -941,7 +941,7 @@
    MODAL HEADER PERSONALIZADO (Duplicado - Mantener sincronizado)
    ======================================== */
 .modal-header-clientes {
-  background: linear-gradient(135deg, #2563eb, #1e40af) !important;
+    background: linear-gradient(135deg, #0468A0, #049093) !important;
   color: white !important;
   border: none;
   padding: 1.5rem 2rem;
