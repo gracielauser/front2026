@@ -158,7 +158,7 @@
         <form class="row g-3" [formGroup]="empleadoForm" (ngSubmit)="submitForm()">
           <!-- CI -->
           <div class="col-md-6">
-            <label class="form-label"><i class="bi bi-card-text me-1"></i>CI <span class="text-danger">*</span></label>
+            <!-- <label class="form-label"><i class="bi bi-card-text me-1"></i>CI <span class="text-danger">*</span></label>
             <input (keyup)="validarCi($event)" type="text" formControlName="ci" class="form-control"
                    placeholder="Ingrese CI" pattern="^[0-9]+$"
                    onkeypress="if(!/^[0-9]$/.test(event.key)){document.getElementById('msgLetras').style.display='block';setTimeout(()=>document.getElementById('msgLetras').style.display='none',2000);event.preventDefault();}"
@@ -176,7 +176,7 @@
                      'is-valid': control['ci'].valid && control['ci'].value?.length >= 6 && control['ci'].value?.length <= 8
                         &&(control['ci'].dirty||control['ci'].touched),
                      'is-invalid': control['ci'].invalid && (control['ci'].dirty||control['ci'].touched)
-                   }">
+                   }"> -->
             <div class="valid-feedback"><i class="bi bi-check-circle-fill"></i> Correcto</div>
             <div class="invalid-feedback">Campo obligatorio. Solo números.</div>
             <div id="msgLetras" class="invalid-feedback" style="display:none;">Solo se aceptan números.</div>
@@ -191,7 +191,7 @@
           </div>
 
           <!-- NOMBRE -->
-          <div class="col-md-6">
+          <div class="col-md-12">
             <label class="form-label"><i class="bi bi-person me-1"></i>Nombre <span class="text-danger">*</span></label>
             <input type="text" formControlName="nombre" class="form-control" placeholder="Ingrese nombre"
                    pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
@@ -335,7 +335,7 @@
           </div>
 
           <!-- GÉNERO -->
-          <div class="col-md-6">
+          <!-- <div class="col-md-6">
             <label class="form-label d-block"><i class="bi bi-gender-ambiguous me-1"></i>Género <span class="text-danger">*</span></label>
             <div class="form-check form-check-inline">
               <input formControlName="genero" class="form-check-input" type="radio" name="genero" id="generoMasc" value="1">
@@ -355,7 +355,7 @@
                 <i class="bi bi-gender-ambiguous"></i> Otro
               </label>
             </div>
-          </div>
+          </div> -->
 
           <!-- FOTO -->
           <div class="col-md-6">
