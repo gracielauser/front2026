@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 export class LoginComponent implements OnInit {
 
   loginDat!:Login;
+  errorMessage: string = '';
 
   constructor(
     private logser:LoginService,
@@ -33,18 +34,31 @@ export class LoginComponent implements OnInit {
     password:new UntypedFormControl('1234',[Validators.required])
    })
   guardarDatos(){
+    this.errorMessage = '';
     const us:any={
       usuario:(this.loginForm.get('login')?.value),
       clave:(this.loginForm.get('password')?.value)
     }
-this.logser.obtenerUsuario(us).subscribe(data =>{
-  console.log(data);
-  if(data==null)console.log("no existe usuario");
-  else{
-    localStorage.setItem('usuario',JSON.stringify(data.user))
-    localStorage.setItem('token',JSON.stringify(data.token))
+this.logser.obtenerUsuario(us).subscribe({
+  next: (data) => {
+    console.log(data);
+    if(data==null)console.log("no existe usuario");
+    else{
+      localStorage.setItem('usuario',JSON.stringify(data.user))
+      localStorage.setItem('token',JSON.stringify(data.token))
 
-    this.router.navigate(['/home'])
+      this.router.navigate(['/home'])
+    }
+  },
+  error: (error) => {
+    console.log('Error en login:', error);
+    if(error.error && error.error.mensaje){
+      this.errorMessage = error.error.mensaje;
+    } else if(error.error && typeof error.error === 'string'){
+      this.errorMessage = error.error;
+    } else {
+      this.errorMessage = 'Error al iniciar sesión. Intente nuevamente';
+    }
   }
 })
   }

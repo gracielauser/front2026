@@ -64,7 +64,6 @@
               <th scope="col">Nro</th>
               <th scope="col">Tipo Doc</th>
               <th scope="col">Nombre Completo</th>
-              <th scope="col">Ciudad</th>
               <th scope="col">Celular</th>
               <th scope="col">Email</th>
               <th scope="col">Estado</th>
@@ -84,12 +83,7 @@
               <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
                 <strong class="client-name">{{cli.nombre}} {{cli.ap_paterno}} {{cli.ap_materno}}</strong>
               </td>
-              <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
-                <span class="client-data">
-                  <i class="bi bi-geo-alt-fill"></i>
-                  {{cli.ciudad || 'Sin ciudad'}}
-                </span>
-              </td>
+
               <td (click)="verDatosCliente(cli)" data-bs-toggle="modal" data-bs-target="#addcliente" style="cursor: pointer;">
                 <span class="client-data">
                   <i class="bi bi-phone-fill"></i>
@@ -162,14 +156,36 @@
           <!-- CI/NIT -->
           <div class="col-md-5">
             <label class="form-label">CI/NIT</label>
-            <input type="text" formControlName="ci_nit" class="form-control" placeholder="Ingrese CI o NIT"
+            <input type="text" formControlName="ci_nit" class="form-control" placeholder="Ej: 123456 o 123456-1A"
               maxlength="15"
+              (focus)="onCiNitFocus()"
+              (blur)="onCiNitBlur()"
+              (input)="onCiNitInput()"
               [ngClass]="{
                 'is-valid': control['ci_nit'].valid && (control['ci_nit'].dirty||control['ci_nit'].touched),
                 'is-invalid': control['ci_nit'].invalid && (control['ci_nit'].dirty||control['ci_nit'].touched)
               }">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Mínimo 5 caracteres, máximo 15.</div>
+
+            <!-- Mensajes de error específicos -->
+            <div class="invalid-feedback" *ngIf="control['ci_nit'].errors?.['formatoCiNit'] && (control['ci_nit'].dirty||control['ci_nit'].touched)">
+              Formato inválido. Use números o XXXXXX-1A/XXXXXX-1B (mínimo 5 dígitos).
+            </div>
+            <div class="invalid-feedback" *ngIf="control['ci_nit'].errors?.['duplicadoCiNit'] && (control['ci_nit'].dirty||control['ci_nit'].touched)">
+              Este CI/NIT ya está registrado con otro cliente.
+            </div>
+            <div class="invalid-feedback" *ngIf="control['ci_nit'].errors?.['minlength'] && (control['ci_nit'].dirty||control['ci_nit'].touched)">
+              Mínimo 5 caracteres.
+            </div>
+            <div class="invalid-feedback" *ngIf="control['ci_nit'].errors?.['maxlength'] && (control['ci_nit'].dirty||control['ci_nit'].touched)">
+              Máximo 15 caracteres.
+            </div>
+
+            <!-- Alerta de formato visible solo con focus -->
+            <div class="alert alert-info p-2 my-2 d-flex align-items-center" role="alert" *ngIf="ciNitFocused">
+              <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+              <small>Formatos válidos: <strong>XXXXXX</strong> (solo números) o <strong>XXXXXX-1A</strong> / <strong>XXXXXX-1B</strong> (mínimo 5 dígitos)</small>
+            </div>
           </div>
           <!-- NOMBRE -->
           <div class="col-md-4">

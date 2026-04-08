@@ -589,6 +589,15 @@
   animation: fadeInToast 0.5s ease;
 }
 
+.toast-error {
+  background: linear-gradient(135deg, var(--unidades-danger), #dc2626);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+  animation: fadeInToast 0.5s ease;
+}
+
 @keyframes fadeInToast {
   from {
     opacity: 0;

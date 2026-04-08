@@ -8,6 +8,11 @@
       <h1 class="welcome-title">BIENVENIDO</h1>
       <p class="welcome-subtitle">Inicia sesión para continuar</p>
 
+      <!-- MENSAJE DE ERROR DEL SERVIDOR -->
+      <div class="alert alert-danger" *ngIf="errorMessage" role="alert">
+        <strong>Error:</strong> {{ errorMessage }}
+      </div>
+
       <form [formGroup]="loginForm" class="login-form">
         <!-- CAMPO USUARIO -->
         <div class="form-group">

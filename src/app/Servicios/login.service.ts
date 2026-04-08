@@ -27,7 +27,7 @@ export class LoginService {
   obtenerUsuario(usuario: any): Observable<any> {
     return this.xhttp.post<any>(this.baseUrl + "/auth/login", usuario)
   }
-  getPersonal(xuser: string, xclave: string): Observable<any> {
+  getPersonal(xuser: string, xclave: string): Observable<any> {//para autenticarse
     const body = new HttpParams()
       .set('login', xuser)
       .set('password', xclave);

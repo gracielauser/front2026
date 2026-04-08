@@ -29,7 +29,7 @@
     <!-- Filtros -->
     <div class="filters-section">
       <div class="filters-grid">
-        <div class="filter-item">
+        <!-- <div class="filter-item">
           <label class="filter-label">
             <i class="bi bi-upc-scan"></i>
             Código
@@ -40,12 +40,12 @@
             [ngModel]="codigo"
             (ngModelChange)="codigo = $event.toUpperCase()"
             placeholder="Buscar por código">
-        </div>
+        </div> -->
 
         <div class="filter-item">
           <label class="filter-label">
             <i class="bi bi-search"></i>
-            Nombre
+            Nombre o codigo
           </label>
           <input
             type="text"
@@ -77,7 +77,7 @@
         </div>
 
         <div class="filter-item">
-          <label class="filter-label">
+          <label class="form-label">
             <i class="bi bi-toggle-on"></i>
             Estado
           </label>
@@ -85,6 +85,27 @@
             <option value="1">Activos</option>
             <option value="2">Inactivos</option>
             <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-box-seam"></i>
+            Unidad
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="unidadMedidaFilter">
+            <option value="">Todas</option>
+            <option *ngFor="let um of apiUnidadesMedida" [value]="um.id_unidad_medida">{{um.abreviatura || um.nombre}}</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-bar-chart-line"></i>
+            Stock
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="stockFilter">
+            <option value="">Todos</option>
+            <option value="normal">Stock normal</option>
+            <option value="bajo">Stock bajo</option>
           </select>
         </div>
       </div>
@@ -110,7 +131,7 @@
           </thead>
           <tbody>
             <tr
-              *ngFor="let pro of apiProductos | codigo:codigo | nombre:nombre | categoria:categoria:subcategoria | estado:estado | paginate: { itemsPerPage: 6, currentPage: page }; let i=index"
+              *ngFor="let pro of apiProductos | codigo:codigo | nombre:nombre | categoria:categoria:subcategoria | estado:estado | stock:stockFilter | paginate: { itemsPerPage: 6, currentPage: page }; let i=index"
               class="table-row">
               <td>{{i+1}}</td>
               <td>
@@ -123,7 +144,15 @@
               </td>
               <td><span class="codigo-badge">{{pro.codigo}}</span></td>
               <td>{{pro.nombre}}</td>
-              <td><span class="categoria-badge">{{pro.categorium?.nombre}}</span></td>
+              <td>
+              <span class="categoria-badge" [ngClass]="{
+                'badge-categoria': pro.categorium?.id_categoria_padre == null,
+                'badge-subcategoria': pro.categorium?.id_categoria_padre != null
+              }">
+                {{pro.categorium?.id_categoria_padre == null ? 'Categoría:' : 'Subcategoría:'}}
+                {{pro.categorium?.nombre}}
+              </span>
+            </td>
               <td><span class="precio">Bs. {{pro.precio_compra}}</span></td>
               <td><span class="precio">Bs. {{pro.precio_venta}}</span></td>
               <td>
@@ -131,7 +160,7 @@
                   'stock-bajo': pro.stock <= pro.stock_minimo,
                   'stock-normal': pro.stock > pro.stock_minimo
                 }">
-                  {{pro.stock}}
+                  {{pro.stock}} {{pro.unidad_medida?.abreviatura || ''}}
                 </span>
               </td>
               <td>
@@ -568,8 +597,8 @@
               <div class="detail-info-item">
                 <i class="bi bi-tag"></i>
                 <div>
-                  <small>Categoría</small>
-                  <p>{{detProducto?.categorium.nombre}}</p>
+                  <small>{{ detProducto?.categorium?.id_categoria_padre == null ? 'Categoría principal' : 'Subcategoría' }}</small>
+                  <p>{{detProducto?.categorium?.nombre || 'N/A'}}</p>
                 </div>
               </div>
 
@@ -577,15 +606,15 @@
                 <i class="bi bi-buildings"></i>
                 <div>
                   <small>Marca</small>
-                  <p>{{detProducto?.marca.nombre}}</p>
+                  <p>{{detProducto?.marca?.nombre || 'N/A'}}</p>
                 </div>
               </div>
 
-              <div class="detail-info-item">
+              <div class="detail-info-item" *ngIf="detProducto?.proveedor">
                 <i class="bi bi-truck"></i>
                 <div>
                   <small>Proveedor</small>
-                  <p>{{detProducto?.proveedor.nombre}}</p>
+                  <p>{{detProducto?.proveedor?.nombre}}</p>
                 </div>
               </div>
 
@@ -593,7 +622,7 @@
                 <i class="bi bi-rulers"></i>
                 <div>
                   <small>Unidad</small>
-                  <p>{{detProducto?.unidad_medida.nombre}}</p>
+                  <p>{{detProducto?.unidad_medida?.nombre || detProducto?.unidad_medida?.abreviatura || 'N/A'}}</p>
                 </div>
               </div>
 

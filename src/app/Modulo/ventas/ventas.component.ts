@@ -17,14 +17,13 @@ import { NroVentaPipe } from '../../Filtros/nro-venta.pipe';
 import { ReportesVentaService } from '../../Servicios/reportes-venta.service';
 import { EstadoPipe } from '../../Filtros/estado.pipe';
 import { ClienteVentaPipe } from '../../Filtros/cliente-venta.pipe';
-import { FechaDesdeVentaPipe } from '../../Filtros/fecha-desde-venta.pipe';
-import { FechaHastaVentaPipe } from '../../Filtros/fecha-hasta-venta.pipe';
+import { FechasPipe } from '../../Filtros/fechas.pipe';
 
 @Component({
   selector: 'app-ventas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule,
-    FormsModule, NroVentaPipe, EstadoPipe, ClienteVentaPipe, FechaDesdeVentaPipe, FechaHastaVentaPipe],
+    FormsModule, NroVentaPipe, EstadoPipe, ClienteVentaPipe, FechasPipe],
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })
@@ -48,6 +47,8 @@ export class VentasComponent implements OnInit, AfterViewInit {
   nombreCliente: string = ''
   fechaDesde: string = ''
   fechaHasta: string = ''
+  filtroFecha: string = ''
+  enFiltroPersonalizado: boolean = false
   page:number=1
   ponerCodigo(e: any) {
     this.codigo = e.target.value.toUpperCase()
@@ -223,5 +224,37 @@ export class VentasComponent implements OnInit, AfterViewInit {
     this.DetVenta = venta;
     this.detallesVenta = venta.det_venta;
     this.abrirModalDetalle();
+  }
+
+  onFiltroFechaChange(event: any): void {
+    const valor = event.target.value;
+    if (valor === 'rango personalizado') {
+      this.enFiltroPersonalizado = true;
+      this.fechaDesde = '';
+      this.fechaHasta = '';
+    } else {
+      this.enFiltroPersonalizado = false;
+      this.fechaDesde = '';
+      this.fechaHasta = '';
+    }
+  }
+
+  ponerFechaVenta(e: any, tipo: number): void {
+    const fechaStr = e.target.value; // formato: YYYY-MM-DD
+    if (!fechaStr) return;
+
+    const partes = fechaStr.split('-').map(Number);
+    const year = partes[0];
+    const month = partes[1];
+    const day = partes[2];
+
+    // Crear fecha en timezone local (Bolivia GMT-4)
+    const fecha = new Date(year, month - 1, day, 0, 0, 0);
+
+    if (tipo === 1) {
+      this.fechaDesde = fecha.toISOString().split('T')[0];
+    } else if (tipo === 2) {
+      this.fechaHasta = fecha.toISOString().split('T')[0];
+    }
   }
 }

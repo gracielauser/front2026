@@ -39,12 +39,14 @@ this.listarUnidades();
 listarUnidades(){
   this.unidadSer.getListaUnidades().subscribe(data => {
     this.apiUnidad = data;
+    console.log('lista de unidaes: ',data);
+
   });
 }
 AgregarUnidad(){
   const unidad= this.uniForm.value
   console.log(unidad);
-  
+
   this.unidadSer.saveUnidad(unidad).subscribe({
     next: (data) => {
       console.log('devuelve: ', data.mensaje, data.nombre);
@@ -78,7 +80,7 @@ guardarModificacion(){
     ...this.uniForm.value
   }
   console.log(unidad);
-  
+
   this.unidadSer.modificarUnidad(unidad).subscribe({
     next: (data) => {
       console.log('devuelve: ', data.mensaje, data.nombre);
@@ -114,6 +116,7 @@ guardarModificacion(){
     cancelarCambio() {
       this.rolSeleccionado = null;
     }
+    error: boolean = false;
 guardarCambio() {
   if (this.rolSeleccionado) {
       this.rolSeleccionado.estado = this.estadoTemporal;
@@ -121,10 +124,12 @@ guardarCambio() {
         next: (data) => {
           console.log('Estado modificado:', data.mensaje);
           this.listarUnidades();
+          this.error = false;
           this.mensajeExito = data.mensaje;
         },
         error: (error) => {
-          console.log('Error al modificar el estado:', error);
+          this.mensajeExito = error.data.mensaje || 'Error al modificar el estado';
+          this.error = true;
         }
       })
     }

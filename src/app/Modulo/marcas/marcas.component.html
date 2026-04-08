@@ -53,6 +53,7 @@
               <th scope="col">Nro</th>
               <th scope="col">Nombre</th>
               <th scope="col">Descripción</th>
+              <th scope="col">Productos</th>
               <th scope="col">Estado</th>
               <th scope="col">Acciones</th>
             </tr>
@@ -67,6 +68,9 @@
               </td>
               <td>
                 <span class="marca-description">{{mar.descripcion}}</span>
+              </td>
+              <td>
+                <span class="badge-number">{{mar.nroProductos ?? 0}}</span>
               </td>
               <td>
                 <div class="form-check form-switch switch-custom">

@@ -32,6 +32,7 @@ export class ClientesComponent implements OnInit {
   cliSeleccionado: any = null
   estadoTemporal: number = 0
   ciudades: string[] = ['Tarija', 'La Paz', 'Pando', 'Cochabamba', 'Chuquisaca', 'Santa Cruz', 'Potosi', 'Beni', 'Oruro']
+  ciNitFocused: boolean = false
 
   constructor(
     private cliSer: ClienteService
@@ -74,6 +75,67 @@ export class ClientesComponent implements OnInit {
     };
   }
 
+  // Validador personalizado para formato CI/NIT: solo números o XXXXXX-1A/XXXXXX-1B
+  formatoCiNit(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) {
+        return null; // Si está vacío, es válido
+      }
+      const value = control.value.toString().trim();
+      // Patrón: solo números (5 o más) o números-número(A|B)
+      const patron = /^\d{5,}(-\d+[AB])?$/;
+      return patron.test(value) ? null : { formatoCiNit: true };
+    };
+  }
+
+  // Validador para verificar duplicados
+  validarDuplicadoCiNit(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) {
+        return null; // Si está vacío, es válido
+      }
+
+      // Verificar que tenemos la lista de clientes
+      if (!this.apiClientes || this.apiClientes.length === 0) {
+        return null; // Si no hay lista, no validar duplicados por ahora
+      }
+
+      const value = control.value.toString().trim();
+
+      // Si estamos en modo edición, excluir el cliente actual
+      if (this.isEditMode && this.clienteModel) {
+        const existe = this.apiClientes.some(cli =>
+          cli.ci_nit.toString().trim() === value && cli.id_cliente !== this.clienteModel.id_cliente
+        );
+        return existe ? { duplicadoCiNit: true } : null;
+      } else {
+        // Si es nuevo, validar contra todos
+        const existe = this.apiClientes.some(cli => cli.ci_nit.toString().trim() === value);
+        return existe ? { duplicadoCiNit: true } : null;
+      }
+    };
+  }
+
+  onCiNitFocus() {
+    this.ciNitFocused = true;
+  }
+
+  onCiNitBlur() {
+    this.ciNitFocused = false;
+  }
+
+  onCiNitInput() {
+    // Forzar validación inmediata del campo CI/NIT
+    const ciNitControl = this.clienteForm.get('ci_nit');
+    if (ciNitControl) {
+      // Actualizar el valor y forzar re-validación completa
+      ciNitControl.updateValueAndValidity({ emitEvent: true });
+      // Marcar como touched y dirty para mostrar errores
+      ciNitControl.markAsTouched();
+      ciNitControl.markAsDirty();
+    }
+  }
+
   mostrarAlerta(exito: boolean, mensaje: string) {
     this.exito = exito;
     this.mensajeExito = mensaje;
@@ -97,7 +159,7 @@ export class ClientesComponent implements OnInit {
     ap_paterno: new FormControl('', [this.optionalMinLength(3), this.optionalMaxLength(40), this.optionalPattern('^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$')]),
     ap_materno: new FormControl('', [this.optionalMinLength(3), this.optionalMaxLength(40), this.optionalPattern('^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$')]),
     direccion: new FormControl('', [this.optionalMinLength(5), this.optionalMaxLength(40)]),
-    ci_nit: new FormControl('', [this.optionalMinLength(5), this.optionalMaxLength(15)]),
+    ci_nit: new FormControl('', [this.formatoCiNit(), this.validarDuplicadoCiNit(), this.optionalMinLength(5), this.optionalMaxLength(15)]),
     estado: new FormControl('1'),
     celular: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15), Validators.pattern('^[0-9]+$')]),
     email: new FormControl('', [this.optionalEmail(), this.optionalMinLength(5), this.optionalMaxLength(40)]),
@@ -113,6 +175,16 @@ export class ClientesComponent implements OnInit {
       this.clienteForm.markAllAsTouched();
       this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
       return;
+    }
+
+    // Verificación adicional de duplicados
+    const ciNitValue = this.clienteForm.get('ci_nit')?.value;
+    if (ciNitValue) {
+      const existeDuplicado = this.apiClientes.some(cli => cli.ci_nit === ciNitValue);
+      if (existeDuplicado) {
+        this.mostrarAlerta(false, '❌ El CI/NIT ya está registrado con otro cliente');
+        return;
+      }
     }
 
     if (this.isEditMode) {
@@ -158,6 +230,12 @@ export class ClientesComponent implements OnInit {
     // Limpiar estado de validaciones
     this.clienteForm.markAsPristine();
     this.clienteForm.markAsUntouched();
+
+    // Pequeño delay para asegurar que clienteModel esté establecido antes de validar
+    setTimeout(() => {
+      // Re-validar CI/NIT para que considere el cliente actual
+      this.clienteForm.get('ci_nit')?.updateValueAndValidity({ emitEvent: false });
+    }, 0);
   }
 
   verDatosCliente(cliente: any) {
@@ -181,12 +259,26 @@ export class ClientesComponent implements OnInit {
       fecha_registro: cliente.fecha_registro
     });
     this.clienteForm.disable();
+    // Re-validar CI/NIT
+    this.clienteForm.get('ci_nit')?.updateValueAndValidity({ emitEvent: false });
   }
   guardarModificacion() {
     if (this.clienteForm.invalid) {
       this.clienteForm.markAllAsTouched();
       this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
       return;
+    }
+
+    // Verificación adicional de duplicados
+    const ciNitValue = this.clienteForm.get('ci_nit')?.value;
+    if (ciNitValue) {
+      const existeDuplicado = this.apiClientes.some(cli =>
+        cli.ci_nit === ciNitValue && cli.id_cliente !== this.idCliente
+      );
+      if (existeDuplicado) {
+        this.mostrarAlerta(false, '❌ El CI/NIT ya está registrado con otro cliente');
+        return;
+      }
     }
 
     const cliente = {
@@ -222,9 +314,12 @@ export class ClientesComponent implements OnInit {
     this.clienteModel = null;
     this.idCliente = 0;
     this.clienteForm.enable();
+    this.ciNitFocused = false;
     // Limpiar estado de validaciones
     this.clienteForm.markAsPristine();
     this.clienteForm.markAsUntouched();
+    // Re-validar CI/NIT
+    this.clienteForm.get('ci_nit')?.updateValueAndValidity({ emitEvent: false });
   }
 
   cerrarModal() {

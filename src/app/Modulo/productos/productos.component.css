@@ -302,12 +302,19 @@
 }
 
 .categoria-badge {
-  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 6px;
   font-weight: 500;
   font-size: 0.75rem;
+}
+
+.categoria-badge.badge-categoria {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.categoria-badge.badge-subcategoria {
+  background: linear-gradient(135deg, #14b8a6, #0f766e);
 }
 
 .precio {

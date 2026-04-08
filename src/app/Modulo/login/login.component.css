@@ -245,6 +245,37 @@
   font-size: 16px;
 }
 
+/* ALERTA DE ERROR DEL SERVIDOR */
+.alert {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  animation: slideDown 0.3s ease;
+  border: 1px solid;
+}
+
+.alert-danger {
+  background-color: rgba(240, 144, 144, 0.15);
+  border-color: var(--error-color);
+  color: #d65a5a;
+}
+
+.alert strong {
+  font-weight: 600;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* BOTÓN DE SUBMIT */
 .btn-submit {
   width: 100%;

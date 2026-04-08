@@ -88,28 +88,48 @@
             </div>
           </div>
 
-          <!-- Filtro 4: Fecha Desde -->
+          <!-- Filtro 4: Fecha -->
           <div class="filter-box">
             <label class="filter-label-modern">
               <i class="bi bi-calendar-range"></i>
+              <span>Fecha</span>
+            </label>
+            <div class="select-wrapper">
+              <select class="modern-select" [(ngModel)]="filtroFecha" (change)="onFiltroFechaChange($event)">
+                <option value="">Todas las fechas</option>
+                <option value="hoy">Hoy</option>
+                <option value="ayer">Ayer</option>
+                <option value="esta semana">Esta semana</option>
+                <option value="este mes">Este mes</option>
+                <option value="mes anterior">Mes anterior</option>
+                <option value="rango personalizado">Rango personalizado</option>
+              </select>
+              <i class="bi bi-chevron-down select-arrow"></i>
+            </div>
+          </div>
+
+          <!-- Filtro 5: Fecha Desde (visible solo en rango personalizado) -->
+          <div class="filter-box" *ngIf="enFiltroPersonalizado">
+            <label class="filter-label-modern">
+              <i class="bi bi-calendar-event"></i>
               <span>Desde</span>
             </label>
             <div class="input-with-icon">
               <i class="bi bi-calendar3 input-prefix-icon"></i>
-              <input type="date" class="modern-input" [(ngModel)]="fechaDesde" />
+              <input type="date" class="modern-input" (change)="ponerFechaVenta($event, 1)" />
               <div class="input-underline"></div>
             </div>
           </div>
 
-          <!-- Filtro 5: Fecha Hasta -->
-          <div class="filter-box">
+          <!-- Filtro 6: Fecha Hasta (visible solo en rango personalizado) -->
+          <div class="filter-box" *ngIf="enFiltroPersonalizado">
             <label class="filter-label-modern">
               <i class="bi bi-calendar-check"></i>
               <span>Hasta</span>
             </label>
             <div class="input-with-icon">
               <i class="bi bi-calendar3 input-prefix-icon"></i>
-              <input type="date" class="modern-input" [(ngModel)]="fechaHasta" />
+              <input type="date" class="modern-input" (change)="ponerFechaVenta($event, 2)" />
               <div class="input-underline"></div>
             </div>
           </div>
@@ -204,7 +224,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechaDesdeVenta:fechaDesde | fechaHastaVenta:fechaHasta | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
+              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
                   class="data-row"
                   [class.row-anulada]="ven.estado == 2">
                 <td class="col-number">
@@ -289,7 +309,7 @@
                   </div>
                 </td>
               </tr>
-              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechaDesdeVenta:fechaDesde | fechaHastaVenta:fechaHasta).length === 0">
+              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta).length === 0">
                 <td colspan="8">
                   <div class="empty-state-modern">
                     <div class="empty-icon-circle">
@@ -313,7 +333,7 @@
       <div class="table-footer-section">
         <div class="footer-info">
           <i class="bi bi-info-circle-fill"></i>
-          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechaDesdeVenta:fechaDesde | fechaHastaVenta:fechaHasta).length }}</strong> venta(s)</span>
+          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta).length }}</strong> venta(s)</span>
         </div>
         <div class="pagination-modern">
           <pagination-controls (pageChange)="page = $event"></pagination-controls>

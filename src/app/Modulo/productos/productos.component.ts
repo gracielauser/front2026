@@ -14,13 +14,14 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { CodigoPipe } from '../../Filtros/codigo.pipe';
 import { NombrePipe } from '../../Filtros/nombre.pipe';
 import { CategoriaPipe } from '../../Filtros/categoria.pipe';
+import { StockPipe } from '../../Filtros/stock.pipe';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, EstadoPipe,
-    CodigoPipe, NombrePipe, CategoriaPipe, NgxPaginationModule],
+    CodigoPipe, NombrePipe, CategoriaPipe, StockPipe, NgxPaginationModule],
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
 })
@@ -35,7 +36,7 @@ export class ProductosComponent implements OnInit, AfterViewInit {
 
   //*ngfor lists
   apiProductos: any[] = []
-  apiCategorias: Categoria[] = []
+  apiCategorias: any[] = []
   apiMarcas: any[] = []
   apiUnidadesMedida: any[] = []
   // Filtros
@@ -43,8 +44,10 @@ export class ProductosComponent implements OnInit, AfterViewInit {
   nombre: string = ''
   categoria = ''
   subcategoria = ''
-  subCategoriasFiltro: Categoria[] = []
+  subCategoriasFiltro: any[] = []
+  unidadMedidaFilter = ''
   estado = '1'
+  stockFilter = ''
   page: number = 1
 
   // Modal unificado
@@ -79,8 +82,8 @@ catalogoPDF(){
     });
 }
   ngOnInit(): void {
-    this.CatSer.getListaCategoria().subscribe((lista) => {
-      this.apiCategorias = lista
+    this.CatSer.getListaCategoria().subscribe((data) => {
+      this.apiCategorias = Array.isArray(data) ? data : (data as any).data || [];
     })
     this.listar()
     this.productoForm.get('fecha_registro').disable()
@@ -93,16 +96,16 @@ catalogoPDF(){
   }
   listar() {
     this.ProSer.getListaProductos().subscribe((lista) => {
-      this.apiProductos = lista
+      this.apiProductos = Array.isArray(lista) ? lista : (lista as any).data || [];
       console.log("productos", this.apiProductos);
 
     })
     this.MarSer.getListaMarcas().subscribe((lista) => {
-      this.apiMarcas = lista
+      this.apiMarcas = Array.isArray(lista) ? lista : (lista as any).data || [];
       console.log("marcas", this.apiMarcas);
     })
     this.UniMedSer.getListaUnidades().subscribe((lista) => {
-      this.apiUnidadesMedida = lista
+      this.apiUnidadesMedida = Array.isArray(lista) ? lista : (lista as any).data || [];
       console.log("unidades de medida", this.apiUnidadesMedida);
     })
   }

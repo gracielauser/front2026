@@ -27,7 +27,7 @@ export class CategoriaComponent implements OnInit, AfterViewInit {
   private modalConfirmacion?: bootstrap.Modal;
 
   categoriaModel!: Categoria;
-  apiCategoria: Categoria[] = []
+  apiCategoria: any[] = []
   estado=''
   nombre:string=''
   page:number=1
@@ -83,11 +83,17 @@ cambioEstado(event: any){
     return this.cateForm.controls
   }
 
-  getCategoriasPadre(): Categoria[] {
+  getCategoriasPadre(): any[] {
+    if (!this.apiCategoria || !Array.isArray(this.apiCategoria)) {
+      return [];
+    }
     return this.apiCategoria.filter(cat => !cat.id_categoria_padre);
   }
 
-  getSubcategorias(idPadre: number): Categoria[] {
+  getSubcategorias(idPadre: number): any[] {
+    if (!this.apiCategoria || !Array.isArray(this.apiCategoria)) {
+      return [];
+    }
     const categorias = this.apiCategoria.find(cat => cat.id_categoria == idPadre);
     return categorias ? categorias.subCategoria || [] : [];
   }

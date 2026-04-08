@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Compra } from '../Modelos/compra';
@@ -25,9 +25,14 @@ private baseUrl= environment.apiUrl+'/api/compra'
       let url = this.baseUrl+"/modificar";
       return this.xhttp.put(url,compra)
      }
-     anular(id:number):Observable<any>{
-      let url = this.baseUrl+"/anular/"+id;
-      return this.xhttp.put(url, null)
+     anular(id:number, id_usuario:number):Observable<any>{
+      let url = this.baseUrl+"/anular";
+
+      const params = new HttpParams()
+        .set('id_compra', id.toString())
+        .set('id_usuario', id_usuario.toString());
+
+      return this.xhttp.put(url, {}, { params });
      }
      recibirCompra(modif: any):Observable<any>{
 return this.xhttp.put(this.baseUrl + '/recibir', modif);

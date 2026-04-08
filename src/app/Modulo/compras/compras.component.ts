@@ -22,6 +22,7 @@ import { FechasPipe } from "../../Filtros/fechas.pipe";
 import { CategoriaService } from '../../Servicios/categoria.service';
 import { UnidadMedidaService } from '../../Servicios/unidad-medida.service';
 import { MarcaService } from '../../Servicios/marca.service';
+import { LoginService } from '../../Servicios/login.service';
 
 @Component({
   selector: 'app-compras',
@@ -79,7 +80,8 @@ export class ComprasComponent implements OnInit, AfterViewInit {
         private InvSer: InventarioService,
         private CatSer: CategoriaService,
         private UniMedSer: UnidadMedidaService,
-        private MarSer: MarcaService
+        private MarSer: MarcaService,
+        private LoginSer: LoginService
   ) { }
 
   ngAfterViewInit(): void {
@@ -332,6 +334,7 @@ export class ComprasComponent implements OnInit, AfterViewInit {
     this.nextNumber = this.apiCompra.length + 1;
     this.nroCompra = 'C' + this.nextNumber.toString().padStart(3, '0');
     this.compraForm.reset({
+      id_compra: '',
       fecha_registro: this.obtenerFechaActual(),
       nro_compra: this.nroCompra,
       monto_total: '0',
@@ -373,6 +376,7 @@ export class ComprasComponent implements OnInit, AfterViewInit {
 
     // Cargar datos de la compra en el formulario
     this.compraForm.patchValue({
+      id_compra: compra.id_compra,
       fecha_registro: compra.fecha_registro.split(' ')[0], // Solo la fecha sin hora
       nro_compra: compra.nro_compra,
       monto_total: compra.monto_total,
@@ -386,7 +390,8 @@ export class ComprasComponent implements OnInit, AfterViewInit {
       precio_unitario: det.precio_unitario,
       precio_venta: det.precio_venta || det.producto.precio_venta || 1,
       cantidad: det.cantidad,
-      sub_total: det.sub_total
+      sub_total: det.sub_total,
+      id_detcompra: det.id_detcompra
     }));
 
     // Calcular el total
@@ -402,7 +407,8 @@ export class ComprasComponent implements OnInit, AfterViewInit {
   }
 
   confirmarAnular(){
-    this.ComSer.anular(this.compraParaAnular.id_compra).subscribe({
+    const usuario = this.LoginSer.obtenerUsuarioLogueado();
+    this.ComSer.anular(this.compraParaAnular.id_compra, usuario.id_usuario).subscribe({
       next: (data) => {
         console.log('Respuesta despues de anular: ', data);
         this.listarCompra();
@@ -461,6 +467,7 @@ export class ComprasComponent implements OnInit, AfterViewInit {
  nroCompra = 'C' + this.nextNumber.toString().padStart(3, '0');
 
   compraForm = new UntypedFormGroup({
+    id_compra: new FormControl(''),
     fecha_registro: new FormControl(this.obtenerFechaActual(), [Validators.required]),
     nro_compra: new FormControl(this.nroCompra, [Validators.required]),
     monto_total: new FormControl('0'),
@@ -628,21 +635,72 @@ export class ComprasComponent implements OnInit, AfterViewInit {
       id_proveedor: this.compraForm.get('id_proveedor').value,
       id_usuario: JSON.parse(localStorage.getItem('usuario')).id_usuario
     }
+
+    if (this.isEditMode) {
+      Compra.id_compra = this.compraForm.get('id_compra')?.value;
+    }
+
+    // Mapear los detalles para enviar solo los campos necesarios
+    Compra.detalle = this.detallesCompra.map(det => {
+      // Si es un producto nuevo (id comienza con 'N'), enviar el objeto completo
+      if (det.producto.id_producto && String(det.producto.id_producto).startsWith('N')) {
+        return {
+          producto: det.producto,
+          cantidad: det.cantidad,
+          precio_unitario: det.precio_unitario,
+          precio_venta: det.precio_venta,
+          sub_total: det.sub_total,
+          id_detcompra: det.id_detcompra ?? null,
+          id_compra: Compra.id_compra ?? null
+        };
+      } else {
+        // Si es un producto existente, enviar solo id_producto
+        return {
+          id_producto: det.producto.id_producto,
+          cantidad: det.cantidad,
+          precio_unitario: det.precio_unitario,
+          precio_venta: det.precio_venta,
+          sub_total: det.sub_total,
+          id_detcompra: det.id_detcompra ?? null,
+          id_compra: Compra.id_compra ?? null
+        };
+      }
+    });
+
     console.log("compra : ", Compra);
     console.log("productos compra : ", this.detallesCompra);
-    Compra.detalle=this.detallesCompra
-    this.ComSer.saveCompra(Compra).subscribe(data => {
-      this.compraForm.reset();
-      this.cerrarModalAgregar();
-      this.listarCompra();
-    })
+
+    if (this.isEditMode) {
+      this.ComSer.modificarCompra(Compra).subscribe(data => {
+        this.compraForm.reset();
+        this.cerrarModalAgregar();
+        this.listarCompra();
+      })
+    } else {
+      this.ComSer.saveCompra(Compra).subscribe(data => {
+        this.compraForm.reset();
+        this.cerrarModalAgregar();
+        this.listarCompra();
+      })
+    }
   }
   fechaD!:Date
   fechaA!:Date
+  filtroFecha: string = '';
+  enFiltroPersonalizado: boolean = false;
   ponerFecha(e:any, tipo:number){
-    const fecha = new Date(e.target.value);
-    if(tipo ==1) this.fechaD=fecha
-    else this.fechaA=fecha
+    const valor = e.target.value; // Formato: "2026-03-13"
+    if (!valor) return;
+
+    const [year, month, day] = valor.split('-').map(Number);
+    const fecha = new Date(year, month - 1, day, 0, 0, 0);
+
+    if(tipo === 1) this.fechaD = fecha;
+    else this.fechaA = fecha;
+  }
+  onFiltroFechaChange(event: any) {
+    const value = event.target.value;
+    this.enFiltroPersonalizado = value === 'rango personalizado';
   }
   detCompra?:any
   detalleCompra:any[]=[]
@@ -650,7 +708,6 @@ export class ComprasComponent implements OnInit, AfterViewInit {
 
   Detalle(compra:any){
     this.detCompra=compra;
-    console.log('cantidad recibida: ',this.detCompra.det_compras[0].cantidad_recibida,' '+this.detCompra.det_compras[0].defectuosos);
 
     // Inicializa detalleCompra y valores por defecto para recepción
     this.detalleCompra = (compra.det_compras || []);
@@ -764,18 +821,26 @@ export class ComprasComponent implements OnInit, AfterViewInit {
 
     const meses = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-    // Separar fecha y hora si existe
-    const partes = fechaStr.split(' ');
-    let fechaParte = partes[0];
-    let horaParte = partes.slice(1).join(' ');
+    try {
+      // Separar fecha y hora si existe
+      const partes = fechaStr.trim().split(' ');
+      let fechaParte = partes[0];
+      let horaParte = partes.slice(1).join(' ');
 
-    // Parsear la fecha
-    const [year, month, day] = fechaParte.split('-');
-    const mesIndex = parseInt(month) - 1;
-    const diaNum = parseInt(day);
+      // Parsear la fecha en formato "YYYY-MM-DD"
+      const [year, month, day] = fechaParte.split('-').map(Number);
 
-    // Formatear: "8 Mar 2026, hh:mm:ss"
-    return `${diaNum} ${meses[mesIndex]} ${year}${horaParte ? ', ' + horaParte : ''}`;
+      if (!year || !month || !day) return fechaStr;
+
+      const mesIndex = month - 1;
+      const diaNum = day;
+
+      // Formatear: "13 Mar 2026, hh:mm:ss"
+      return `${diaNum} ${meses[mesIndex]} ${year}${horaParte ? ', ' + horaParte : ''}`;
+    } catch (error) {
+      // Si hay error, devolver la cadena original
+      return fechaStr;
+    }
   }
 
   calcularTotalProductos(compra: any): number {
