@@ -335,11 +335,9 @@
                           type="number"
                           class="subtotal-ultra-input"
                           [value]="productosVentaSubtotales[i]"
-                          (input)="nuevoSubtotal(i, $event)"
-                          (blur)="validarSubtotal(i, $event)"
+                          readonly
                           (click)="seleccionarTextoInput($event)"
                           (focus)="seleccionarTextoInput($event)"
-                          (keydown)="bloquearTeclasInvalidasPrecio($event)"
                           min="0.01"
                           step="0.01"
                         />

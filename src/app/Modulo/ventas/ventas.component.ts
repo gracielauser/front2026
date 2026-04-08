@@ -81,6 +81,23 @@ export class VentasComponent implements OnInit, AfterViewInit {
     return `${year}-${month}-${day}`;
   }
 
+  formatFechaRegistro(fecha: string | null | undefined): string {
+    if (!fecha) {
+      return '';
+    }
+    const [datePart, timePart] = fecha.split(' ');
+    if (!datePart) {
+      return fecha;
+    }
+    const [year, month, day] = datePart.split('-').map(val => parseInt(val, 10));
+    if (!year || !month || !day) {
+      return fecha;
+    }
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const fechaFormateada = `${day} ${meses[month - 1]} ${year}`;
+    return timePart ? `${fechaFormateada}, ${timePart}` : fechaFormateada;
+  }
+
   listarVentas() {
     this.ventaSer.getListaVentas().subscribe(data => {
       this.apiVentas = data

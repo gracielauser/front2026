@@ -44,7 +44,8 @@ export class GastosComponent {
     })
   }
   AgregarGasto(){
-   const gasto=this.gastoForm.getRawValue()
+   const gasto=this.gastoForm.getRawValue();
+   gasto.fecha = this.obtenerFechaActual();
    console.log("aquii",gasto);
     this.gastoSer.saveGasto(gasto).subscribe({
        next: (data) => {
@@ -72,11 +73,14 @@ this.mensajeExito = data.mensaje;
 
   }
   obtenerFechaActual(): string {
-  const hoy = new Date();
-  const year = hoy.getFullYear();
-  const month = String(hoy.getMonth() + 1).padStart(2, '0'); // meses empiezan en 0
-  const day = String(hoy.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const month = String(hoy.getMonth() + 1).padStart(2, '0'); // meses empiezan en 0
+    const day = String(hoy.getDate()).padStart(2, '0');
+    const hours = String(hoy.getHours()).padStart(2, '0');
+    const minutes = String(hoy.getMinutes()).padStart(2, '0');
+    const seconds = String(hoy.getSeconds()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
     obtenerUsuario(){
     const usuario: any = JSON.parse(localStorage.getItem('usuario'))
@@ -91,6 +95,24 @@ gastoSeleccionado: any = null;
   cancelarCambio() {
     this.gastoSeleccionado = null;
   }
+
+  formatFechaGasto(fecha: string | null | undefined): string {
+    if (!fecha) {
+      return '';
+    }
+    const [datePart, timePart] = fecha.split(' ');
+    if (!datePart) {
+      return fecha;
+    }
+    const [year, month, day] = datePart.split('-').map((value) => parseInt(value, 10));
+    if (!year || !month || !day) {
+      return fecha;
+    }
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const fechaFormateada = `${day} ${meses[month - 1]} ${year}`;
+    return timePart ? `${fechaFormateada}, ${timePart}` : fechaFormateada;
+  }
+
   guardarCambio() {
     if (this.gastoSeleccionado) {
       this.gastoSeleccionado.estado = 0;//como es anulacion ponemos el estado que significa anulado osea 0
