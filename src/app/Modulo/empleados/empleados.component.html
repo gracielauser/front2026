@@ -220,13 +220,13 @@
 
           <!-- NOTA DE APELLIDOS -->
           <div class="col-12">
-            <small class="text-muted"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>Debe completar al menos un apellido</small>
+            <small class="text-muted"><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>Debe completar el apellido paterno</small>
           </div>
 
           <!-- APELLIDO PATERNO -->
           <div class="col-md-6">
-            <label class="form-label"><i class="bi bi-person me-1"></i>Apellido Paterno</label>
-            <input type="text" formControlName="ap_paterno" class="form-control" placeholder="Opcional"
+            <label class="form-label"><i class="bi bi-person me-1"></i>Apellido Paterno <span class="text-danger">*</span></label>
+            <input type="text" formControlName="ap_paterno" class="form-control" placeholder="Ingrese apellido paterno"
                    pattern="^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$"
                    onkeypress="if(!/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]$/.test(event.key)){document.getElementById('msgNumerosAp').style.display='block';setTimeout(()=>document.getElementById('msgNumerosAp').style.display='none',2000);event.preventDefault();}"
                    oninput="
@@ -305,7 +305,7 @@
 
           <!-- SALARIO -->
           <div class="col-md-6">
-            <label class="form-label"><i class="bi bi-wallet2 me-1"></i>Salario <span class="text-danger">*</span></label>
+            <label class="form-label"><i class="bi bi-wallet2 me-1"></i>Salario</label>
             <div class="input-group">
               <input type="text" formControlName="salario" class="form-control" placeholder="Ej: 2500"
                      pattern="^[0-9]+$"
@@ -370,7 +370,7 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="Cancelar()">
           <i class="bi bi-x-circle"></i> Cancelar
         </button>
-        <button type="button" class="btn btn-primary" (click)="submitForm()" [disabled]="empleadoForm.invalid">
+        <button type="button" class="btn btn-primary" (click)="submitForm()" [disabled]="camposRequeridosInvalidos()">
           <i [class]="isEditMode ? 'bi bi-check-circle' : 'bi bi-plus-circle'"></i>
           {{ isEditMode ? 'Actualizar' : 'Guardar' }}
         </button>

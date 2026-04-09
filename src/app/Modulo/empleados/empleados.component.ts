@@ -100,20 +100,23 @@ ngAfterViewInit() {
   }
   empleadoForm = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
-    ap_paterno: new FormControl(''),
+    ap_paterno: new FormControl('', [Validators.required]),
     ap_materno: new FormControl(''),
     celular: new FormControl('', [Validators.required]),
-    ci: new FormControl('', [Validators.required]),
-    salario: new FormControl('', [Validators.required]),
-    genero: new FormControl('', [Validators.required]),
+    ci: new FormControl(''),
+    salario: new FormControl(''),
+    genero: new FormControl(''),
     estado: new FormControl('1')
-  },
- { validators: this.alMenosUnApellido() }
-)
+  });
 
 
   get control() {
-    return this.empleadoForm.controls
+    return this.empleadoForm.controls;
+  }
+
+  // Solo los campos requeridos afectan el botón
+  camposRequeridosInvalidos() {
+    return this.control['nombre'].invalid || this.control['ap_paterno'].invalid || this.control['celular'].invalid;
   }
   openModalAdd() {
     this.isEditMode = false;
@@ -341,18 +344,7 @@ ngAfterViewInit() {
       }
     })
   }
-alMenosUnApellido(): ValidatorFn {
-  return (formGroup: FormGroup): ValidationErrors | null => {
-    const paterno = formGroup.get('ap_paterno')?.value?.trim();
-    const materno = formGroup.get('ap_materno')?.value?.trim();
 
-    if (!paterno && !materno) {
-      return { apellidoRequerido: true }; // 👈 devuelve error
-    }
-
-    return null; // 👈 válido
-  };
-}
 
 // Método para obtener la URL de la foto del empleado
 getFotoUrl(foto: string | null): string {
