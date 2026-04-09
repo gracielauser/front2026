@@ -234,12 +234,11 @@
 /* ==================== CARDS MEJORADAS ==================== */
 .card {
   border-radius: 12px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .card-header {
@@ -256,7 +255,7 @@
 /* ==================== TABLAS MEJORADAS ==================== */
 .table-responsive {
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .table thead {
@@ -320,7 +319,15 @@
 .form-control:focus, .form-select:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-  transform: scale(1.01);
+}
+
+.form-select {
+  position: relative;
+  z-index: 1;
+}
+
+.form-select:focus {
+  z-index: 1050;
 }
 
 /* ==================== ANIMACIONES SUTILES ==================== */

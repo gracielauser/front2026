@@ -18,12 +18,13 @@ import { ReportesVentaService } from '../../Servicios/reportes-venta.service';
 import { EstadoPipe } from '../../Filtros/estado.pipe';
 import { ClienteVentaPipe } from '../../Filtros/cliente-venta.pipe';
 import { FechasPipe } from '../../Filtros/fechas.pipe';
+import { TipoVentaPipe } from '../../Filtros/tipo-venta.pipe';
 
 @Component({
   selector: 'app-ventas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule,
-    FormsModule, NroVentaPipe, EstadoPipe, ClienteVentaPipe, FechasPipe],
+    FormsModule, NroVentaPipe, EstadoPipe, ClienteVentaPipe, FechasPipe, TipoVentaPipe],
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })
@@ -48,6 +49,7 @@ export class VentasComponent implements OnInit, AfterViewInit {
   fechaDesde: string = ''
   fechaHasta: string = ''
   filtroFecha: string = ''
+  tipoVenta: string = ''
   enFiltroPersonalizado: boolean = false
   page:number=1
   ponerCodigo(e: any) {

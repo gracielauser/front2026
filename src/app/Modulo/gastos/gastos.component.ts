@@ -7,10 +7,11 @@ import { CommonModule } from '@angular/common';
 import { CategoriagPipe } from '../../Filtros/categoriag.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { FechasPipe } from '../../Filtros/fechas.pipe';
+import { EstadoPipe } from '../../Filtros/estado.pipe';
 @Component({
   selector: 'app-gastos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,FormsModule,CategoriagPipe,NgxPaginationModule,FechasPipe],
+  imports: [CommonModule, ReactiveFormsModule,FormsModule,CategoriagPipe,NgxPaginationModule,FechasPipe,EstadoPipe],
   templateUrl: './gastos.component.html',
   styleUrl: './gastos.component.css'
 })
@@ -18,6 +19,7 @@ export class GastosComponent {
 
   apiGasto:any[]=[]
   categoria=''
+  estadoFiltro=''
   page:number=1
    mensajeExito: string | null = null;
   filtroFecha: string = '';

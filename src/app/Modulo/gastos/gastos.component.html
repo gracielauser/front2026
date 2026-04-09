@@ -58,6 +58,18 @@
 
         <div class="filter-item">
           <label class="filter-label">
+            <i class="bi bi-check-circle"></i>
+            Estado
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="estadoFiltro">
+            <option value="">Todos</option>
+            <option value="1">Válidos</option>
+            <option value="0">Anulados</option>
+          </select>
+        </div>
+
+        <div class="filter-item">
+          <label class="filter-label">
             <i class="bi bi-calendar-range"></i>
             Fecha
           </label>
@@ -103,12 +115,14 @@
               <th>Monto</th>
               <th>Categoría</th>
               <th>Descripción</th>
+              <th>Estado</th>
               <th>Gastado Por</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let i=index; let gasto of apiGasto | fechas:filtroFecha:fechaDesde:fechaHasta | paginate: { itemsPerPage: 6, currentPage: page }|categoriag:categoria">
+            <tr *ngFor="let i=index; let gasto of apiGasto | fechas:filtroFecha:fechaDesde:fechaHasta | categoriag:categoria | estado:estadoFiltro | paginate: { itemsPerPage: 6, currentPage: page }"
+                [ngClass]="{'table-secondary': gasto.estado === 0 || gasto.estado === 2}">
               <td>
                 <span class="badge-number">{{i+1}}</span>
               </td>
@@ -117,7 +131,7 @@
                 {{ formatFechaGasto(gasto.fecha) }}
               </td>
               <td>
-                <span class="monto-badge">{{gasto.monto}} Bs.</span>
+                <span class="monto-badge" [ngClass]="{'text-decoration-line-through text-muted': gasto.estado === 0 || gasto.estado === 2}">{{gasto.monto}} Bs.</span>
               </td>
               <td>
                 <span class="categoria-badge">{{gasto.categoria}}</span>
@@ -126,15 +140,32 @@
                 <span class="descripcion-text">{{gasto.descripcion}}</span>
               </td>
               <td>
+                <span class="badge"
+                      [ngClass]="{
+                        'bg-success': gasto.estado === 1,
+                        'bg-danger': gasto.estado === 0 || gasto.estado === 2
+                      }">
+                  {{ gasto.estado === 1 ? 'Válido' : 'Anulado' }}
+                </span>
+              </td>
+              <td>
                 <i class="bi bi-person-circle me-1" style="color: var(--gastos-primary);"></i>
                 {{gasto.usuario?.empleado?.nombre}} {{gasto.usuario?.empleado?.ap_paterno}} {{gasto.usuario?.empleado?.ap_materno}}
               </td>
               <td>
-                <button class="btn-action btn-cancel" data-bs-toggle="modal" data-bs-target="#anular"
+                <button *ngIf="gasto.estado === 1"
+                        class="btn-action btn-cancel"
+                        data-bs-toggle="modal"
+                        data-bs-target="#anular"
                         (click)="showModal(gasto)">
                   <i class="bi bi-x-circle-fill"></i>
                   Anular
                 </button>
+                <span *ngIf="gasto.estado === 0 || gasto.estado === 2"
+                      class="text-muted fst-italic">
+                  <i class="bi bi-x-circle"></i>
+                  Ya anulado
+                </span>
               </td>
             </tr>
           </tbody>

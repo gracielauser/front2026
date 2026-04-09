@@ -338,7 +338,7 @@ export class NuevaVentaComponent implements OnInit {
       next: (data) => {
       console.log('Venta guardada exitosamente:', data);
       const nota:boolean = Number(data.tipo_venta)==1
-      this.ventaSer.notaVenta(Number(data.id_venta),nota).subscribe((pdfBlob) => {
+      this.ventaSer.notaVenta(Number(data.id_venta),nota,!nota).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });
       // Abre en una nueva pestaña
       const url = URL.createObjectURL(blob);

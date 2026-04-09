@@ -88,6 +88,22 @@
             </div>
           </div>
 
+          <!-- Filtro: Tipo de Impuesto -->
+          <div class="filter-box">
+            <label class="filter-label-modern">
+              <i class="bi bi-receipt"></i>
+              <span>Tipo de Impuesto</span>
+            </label>
+            <div class="select-wrapper">
+              <select class="modern-select" [(ngModel)]="tipoVenta">
+                <option value="">● Todos</option>
+                <option value="1">Ninguno</option>
+                <option value="2">Facturado</option>
+              </select>
+              <i class="bi bi-chevron-down select-arrow"></i>
+            </div>
+          </div>
+
           <!-- Filtro 4: Fecha -->
           <div class="filter-box">
             <label class="filter-label-modern">
@@ -224,7 +240,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
+              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
                   class="data-row"
                   [class.row-anulada]="ven.estado == 2">
                 <td class="col-number">
@@ -309,7 +325,7 @@
                   </div>
                 </td>
               </tr>
-              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta).length === 0">
+              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta).length === 0">
                 <td colspan="8">
                   <div class="empty-state-modern">
                     <div class="empty-icon-circle">
@@ -333,7 +349,7 @@
       <div class="table-footer-section">
         <div class="footer-info">
           <i class="bi bi-info-circle-fill"></i>
-          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta).length }}</strong> venta(s)</span>
+          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta).length }}</strong> venta(s)</span>
         </div>
         <div class="pagination-modern">
           <pagination-controls (pageChange)="page = $event"></pagination-controls>

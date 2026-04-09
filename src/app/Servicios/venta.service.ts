@@ -27,12 +27,12 @@ export class VentaService {
       let url = this.baseUrl+"/anular/"+id_venta;
       return this.xhttp.put(url, null)
      }
-       notaVenta(idVenta:number,nota:boolean=true): Observable<Blob> {
+       notaVenta(idVenta:number,nota:boolean=true, enviarEmail:boolean=false): Observable<Blob> {
   // const params = new HttpParams()// Opción B: Construir parámetros en cadena
   //     .set('idVenta', idVenta)
   // .set('partido', this.currentUser().partido);
 
-  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/notaVenta/`+idVenta, {nota: nota}, {
+  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/notaVenta/`+idVenta, {nota: nota, enviarEmail: enviarEmail}, {
     // params,
     responseType: 'blob' // 👈 clave para manejar PDF
   });
@@ -52,6 +52,11 @@ export class VentaService {
     return this.xhttp.post(`${environment.apiUrl}/api/reporte/facturas`,{}, {
       responseType: 'blob' // 👈 clave para manejar PDF
     });
+}
+getExcel(body={}): Observable<Blob> {
+  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/reporteVentas-excel`, body, {
+    responseType: 'blob' // 👈 clave para manejar Excel
+  });
 }
 datosVentas(): Observable<any> {
   console.log("en servicio datos ventas");

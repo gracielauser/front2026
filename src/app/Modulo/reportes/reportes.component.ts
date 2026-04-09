@@ -76,8 +76,15 @@ export class ReportesComponent implements OnInit {
     tipo_venta: '',
     estado: '',
     tipo_pago: '',
-    busqueda: ''
+    busqueda: '',
+    id_cliente: ''
   }
+  filtroFechaVentas: string = '';
+  fechaDesdeVentasR: string = '';
+  fechaHastaVentasR: string = '';
+  enFiltroPersonalizadoVentasR: boolean = false;
+  mostrarListaClientesVentas: boolean = false;
+  clienteSeleccionadoVentas: any = null;
 
   // Datos de gastos
   datosGastosReporte: any = null
@@ -230,7 +237,7 @@ datosVentas(){
   })
 }
 datosNegocio(){
-  this.RepSer.datosNegocio().subscribe((data)=>{
+  this.RepSer.datosNegocio(this.filtroNegocio.desde, this.filtroNegocio.hasta).subscribe((data)=>{
     console.log('datos negocio: ',data);
     this.datosNegocioReporte = data;
   })
@@ -631,7 +638,90 @@ limpiarFiltrosCompras() {
   };
 }
 
+onFiltroFechaVentasChange(event: any): void {
+  const valor = event.target.value;
+  if (valor === 'rango personalizado') {
+    this.enFiltroPersonalizadoVentasR = true;
+    this.fechaDesdeVentasR = '';
+    this.fechaHastaVentasR = '';
+  } else {
+    this.enFiltroPersonalizadoVentasR = false;
+    this.fechaDesdeVentasR = '';
+    this.fechaHastaVentasR = '';
+  }
+}
+
+ponerFechaVentasR(e: any, tipo: number): void {
+  const fechaStr = e.target.value;
+  if (!fechaStr) return;
+  if (tipo === 1) {
+    this.fechaDesdeVentasR = fechaStr;
+  } else if (tipo === 2) {
+    this.fechaHastaVentasR = fechaStr;
+  }
+}
+
+get fechasFiltroVentas(): { desde: Date | null, hasta: Date | null } {
+  const hoy = new Date();
+  switch (this.filtroFechaVentas) {
+    case 'hoy':
+      const hoyComienzo = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+      const hoyFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+      return { desde: hoyComienzo, hasta: hoyFin };
+    case 'ayer':
+      const ayer = new Date(hoy);
+      ayer.setDate(hoy.getDate() - 1);
+      const ayerComienzo = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 0, 0, 0);
+      const ayerFin = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 23, 59, 59);
+      return { desde: ayerComienzo, hasta: ayerFin };
+    case 'esta semana':
+      const inicioSemana = new Date(hoy);
+      inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+      inicioSemana.setHours(0, 0, 0, 0);
+      return { desde: inicioSemana, hasta: hoy };
+    case 'este mes':
+      const inicioDeMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1, 0, 0, 0);
+      return { desde: inicioDeMes, hasta: hoy };
+    case 'mes anterior':
+      const mesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1, 0, 0, 0);
+      const finMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0, 23, 59, 59);
+      return { desde: mesAnterior, hasta: finMesAnterior };
+    case 'rango personalizado':
+      return {
+        desde: this.fechaDesdeVentasR ? new Date(this.fechaDesdeVentasR + 'T00:00:00') : null,
+        hasta: this.fechaHastaVentasR ? new Date(this.fechaHastaVentasR + 'T23:59:59') : null
+      };
+    default:
+      return { desde: null, hasta: null };
+  }
+}
+
 // Métodos para ventas
+get clientesDisponiblesVentas(): any[] {
+  if (!this.datosVentasReporte || !this.datosVentasReporte.ventas) {
+    return [];
+  }
+  // Obtener clientes únicos de las ventas
+  const clientesMap = new Map();
+  this.datosVentasReporte.ventas.forEach((v: any) => {
+    if (v.cliente && v.cliente.id_cliente) {
+      clientesMap.set(v.cliente.id_cliente, v.cliente);
+    }
+  });
+  return Array.from(clientesMap.values());
+}
+
+get clientesFiltradosVentas(): any[] {
+  return this.clientesDisponiblesVentas.filter((c: any) => {
+    if (!this.filtroVentas.busqueda) return true;
+    const busqueda = this.filtroVentas.busqueda.toLowerCase();
+    return (
+      c.nombre_completo?.toLowerCase().includes(busqueda) ||
+      c.ci_nit?.toString().includes(this.filtroVentas.busqueda)
+    );
+  });
+}
+
 get ventasFiltradas(): any[] {
   if (!this.datosVentasReporte || !this.datosVentasReporte.ventas) {
     return [];
@@ -639,21 +729,23 @@ get ventasFiltradas(): any[] {
 
   return this.datosVentasReporte.ventas.filter((v: any) => {
     const coincideBusqueda = !this.filtroVentas.busqueda ||
-      v.cliente.nombre_completo.toLowerCase().includes(this.filtroVentas.busqueda.toLowerCase()) ||
-      v.nro_venta.toLowerCase().includes(this.filtroVentas.busqueda.toLowerCase()) ||
-      v.cliente.ci_nit.toString().includes(this.filtroVentas.busqueda);
+      (v.cliente?.nombre_completo?.toLowerCase().includes(this.filtroVentas.busqueda.toLowerCase())) ||
+      (v.nro_venta?.toLowerCase().includes(this.filtroVentas.busqueda.toLowerCase())) ||
+      (v.cliente?.ci_nit?.toString().includes(this.filtroVentas.busqueda));
 
-    // Filtro por rango de fechas
+    // Filtro por fecha mediante selector
     let coincideFecha = true;
-    if (this.filtroVentas.desde && v.fecha_registro) {
-      const fechaVenta = new Date(v.fecha_registro);
-      const fechaDesde = new Date(this.filtroVentas.desde);
-      coincideFecha = fechaVenta >= fechaDesde;
-    }
-    if (this.filtroVentas.hasta && v.fecha_registro && coincideFecha) {
-      const fechaVenta = new Date(v.fecha_registro);
-      const fechaHasta = new Date(this.filtroVentas.hasta);
-      coincideFecha = fechaVenta <= fechaHasta;
+    if (this.filtroFechaVentas) {
+      const fechasFiltro = this.fechasFiltroVentas;
+      const fechaVentaStr = v.fecha_registro ? v.fecha_registro.split(' ')[0] : null;
+      if (fechasFiltro.desde && fechaVentaStr) {
+        const fechaDesdeStr = fechasFiltro.desde.toISOString().split('T')[0];
+        coincideFecha = fechaVentaStr >= fechaDesdeStr;
+      }
+      if (fechasFiltro.hasta && fechaVentaStr && coincideFecha) {
+        const fechaHastaStr = fechasFiltro.hasta.toISOString().split('T')[0];
+        coincideFecha = fechaVentaStr <= fechaHastaStr;
+      }
     }
 
     const coincideTipoVenta = this.filtroVentas.tipo_venta === '' ||
@@ -665,7 +757,10 @@ get ventasFiltradas(): any[] {
     const coincideTipoPago = this.filtroVentas.tipo_pago === '' ||
       v.tipo_pago === this.filtroVentas.tipo_pago;
 
-    return coincideBusqueda && coincideFecha && coincideTipoVenta && coincideEstado && coincideTipoPago;
+    const coincideCliente = !this.filtroVentas.id_cliente ||
+      (v.cliente?.id_cliente && v.cliente.id_cliente.toString() === this.filtroVentas.id_cliente);
+
+    return coincideBusqueda && coincideFecha && coincideTipoVenta && coincideEstado && coincideTipoPago && coincideCliente;
   });
 }
 
@@ -712,8 +807,39 @@ limpiarFiltrosVentas() {
     tipo_venta: '',
     estado: '',
     tipo_pago: '',
-    busqueda: ''
+    busqueda: '',
+    id_cliente: ''
   };
+  this.filtroFechaVentas = '';
+  this.fechaDesdeVentasR = '';
+  this.fechaHastaVentasR = '';
+  this.enFiltroPersonalizadoVentasR = false;
+  this.clienteSeleccionadoVentas = null;
+  this.mostrarListaClientesVentas = false;
+}
+
+seleccionarClienteVentas(cliente: any) {
+  this.clienteSeleccionadoVentas = cliente;
+  this.filtroVentas.id_cliente = cliente.id_cliente.toString();
+  this.filtroVentas.busqueda = cliente.nombre_completo;
+  this.mostrarListaClientesVentas = false;
+}
+
+mostrarDropdownClientesVentas() {
+  this.mostrarListaClientesVentas = true;
+}
+
+ocultarDropdownClientesVentas() {
+  setTimeout(() => {
+    this.mostrarListaClientesVentas = false;
+  }, 200);
+}
+
+limpiarClienteVentas() {
+  this.clienteSeleccionadoVentas = null;
+  this.filtroVentas.id_cliente = '';
+  this.filtroVentas.busqueda = '';
+  this.mostrarListaClientesVentas = false;
 }
 
 // Métodos para gastos
@@ -863,6 +989,7 @@ limpiarFiltrosNegocio() {
     desde: '',
     hasta: ''
   };
+  this.datosNegocio();
 }
    async descargarPDF(): Promise<void> {
     console.log("haciendo pdf");
@@ -1012,22 +1139,95 @@ this.GasSer.getPDF({}).subscribe((pdfBlob) => {
     });
 }
 reporteClientesPDF(){
-this.CliSer.getPDF({}).subscribe((pdfBlob) => {
-      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
-      // Abre en una nueva pestaña
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    });
+  const datosReporte = {
+    filtros: {
+      desde: this.filtroClientes.desde || null,
+      hasta: this.filtroClientes.hasta || null,
+      id_cliente: this.filtroClientes.id_cliente || null,
+      busqueda: this.filtroClientes.busqueda || null
+    },
+    resumenes: this.totalesFiltradosClientes,
+    lista: this.clientesFiltrados
+  };
+
+  console.log('Datos enviados al PDF:', datosReporte);
+
+  this.CliSer.getPDF(datosReporte).subscribe((pdfBlob) => {
+    const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  });
+}
+
+reporteClientesExcel(){
+  const datosReporte = {
+    filtros: {
+      desde: this.filtroClientes.desde || null,
+      hasta: this.filtroClientes.hasta || null,
+      id_cliente: this.filtroClientes.id_cliente || null,
+      busqueda: this.filtroClientes.busqueda || null
+    },
+    resumenes: this.totalesFiltradosClientes,
+    lista: this.clientesFiltrados
+  };
+
+  console.log('Datos enviados al Excel:', datosReporte);
+
+  // Aquí deberías llamar al servicio para generar Excel
+  // this.CliSer.getExcel(datosReporte).subscribe((excelBlob) => {
+  //   const blob = new Blob([excelBlob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  //   const url = URL.createObjectURL(blob);
+  //   const a = document.createElement('a');
+  //   a.href = url;
+  //   a.download = 'reporte-clientes.xlsx';
+  //   a.click();
+  // });
 }
 
  ventasPDF(resumido:boolean){
- this.VenSer.getPDF({},resumido).subscribe((pdfBlob) => {
-      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+  const datosReporte = {
+    filtros: {
+      desde: this.filtroVentas.desde || null,
+      hasta: this.filtroVentas.hasta || null,
+      tipo_venta: this.filtroVentas.tipo_venta || null,
+      estado: this.filtroVentas.estado || null,
+      tipo_pago: this.filtroVentas.tipo_pago || null,
+      id_cliente: this.filtroVentas.id_cliente || null,
+      busqueda: this.filtroVentas.busqueda || null
+    },
+    lista: this.ventasFiltradas
+  };
+  console.log('Datos enviados al PDF de ventas:', datosReporte);
+  this.VenSer.getPDF(datosReporte, resumido).subscribe((pdfBlob) => {
+    const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  });
+}
 
-      // Abre en una nueva pestaña
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    });
+ventasExcel() {
+  const datosReporte = {
+    filtros: {
+      desde: this.filtroVentas.desde || null,
+      hasta: this.filtroVentas.hasta || null,
+      tipo_venta: this.filtroVentas.tipo_venta || null,
+      estado: this.filtroVentas.estado || null,
+      tipo_pago: this.filtroVentas.tipo_pago || null,
+      id_cliente: this.filtroVentas.id_cliente || null,
+      busqueda: this.filtroVentas.busqueda || null
+    },
+    lista: this.ventasFiltradas
+  };
+  console.log('Datos para Excel de ventas:', datosReporte);
+  this.VenSer.getExcel(datosReporte).subscribe((excelBlob) => {
+    const blob = new Blob([excelBlob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reporte-ventas-${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.click();
+    URL.revokeObjectURL(url);
+  });
 }
 inventarioPDF(){
   console.log('llamando pdf en ts');

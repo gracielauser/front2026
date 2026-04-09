@@ -89,7 +89,7 @@
           <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="fw-bold"><i class="bi bi-people-fill me-2"></i>Reporte de Clientes</h2>
             <div>
-              <button class="btn btn-success me-2"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+              <button class="btn btn-success me-2" (click)="reporteClientesExcel()"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
               <button class="btn btn-danger" (click)="reporteClientesPDF()"><i class="bi bi-filetype-pdf"></i> Exportar
                 PDF</button>
             </div>
@@ -300,8 +300,8 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
               <h2 class="fw-bold"><i class="bi bi-cash-coin me-2"></i>Reporte de Ventas</h2>
               <div>
-                <button class="btn btn-success me-2"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
-                <button class="btn btn-danger m2-2" (click)="ventasPDF(true)"><i class="bi bi-filetype-pdf"></i> Reporte PDF
+                <button class="btn btn-success me-2" (click)="ventasExcel()"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+                <button class="btn btn-danger me-2" (click)="ventasPDF(true)"><i class="bi bi-filetype-pdf"></i> Reporte PDF
                   Resumido</button>
                 <button class="btn btn-danger" (click)="ventasPDF(false)"><i class="bi bi-filetype-pdf"></i> Reporte PDF
                   Detallado</button>
@@ -315,16 +315,55 @@
                 <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
                 <div class="row g-3">
                   <div class="col-md-3">
-                    <label class="form-label">Tipo de venta</label>
-                    <select class="form-select" [(ngModel)]="filtroVentas.tipo_venta">
+                    <label class="form-label">Cliente</label>
+                    <div class="position-relative">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="filtroVentas.busqueda"
+                        (focus)="mostrarDropdownClientesVentas()"
+                        (blur)="ocultarDropdownClientesVentas()"
+                        placeholder="Buscar cliente..."
+                        style="position: relative; z-index: 1;">
+                      <button
+                        *ngIf="clienteSeleccionadoVentas"
+                        type="button"
+                        class="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y text-danger"
+                        (click)="limpiarClienteVentas()"
+                        style="z-index: 2;">
+                        <i class="bi bi-x-circle-fill"></i>
+                      </button>
+                      <ul
+                        *ngIf="mostrarListaClientesVentas && clientesFiltradosVentas.length > 0"
+                        class="list-group position-absolute w-100 shadow-lg"
+                        style="max-height: 250px; overflow-y: auto; z-index: 9999; top: 100%; left: 0;">
+                        <li
+                          *ngFor="let cliente of clientesFiltradosVentas"
+                          class="list-group-item list-group-item-action"
+                          (mousedown)="seleccionarClienteVentas(cliente)"
+                          style="cursor: pointer; position: relative; z-index: 10000;">
+                          <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                              <strong>{{ cliente.nombre_completo }}</strong>
+                              <br>
+                              <small class="text-muted">CI/NIT: {{ cliente.ci_nit }}</small>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Tipo de Impuesto</label>
+                    <select class="form-select" [(ngModel)]="filtroVentas.tipo_venta" style="position: relative; z-index: 1;">
                       <option value="">Todos</option>
+                      <option value="Sin Factura">Ninguno</option>
                       <option value="Facturado">Facturado</option>
-                      <option value="Sin Factura">Sin Factura</option>
                     </select>
                   </div>
                   <div class="col-md-3">
                     <label class="form-label">Estado</label>
-                    <select class="form-select" [(ngModel)]="filtroVentas.estado">
+                    <select class="form-select" [(ngModel)]="filtroVentas.estado" style="position: relative; z-index: 1;">
                       <option value="">Todos</option>
                       <option value="Válida">Válida</option>
                       <option value="Anulada">Anulada</option>
@@ -332,23 +371,31 @@
                   </div>
                   <div class="col-md-3">
                     <label class="form-label">Tipo de pago</label>
-                    <select class="form-select" [(ngModel)]="filtroVentas.tipo_pago">
+                    <select class="form-select" [(ngModel)]="filtroVentas.tipo_pago" style="position: relative; z-index: 1;">
                       <option value="">Todos</option>
                       <option value="Efectivo">Efectivo</option>
                       <option value="QR">QR</option>
                     </select>
                   </div>
                   <div class="col-md-3">
-                    <label class="form-label">Buscar</label>
-                    <input type="text" class="form-control" placeholder="Cliente, CI o Nro. Venta" [(ngModel)]="filtroVentas.busqueda">
+                    <label class="form-label">Fecha</label>
+                    <select class="form-select" [(ngModel)]="filtroFechaVentas" (change)="onFiltroFechaVentasChange($event)" style="position: relative; z-index: 1;">
+                      <option value="">Todas las fechas</option>
+                      <option value="hoy">Hoy</option>
+                      <option value="ayer">Ayer</option>
+                      <option value="esta semana">Esta semana</option>
+                      <option value="este mes">Este mes</option>
+                      <option value="mes anterior">Mes anterior</option>
+                      <option value="rango personalizado">Rango personalizado</option>
+                    </select>
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-3" *ngIf="enFiltroPersonalizadoVentasR">
                     <label class="form-label">Desde</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroVentas.desde">
+                    <input type="date" class="form-control" (change)="ponerFechaVentasR($event, 1)" />
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-3" *ngIf="enFiltroPersonalizadoVentasR">
                     <label class="form-label">Hasta</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroVentas.hasta">
+                    <input type="date" class="form-control" (change)="ponerFechaVentasR($event, 2)" />
                   </div>
                   <div class="col-md-3 d-flex align-items-end">
                     <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosVentas()">
@@ -785,11 +832,11 @@
                 <div class="row g-3">
                   <div class="col-md-3">
                     <label class="form-label">Desde</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroNegocio.desde">
+                    <input type="date" class="form-control" [(ngModel)]="filtroNegocio.desde" (change)="datosNegocio()">
                   </div>
                   <div class="col-md-3">
                     <label class="form-label">Hasta</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroNegocio.hasta">
+                    <input type="date" class="form-control" [(ngModel)]="filtroNegocio.hasta" (change)="datosNegocio()">
                   </div>
                   <div class="col-md-2 d-flex align-items-end">
                     <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosNegocio()">
@@ -801,11 +848,11 @@
                       <i class="bi bi-filetype-pdf"></i> PDF
                     </button>
                   </div>
-                  <div class="col-md-2 d-flex align-items-end">
+                  <!-- <div class="col-md-2 d-flex align-items-end">
                     <button type="button" class="btn btn-success w-100">
                       <i class="bi bi-file-earmark-excel"></i> Excel
                     </button>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -930,7 +977,7 @@
             </div>
 
             <!-- Detalle de Gastos Operativos -->
-            <div class="card shadow-sm mb-4" *ngIf="estadoResultados?.gastos_operativos?.detalle?.length > 0">
+            <!-- <div class="card shadow-sm mb-4" *ngIf="estadoResultados?.gastos_operativos?.detalle?.length > 0">
               <div class="card-header bg-warning text-dark">
                 <h5 class="mb-0"><i class="bi bi-receipt"></i> Detalle de Gastos Operativos</h5>
               </div>
@@ -975,10 +1022,10 @@
                   </table>
                 </div>
               </div>
-            </div>
+            </div> -->
 
             <!-- Detalle de Ingresos (Ventas) -->
-            <div class="card shadow-sm mb-4" *ngIf="estadoResultados?.ingresos?.detalle?.length > 0">
+            <!-- <div class="card shadow-sm mb-4" *ngIf="estadoResultados?.ingresos?.detalle?.length > 0">
               <div class="card-header bg-success text-white">
                 <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Detalle de Ventas</h5>
               </div>
@@ -1031,7 +1078,7 @@
                   </table>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
 
         </div>
@@ -1365,7 +1412,15 @@
                     <label class="form-label">Categoría</label>
                     <select class="form-select" [(ngModel)]="filtroGastos.categoria">
                       <option value="">Todos</option>
-                      <option *ngFor="let cat of categoriasGastos" [value]="cat.id_categoria">{{cat.nombre}}</option>
+                      <option value="Servicios básicos">Servicios básicos</option>
+                      <option value="Alquiler">Alquiler</option>
+                      <option value="Alimentos">Alimentos</option>
+                      <option value="Transporte">Transporte</option>
+                      <option value="Sueldos">Sueldos</option>
+                      <option value="Limpieza">Limpieza</option>
+                      <option value="Internet">Internet</option>
+                      <option value="Articulos para operacion de tienda">Articulos para operacion de tienda</option>
+                      <option value="Otros">Otros</option>
                     </select>
                   </div>
                   <div class="col-md-2">
