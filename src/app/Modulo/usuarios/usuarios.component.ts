@@ -202,17 +202,19 @@ export class UsuariosComponent implements OnInit {
         next: (data) => {
           console.log('✅ Usuario agregado con éxito:', data);
           this.mostrarAlerta(true, data.mensaje || '✅ Usuario agregado exitosamente');
+          var usu_roles = [];
           this.rolesSeleccionados.forEach((rolId)=>{
             const usuRol={
               id_usuario: data.id_usuario,
               id_rol: rolId
             }
-            this.rolService.asignarRol(usuRol).subscribe((response) => {
+            usu_roles.push(usuRol)
+          })
+          this.rolService.asignarRol(usu_roles).subscribe((response) => {
               console.log('✅ Rol asignado:', response);
             }, (error) => {
               console.error('❌ Error al asignar rol:', error);
             });
-          })
           this.Listar();
           this.usuarioForm.reset();
           this.rolesSeleccionados = [];
@@ -249,17 +251,20 @@ export class UsuariosComponent implements OnInit {
         console.log('✅ Usuario modificado con éxito:', data);
         this.mostrarAlerta(true, data.mensaje || '✅ Usuario actualizado exitosamente');
         // Actualizar roles
+        var usu_roles = [];
         this.rolesSeleccionados.forEach((rolId)=>{
           const usuRol={
             id_usuario: data.id_usuario,
             id_rol: rolId
           }
-          this.rolService.asignarRol(usuRol).subscribe((response) => {
+          usu_roles.push(usuRol);
+
+        });
+         this.rolService.asignarRol(usu_roles).subscribe((response) => {
             console.log('✅ Rol actualizado:', response);
           }, (error) => {
             console.error('❌ Error al actualizar rol:', error);
           });
-        });
         this.usuarioForm.reset();
         this.rolesSeleccionados = [];
         this.cambiotitulEditar = false;
