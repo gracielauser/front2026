@@ -43,7 +43,8 @@ export class ReportesComponent implements OnInit {
     categoria: '',
     marca: '',
     estado: '',
-    busqueda: ''
+    busqueda: '',
+    unidad: ''
   }
 
   // Datos de clientes
@@ -340,7 +341,10 @@ get productosFiltradosInventario(): any[] {
       p.nombre.toLowerCase().includes(this.filtroInventario.busqueda.toLowerCase()) ||
       p.codigo.toLowerCase().includes(this.filtroInventario.busqueda.toLowerCase());
 
-    return coincideCategoria && coincideMarca && coincideEstado && coincideBusqueda;
+    const coincideUnidad = !this.filtroInventario.unidad ||
+      p.unidad_medida?.id_unidad_medida == this.filtroInventario.unidad;
+
+    return coincideCategoria && coincideMarca && coincideEstado && coincideBusqueda && coincideUnidad;
   });
 }
 
@@ -370,12 +374,26 @@ get marcas(): any[] {
   return Array.from(marcasMap.values());
 }
 
+get unidades(): any[] {
+  if (!this.datosInventarioReporte || !this.datosInventarioReporte.productos) {
+    return [];
+  }
+  const unidadesMap = new Map();
+  this.datosInventarioReporte.productos.forEach((p: any) => {
+    if (p.unidad_medida && !unidadesMap.has(p.unidad_medida.id_unidad_medida)) {
+      unidadesMap.set(p.unidad_medida.id_unidad_medida, p.unidad_medida);
+    }
+  });
+  return Array.from(unidadesMap.values());
+}
+
 limpiarFiltrosInventario() {
   this.filtroInventario = {
     categoria: '',
     marca: '',
     estado: '',
-    busqueda: ''
+    busqueda: '',
+    unidad: ''
   };
 }
 

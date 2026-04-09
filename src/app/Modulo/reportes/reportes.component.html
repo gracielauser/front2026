@@ -609,6 +609,14 @@
                       [(ngModel)]="filtroInventario.busqueda">
                   </div>
 
+                  <div class="col-md-3">
+                    <label for="unidadInventario" class="form-label">Unidad de Medida</label>
+                    <select id="unidadInventario" class="form-select" [(ngModel)]="filtroInventario.unidad">
+                      <option value="">Todas las unidades</option>
+                      <option *ngFor="let u of unidades" [value]="u.id_unidad_medida">{{u.abreviatura || u.nombre}}</option>
+                    </select>
+                  </div>
+
                   <div class="col-md-3 d-flex align-items-end">
                     <button type="button" (click)="limpiarFiltrosInventario()" class="btn btn-secondary w-100">
                       <i class="bi bi-x-circle"></i> Limpiar Filtros

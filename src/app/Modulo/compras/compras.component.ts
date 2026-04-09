@@ -511,7 +511,8 @@ export class ComprasComponent implements OnInit, AfterViewInit {
     id_categoria: new FormControl('', [Validators.required]),
     sub_categoria: new FormControl(''),
     id_unidad_medida: new FormControl('', [Validators.required]),
-    id_marca: new FormControl('', [Validators.required])
+    id_marca: new FormControl('', [Validators.required]),
+    stock_minimo: new FormControl(5, [Validators.required, Validators.min(1)])
   });
 
   get controlProducto() {
@@ -571,6 +572,7 @@ export class ComprasComponent implements OnInit, AfterViewInit {
       categorium: this.apiCategorias.find(c => c.id_categoria == idCategoriaFinal) || null,
       id_unidad_medida: this.productoFormCompra.get('id_unidad_medida')?.value,
       id_marca: this.productoFormCompra.get('id_marca')?.value,
+      stock_minimo: this.productoFormCompra.get('stock_minimo')?.value,
       estado: 1,
       stock: 0,
       foto: 'default.png'

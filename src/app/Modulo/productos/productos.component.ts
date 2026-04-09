@@ -15,13 +15,14 @@ import { CodigoPipe } from '../../Filtros/codigo.pipe';
 import { NombrePipe } from '../../Filtros/nombre.pipe';
 import { CategoriaPipe } from '../../Filtros/categoria.pipe';
 import { StockPipe } from '../../Filtros/stock.pipe';
+import { UnidadMedidaPipe } from '../../Filtros/unidad-medida.pipe';
 import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-productos',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, EstadoPipe,
-    CodigoPipe, NombrePipe, CategoriaPipe, StockPipe, NgxPaginationModule],
+    CodigoPipe, NombrePipe, CategoriaPipe, StockPipe, UnidadMedidaPipe, NgxPaginationModule],
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
 })

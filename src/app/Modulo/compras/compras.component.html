@@ -883,6 +883,24 @@
               <div class="invalid-feedback">Seleccione una unidad de medida</div>
             </div>
 
+            <!-- Stock Mínimo -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Stock Mínimo <span class="required-mark">*</span>
+              </label>
+              <input
+                type="number"
+                formControlName="stock_minimo"
+                class="form-control form-control-modern"
+                placeholder="Ej: 5"
+                min="1"
+                (keypress)="$event.charCode >= 48 && $event.charCode <= 57 || $event.preventDefault()"
+                [ngClass]="{
+                  'is-invalid': controlProducto['stock_minimo'].invalid && controlProducto['stock_minimo'].touched
+                }">
+              <div class="invalid-feedback">Stock mínimo requerido (mínimo 1)</div>
+            </div>
+
             <!-- Descripción -->
             <div class="col-md-12">
               <label class="form-label-custom">
