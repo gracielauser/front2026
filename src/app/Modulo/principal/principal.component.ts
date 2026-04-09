@@ -4,6 +4,7 @@ import { ClienteService } from '../../Servicios/cliente.service';
 import { MarcaService } from '../../Servicios/marca.service';
 import { CategoriaService } from '../../Servicios/categoria.service';
 import { ProveedorService } from '../../Servicios/proveedor.service';
+import { GastoService } from '../../Servicios/gasto.service';
 import { Categoria } from '../../Modelos/categoria';
 import { Cliente } from '../../Modelos/cliente';
 import { Proveedor } from '../../Modelos/proveedor';
@@ -27,13 +28,15 @@ export class PrincipalComponent implements OnInit {
   apiCliente:any[]=[]
   rol: any;
   page: number = 1;
+  totalGastosMes: number = 0;
 
   constructor(
     private proSer:ProductoService,
     private cliSer:ClienteService,
     private marcaSer:MarcaService,
     private cateSer:CategoriaService,
-    private proveSer:ProveedorService
+    private proveSer:ProveedorService,
+    private gastoSer:GastoService
   ) { }
 
   ngOnInit(): void {
@@ -48,6 +51,7 @@ export class PrincipalComponent implements OnInit {
     this.Categoria()
     this.Cliente()
     this.Proveedor()
+    this.Gastos()
   }
 
   tienePermiso(permisoId: number): boolean {
@@ -90,6 +94,19 @@ export class PrincipalComponent implements OnInit {
   Cliente(){
     this.cliSer.getListaClientes().subscribe((lista)=>{
       this.apiCliente=lista
+    })
+  }
+  Gastos(){
+    this.gastoSer.getListaGasto().subscribe((lista)=>{
+      const ahora = new Date();
+      const mesActual = ahora.getMonth();
+      const anioActual = ahora.getFullYear();
+      const gastosActivosMes = lista.filter(gasto => {
+        if (gasto.estado !== 1) return false;
+        const fechaGasto = new Date(gasto.fecha.split(' ')[0]);
+        return fechaGasto.getMonth() === mesActual && fechaGasto.getFullYear() === anioActual;
+      });
+      this.totalGastosMes = gastosActivosMes.reduce((suma, gasto) => suma + parseFloat(gasto.monto || 0), 0);
     })
   }
 }

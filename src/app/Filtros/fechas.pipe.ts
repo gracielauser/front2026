@@ -114,7 +114,7 @@ export class FechasPipe implements PipeTransform {
     }
 
     return items.filter(item => {
-      const fechaStr = item.fecha_registro;
+      const fechaStr = item.fecha || item.fecha_registro;
       if (!fechaStr) return false;
 
       const fechaItem = this.parseFechaLocal(fechaStr);

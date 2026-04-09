@@ -63,7 +63,7 @@ export class NuevaVentaComponent implements OnInit {
     direccion: new FormControl('', [Validators.minLength(5), Validators.maxLength(40)]),
     ci_nit: new FormControl('', [Validators.minLength(5), Validators.maxLength(15)]),
     estado: new FormControl('1'),
-    celular: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15)]),
+    celular: new FormControl('', [Validators.minLength(8), Validators.maxLength(15)]),
     email: new FormControl('', [Validators.email, Validators.minLength(5), Validators.maxLength(40)]),
     ciudad: new FormControl('Tarija'),
     tipo_documento: new FormControl('1'),

@@ -151,6 +151,8 @@ export class ClientesComponent implements OnInit {
   Listar() {
     this.cliSer.getListaClientes().subscribe((lista) => {
       this.apiClientes = lista
+      console.log('clientesssssssssssss: ',lista);
+
     })
   }
 
@@ -161,7 +163,7 @@ export class ClientesComponent implements OnInit {
     direccion: new FormControl('', [this.optionalMinLength(5), this.optionalMaxLength(40)]),
     ci_nit: new FormControl('', [this.formatoCiNit(), this.validarDuplicadoCiNit(), this.optionalMinLength(5), this.optionalMaxLength(15)]),
     estado: new FormControl('1'),
-    celular: new FormControl('', [Validators.required, Validators.minLength(8), Validators.maxLength(15), Validators.pattern('^[0-9]+$')]),
+    celular: new FormControl('', [ Validators.minLength(8), Validators.maxLength(15), Validators.pattern('^[0-9]+$')]),
     email: new FormControl('', [this.optionalEmail(), this.optionalMinLength(5), this.optionalMaxLength(40)]),
     ciudad: new FormControl('Tarija'),
     tipo_documento: new FormControl('1'),
@@ -378,4 +380,19 @@ obtenerFechaHoraActual(): string {
   const seconds = String(hoy.getSeconds()).padStart(2, '0');
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
-}
+  formatFechaRegistro(fecha: string | null | undefined): string {
+    if (!fecha) {
+      return '';
+    }
+    const [datePart, timePart] = fecha.split(' ');
+    if (!datePart) {
+      return fecha;
+    }
+    const [year, month, day] = datePart.split('-').map(val => parseInt(val, 10));
+    if (!year || !month || !day) {
+      return fecha;
+    }
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const fechaFormateada = `${day} ${meses[month - 1]} ${year}`;
+    return timePart ? `${fechaFormateada}, ${timePart}` : fechaFormateada;
+  }}

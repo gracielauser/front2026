@@ -225,7 +225,7 @@
           </div>
           <!-- CELULAR -->
           <div class="col-md-4">
-            <label class="form-label">Celular <span class="text-danger">*</span></label>
+            <label class="form-label">Celular </label>
             <input type="text" formControlName="celular" class="form-control" placeholder="Número de celular"
               maxlength="15"
               [ngClass]="{
@@ -266,6 +266,12 @@
             <div class="valid-feedback">Correcto.</div>
             <div class="invalid-feedback">Mínimo 5, máximo 40 caracteres.</div>
           </div> -->
+
+          <!-- FECHA DE REGISTRO (solo en modo vista) -->
+          <div class="col-md-12" *ngIf="isViewMode">
+            <label class="form-label">Fecha de Registro</label>
+            <input type="text" class="form-control" [value]="formatFechaRegistro(clienteModel?.fecha_registro)" readonly>
+          </div>
 
           <div class="modal-footer" *ngIf="!isViewMode">
             <button (click)="limpiar()" type="button" class="btn btn-secondary" data-bs-dismiss="modal">

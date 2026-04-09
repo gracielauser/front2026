@@ -87,6 +87,10 @@ export class ReportesComponent implements OnInit {
     categoria: '',
     busqueda: ''
   }
+  filtroFechaGastos: string = '';
+  fechaDesdeGastos: string = '';
+  fechaHastaGastos: string = '';
+  enFiltroPersonalizadoGastos: boolean = false;
 
   // Datos de estado de resultados (negocio)
   datosNegocioReporte: any = null
@@ -257,6 +261,65 @@ datosCompras(){
   })
 }
 
+onFiltroFechaGastosChange(event: any): void {
+  const valor = event.target.value;
+  if (valor === 'rango personalizado') {
+    this.enFiltroPersonalizadoGastos = true;
+    this.fechaDesdeGastos = '';
+    this.fechaHastaGastos = '';
+  } else {
+    this.enFiltroPersonalizadoGastos = false;
+    this.fechaDesdeGastos = '';
+    this.fechaHastaGastos = '';
+  }
+}
+
+ponerFechaGastos(e: any, tipo: number): void {
+  const fechaStr = e.target.value; // formato: YYYY-MM-DD
+  if (!fechaStr) return;
+
+  // Guardar la fecha tal como la elige el usuario para evitar cambios por conversión UTC
+  if (tipo === 1) {
+    this.fechaDesdeGastos = fechaStr;
+  } else if (tipo === 2) {
+    this.fechaHastaGastos = fechaStr;
+  }
+}
+
+get fechasFiltroGastos(): { desde: Date | null, hasta: Date | null } {
+  const hoy = new Date();
+  switch (this.filtroFechaGastos) {
+    case 'hoy':
+        const hoyComienzo = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+        const hoyFin = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+        return { desde: hoyComienzo, hasta: hoyFin };
+      case 'ayer':
+        const ayer = new Date(hoy);
+        ayer.setDate(hoy.getDate() - 1);
+        const ayerComienzo = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 0, 0, 0);
+        const ayerFin = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 23, 59, 59);
+        return { desde: ayerComienzo, hasta: ayerFin };
+      case 'esta semana':
+        const inicioSemana = new Date(hoy);
+        inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+        inicioSemana.setHours(0, 0, 0, 0);
+        return { desde: inicioSemana, hasta: hoy };
+      case 'este mes':
+        const inicioDeMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1, 0, 0, 0);
+        return { desde: inicioDeMes, hasta: hoy };
+      case 'mes anterior':
+        const mesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1, 0, 0, 0);
+        const finMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0, 23, 59, 59);
+        return { desde: mesAnterior, hasta: finMesAnterior };
+      case 'rango personalizado':
+        return {
+          desde: this.fechaDesdeGastos ? new Date(this.fechaDesdeGastos + 'T00:00:00') : null,
+          hasta: this.fechaHastaGastos ? new Date(this.fechaHastaGastos + 'T23:59:59') : null
+        };
+      default:
+        return { desde: null, hasta: null };
+  }
+}
 
 get productosFiltradosInventario(): any[] {
   if (!this.datosInventarioReporte || !this.datosInventarioReporte.productos) {
@@ -555,13 +618,13 @@ get ventasFiltradas(): any[] {
   if (!this.datosVentasReporte || !this.datosVentasReporte.ventas) {
     return [];
   }
-  
+
   return this.datosVentasReporte.ventas.filter((v: any) => {
-    const coincideBusqueda = !this.filtroVentas.busqueda || 
+    const coincideBusqueda = !this.filtroVentas.busqueda ||
       v.cliente.nombre_completo.toLowerCase().includes(this.filtroVentas.busqueda.toLowerCase()) ||
       v.nro_venta.toLowerCase().includes(this.filtroVentas.busqueda.toLowerCase()) ||
       v.cliente.ci_nit.toString().includes(this.filtroVentas.busqueda);
-    
+
     // Filtro por rango de fechas
     let coincideFecha = true;
     if (this.filtroVentas.desde && v.fecha_registro) {
@@ -574,23 +637,23 @@ get ventasFiltradas(): any[] {
       const fechaHasta = new Date(this.filtroVentas.hasta);
       coincideFecha = fechaVenta <= fechaHasta;
     }
-    
-    const coincideTipoVenta = this.filtroVentas.tipo_venta === '' || 
+
+    const coincideTipoVenta = this.filtroVentas.tipo_venta === '' ||
       v.tipo_venta === this.filtroVentas.tipo_venta;
-    
-    const coincideEstado = this.filtroVentas.estado === '' || 
+
+    const coincideEstado = this.filtroVentas.estado === '' ||
       v.estado === this.filtroVentas.estado;
-    
+
     const coincideTipoPago = this.filtroVentas.tipo_pago === '' ||
       v.tipo_pago === this.filtroVentas.tipo_pago;
-    
+
     return coincideBusqueda && coincideFecha && coincideTipoVenta && coincideEstado && coincideTipoPago;
   });
 }
 
 get totalesFiltradosVentas(): any {
   const ventas = this.ventasFiltradas;
-  
+
   if (ventas.length === 0) {
     return {
       total_ventas: 0,
@@ -603,7 +666,7 @@ get totalesFiltradosVentas(): any {
       cantidad_qr: 0
     };
   }
-  
+
   const ventas_validas = ventas.filter((v: any) => v.estado_valor === 1).length;
   const ventas_anuladas = ventas.filter((v: any) => v.estado_valor === 0).length;
   const monto_total_general = ventas.filter((v: any) => v.incluida_en_totales).reduce((sum: number, v: any) => sum + (v.total || 0), 0);
@@ -611,7 +674,7 @@ get totalesFiltradosVentas(): any {
   const total_qr = ventas.filter((v: any) => v.tipo_pago === 'QR' && v.incluida_en_totales).reduce((sum: number, v: any) => sum + (v.total || 0), 0);
   const cantidad_efectivo = ventas.filter((v: any) => v.tipo_pago === 'Efectivo' && v.incluida_en_totales).length;
   const cantidad_qr = ventas.filter((v: any) => v.tipo_pago === 'QR' && v.incluida_en_totales).length;
-  
+
   return {
     total_ventas: ventas.length,
     ventas_validas,
@@ -656,41 +719,52 @@ get todosGastosAplanados(): any[] {
 
 get gastosFiltrados(): any[] {
   const todosGastos = this.todosGastosAplanados;
-  
+
   if (todosGastos.length === 0) {
     return [];
   }
-  
+
   return todosGastos.filter((g: any) => {
-    const coincideBusqueda = !this.filtroGastos.busqueda || 
+    const coincideBusqueda = !this.filtroGastos.busqueda ||
       g.descripcion.toLowerCase().includes(this.filtroGastos.busqueda.toLowerCase()) ||
       g.usuario.nombre_completo.toLowerCase().includes(this.filtroGastos.busqueda.toLowerCase());
-    
+
+    // Extraer solo fecha (YYYY-MM-DD) de g.fecha que está en formato 'YYYY-MM-DD HH:MM:SS'
+    const fechaGastoStr = g.fecha ? g.fecha.split(' ')[0] : null;
+
     // Filtro por rango de fechas
     let coincideFecha = true;
-    if (this.filtroGastos.desde && g.fecha) {
-      const fechaGasto = new Date(g.fecha);
-      const fechaDesde = new Date(this.filtroGastos.desde);
-      coincideFecha = fechaGasto >= fechaDesde;
+    if (this.filtroFechaGastos) {
+      const fechasFiltro = this.fechasFiltroGastos;
+      if (fechasFiltro.desde && fechaGastoStr) {
+        const fechaDesdeStr = fechasFiltro.desde.toISOString().split('T')[0];
+        coincideFecha = fechaGastoStr >= fechaDesdeStr;
+      }
+      if (fechasFiltro.hasta && fechaGastoStr && coincideFecha) {
+        const fechaHastaStr = fechasFiltro.hasta.toISOString().split('T')[0];
+        coincideFecha = fechaGastoStr <= fechaHastaStr;
+      }
+    } else {
+      if (this.filtroGastos.desde && fechaGastoStr) {
+        coincideFecha = fechaGastoStr >= this.filtroGastos.desde;
+      }
+      if (this.filtroGastos.hasta && fechaGastoStr && coincideFecha) {
+        coincideFecha = fechaGastoStr <= this.filtroGastos.hasta;
+      }
     }
-    if (this.filtroGastos.hasta && g.fecha && coincideFecha) {
-      const fechaGasto = new Date(g.fecha);
-      const fechaHasta = new Date(this.filtroGastos.hasta);
-      coincideFecha = fechaGasto <= fechaHasta;
-    }
-    
+
     const coincideEstado = this.filtroGastos.estado === '' || g.estado === this.filtroGastos.estado;
-    
+
     const coincideCategoria = this.filtroGastos.categoria === '' ||
       g.categoria.toString() === this.filtroGastos.categoria;
-    
+
     return coincideBusqueda && coincideFecha && coincideEstado && coincideCategoria;
   });
 }
 
 get totalesFiltradosGastos(): any {
   const gastos = this.gastosFiltrados;
-  
+
   if (gastos.length === 0) {
     return {
       total_gastos: 0,
@@ -701,13 +775,13 @@ get totalesFiltradosGastos(): any {
       monto_total_anulados: 0
     };
   }
-  
+
   const gastos_validos = gastos.filter((g: any) => g.estado_valor === 1).length;
   const gastos_anulados = gastos.filter((g: any) => g.estado_valor === 0 || g.estado_valor === 2).length;
   const monto_total_general = gastos.reduce((sum: number, g: any) => sum + (g.monto || 0), 0);
   const monto_total_validos = gastos.filter((g: any) => g.incluido_en_totales).reduce((sum: number, g: any) => sum + (g.monto || 0), 0);
   const monto_total_anulados = gastos.filter((g: any) => !g.incluido_en_totales).reduce((sum: number, g: any) => sum + (g.monto || 0), 0);
-  
+
   return {
     total_gastos: gastos.length,
     gastos_validos,
@@ -739,6 +813,10 @@ limpiarFiltrosGastos() {
     categoria: '',
     busqueda: ''
   };
+  this.filtroFechaGastos = '';
+  this.fechaDesdeGastos = '';
+  this.fechaHastaGastos = '';
+  this.enFiltroPersonalizadoGastos = false;
 }
 
 // Métodos para estado de resultados (negocio)

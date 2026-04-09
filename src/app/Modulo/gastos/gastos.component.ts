@@ -6,10 +6,11 @@ import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { CommonModule } from '@angular/common';
 import { CategoriagPipe } from '../../Filtros/categoriag.pipe';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { FechasPipe } from '../../Filtros/fechas.pipe';
 @Component({
   selector: 'app-gastos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule,FormsModule,CategoriagPipe,NgxPaginationModule],
+  imports: [CommonModule, ReactiveFormsModule,FormsModule,CategoriagPipe,NgxPaginationModule,FechasPipe],
   templateUrl: './gastos.component.html',
   styleUrl: './gastos.component.css'
 })
@@ -19,6 +20,10 @@ export class GastosComponent {
   categoria=''
   page:number=1
    mensajeExito: string | null = null;
+  filtroFecha: string = '';
+  fechaDesde: string = '';
+  fechaHasta: string = '';
+  enFiltroPersonalizado: boolean = false;
   constructor(
     private gastoSer:GastoService
   ) { }
@@ -136,4 +141,28 @@ gastoSeleccionado: any = null;
     }
   }
 
+  onFiltroFechaChange(event: any): void {
+    const valor = event.target.value;
+    if (valor === 'rango personalizado') {
+      this.enFiltroPersonalizado = true;
+      this.fechaDesde = '';
+      this.fechaHasta = '';
+    } else {
+      this.enFiltroPersonalizado = false;
+      this.fechaDesde = '';
+      this.fechaHasta = '';
+    }
+  }
+
+  ponerFechaGasto(e: any, tipo: number): void {
+    const fechaStr = e.target.value; // formato: YYYY-MM-DD
+    if (!fechaStr) return;
+
+    // Guardar la fecha tal como la elige el usuario para evitar cambios por conversión UTC
+    if (tipo === 1) {
+      this.fechaDesde = fechaStr;
+    } else if (tipo === 2) {
+      this.fechaHasta = fechaStr;
+    }
+  }
 }
