@@ -30,6 +30,12 @@ export class KardexComponent {
   marca = ''
   page: number = 1
 
+  // Filtro de fechas
+  periodoFecha: string = ''
+  desde: string = ''
+  hasta: string = ''
+  mostrarRangoPersonalizado: boolean = false
+
   // Búsqueda de productos en modal
   buscarProducto: string = ''
   mostrarListaProductos: boolean = false
@@ -60,23 +66,16 @@ export class KardexComponent {
     this.listarCategorias()
   }
 reporteBeneficio(){
-  // this.ProSer.getPDF().subscribe((pdfBlob) => {
-    // const url = window.URL.createObjectURL(pdfBlob);
-    // const a = document.createElement('a');
-    // a.href = url;
-    // a.download = 'reporte_beneficio_producto.pdf';
-    // a.click();
-    // window.URL.revokeObjectURL(url);
-  // });
-  this.ProSer.beneficioPDF({}).subscribe((pdfBlob) => {
+  const body = this.construirFiltrosBody();
+  this.ProSer.beneficioPDF(body).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });
-      // Abre en una nueva pestaña
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     });
 }
   ListarProductos() {
-    this.ProSer.movimientos().subscribe(data => {
+    const body = this.construirFiltrosBody();
+    this.ProSer.movimientos(body).subscribe(data => {
       this.apiProductos = data
       console.log("productos", data);
     })
@@ -156,6 +155,79 @@ reporteBeneficio(){
       this.subCategoriasFiltro = categoriaSeleccionada?.subCategoria || [];
     } else {
       this.subCategoriasFiltro = [];
+    }
+  }
+
+  // Construir body con todos los filtros activos
+  construirFiltrosBody(): any {
+    const body: any = {};
+    if (this.nombreCodigo) body.nombre_codigo = this.nombreCodigo;
+    if (this.categoria)    body.id_categoria  = parseInt(this.categoria);
+    if (this.marca)        body.id_marca      = parseInt(this.marca);
+    if (this.desde)        body.desde         = this.desde;
+    if (this.hasta)        body.hasta         = this.hasta;
+    return body;
+  }
+
+  // Calcular desde/hasta según el período seleccionado
+  onPeriodoChange() {
+    const hoy = new Date();
+    const fmt = (d: Date) => d.toISOString().split('T')[0];
+
+    this.mostrarRangoPersonalizado = false;
+    this.desde = '';
+    this.hasta = '';
+
+    switch (this.periodoFecha) {
+      case 'hoy':
+        this.desde = fmt(hoy);
+        this.hasta = fmt(hoy);
+        break;
+      case 'ayer': {
+        const ayer = new Date(hoy);
+        ayer.setDate(hoy.getDate() - 1);
+        this.desde = fmt(ayer);
+        this.hasta = fmt(ayer);
+        break;
+      }
+      case 'esta_semana': {
+        const inicio = new Date(hoy);
+        inicio.setDate(hoy.getDate() - hoy.getDay() + (hoy.getDay() === 0 ? -6 : 1));
+        this.desde = fmt(inicio);
+        this.hasta = fmt(hoy);
+        break;
+      }
+      case 'semana_pasada': {
+        const finSP = new Date(hoy);
+        finSP.setDate(hoy.getDate() - hoy.getDay() - (hoy.getDay() === 0 ? 1 : hoy.getDay()));
+        const inicioSP = new Date(finSP);
+        inicioSP.setDate(finSP.getDate() - 6);
+        this.desde = fmt(inicioSP);
+        this.hasta = fmt(finSP);
+        break;
+      }
+      case 'este_mes': {
+        const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+        this.desde = fmt(inicioMes);
+        this.hasta = fmt(hoy);
+        break;
+      }
+      case 'mes_anterior': {
+        const inicioMA = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+        const finMA    = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+        this.desde = fmt(inicioMA);
+        this.hasta = fmt(finMA);
+        break;
+      }
+      case 'personalizado':
+        this.mostrarRangoPersonalizado = true;
+        break;
+      default:
+        break;
+    }
+
+    if (this.periodoFecha !== 'personalizado') {
+      this.ListarProductos();
     }
   }
   usuario: any = JSON.parse(localStorage.getItem('usuario'))

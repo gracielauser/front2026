@@ -69,6 +69,42 @@
             <option *ngFor="let m of marcasDisponibles" [value]="m.id_marca">{{m.nombre}}</option>
           </select>
         </div>
+
+        <!-- Filtro período -->
+        <div class="filter-item">
+          <label class="filter-label">
+            <i class="bi bi-calendar-range"></i>
+            Período
+          </label>
+          <select class="form-select filter-select" [(ngModel)]="periodoFecha" (change)="onPeriodoChange()">
+            <option value="">Todo el tiempo</option>
+            <option value="hoy">Hoy</option>
+            <option value="ayer">Ayer</option>
+            <option value="esta_semana">Esta semana</option>
+            <option value="semana_pasada">Semana pasada</option>
+            <option value="este_mes">Este mes</option>
+            <option value="mes_anterior">Mes anterior</option>
+            <option value="personalizado">Rango personalizado</option>
+          </select>
+        </div>
+
+        <!-- Rango personalizado (solo visible si periodoFecha === 'personalizado') -->
+        <div class="filter-item" *ngIf="mostrarRangoPersonalizado">
+          <label class="filter-label">
+            <i class="bi bi-calendar-event"></i>
+            Desde
+          </label>
+          <input type="date" class="form-control filter-input" [(ngModel)]="desde" (change)="ListarProductos()">
+        </div>
+
+        <div class="filter-item" *ngIf="mostrarRangoPersonalizado">
+          <label class="filter-label">
+            <i class="bi bi-calendar-event-fill"></i>
+            Hasta
+          </label>
+          <input type="date" class="form-control filter-input" [(ngModel)]="hasta" (change)="ListarProductos()">
+        </div>
+
       </div>
     </div>
 
@@ -100,7 +136,7 @@
                 <span class="producto-name">{{mov.producto?.nombre}}</span>
               </td>
               <td>
-                <span class="marca-badge">{{mov.producto?.marca?.nombre}}</span>
+                <span class="">{{mov.producto?.marca?.nombre}}</span>
               </td>
               <td>
                 <span class="entrada-badge">{{mov.entradas}}</span>

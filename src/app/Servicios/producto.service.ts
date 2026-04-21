@@ -20,8 +20,8 @@ private baseUrl=environment.apiUrl+'/api/producto'
    verKardexDetallado(id:number):Observable<any>{
     return this.xhttp.get<any>(this.baseUrl+'/kardex/'+id);
    }
-   movimientos():Observable<any[]>{
-    return this.xhttp.get<any[]>(this.baseUrl+'/movimientos');
+   movimientos(body={}):Observable<any[]>{
+    return this.xhttp.post<any[]>(this.baseUrl+'/movimientos', body);
    }
    //datos de la API
    saveProductos(pro:FormData):Observable<any>{//adicionar

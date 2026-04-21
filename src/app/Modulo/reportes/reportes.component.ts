@@ -19,13 +19,15 @@ import { ClienteService } from '../../Servicios/cliente.service';
 import { GastoService } from '../../Servicios/gasto.service';
 import { RecepcionCompra } from '../../Modelos/recepcion-compra';
 import { ReportesVentaService } from '../../Servicios/reportes-venta.service';
+import { NgxEchartsModule } from 'ngx-echarts';
+import type { EChartsOption } from 'echarts';
 
 //(pdfMake as any).vfs = (pdfFonts as any).pdfMake.vfs;
 
 @Component({
   selector: 'app-reportes',
   standalone:true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, NgxEchartsModule],
   templateUrl: './reportes.component.html',
   styleUrls: ['./reportes.component.css'],
 })
@@ -107,6 +109,22 @@ export class ReportesComponent implements OnInit {
     hasta: ''
   }
 
+  // Datos de tendencia de productos
+  datosTendenciaReporte: any[] = []
+  filtroTendencia = {
+    nombre_codigo: '',
+    categoria: '',
+    marca: '',
+    desde: '',
+    hasta: '',
+    tipo_venta: ''
+  }
+  periodoTendencia: string = ''
+  mostrarRangoPersonalizadoTendencia: boolean = false
+  chartOptionTendencia!: EChartsOption
+  categoriasParaTendencia: any[] = []
+  marcasParaTendencia: any[] = []
+
   compras: any[] = [];
   constructor(
     private VenSer: VentaService,
@@ -123,103 +141,7 @@ export class ReportesComponent implements OnInit {
   //para los filtros
 
   ngOnInit(): void {
-
-   this.compras = [
-      {
-        id_compra: 1,
-        nro_compra: 'C-0001',
-        monto_total: 1520.50,
-        estado: 1,
-        fecha_registro: '2025-10-10',
-        proveedor: {
-          id_proveedor: 3,
-          nombre: 'Autorepuestos Tarija',
-          ciudad: 'Tarija',
-          direccion: 'Av. La Paz N°123',
-          celular: 72956432,
-          email: 'ventas@autorepuestos.com'
-        },
-        usuario: {
-          id_usuario: 1,
-          nombre: 'Juan Pérez'
-        },
-        detalles: [
-          {
-            id_detcompra: 1,
-            producto: {
-              id_producto: 10,
-              nombre: 'Filtro de aceite Toyota',
-              codigo: 'FA-001',
-              precio_compra: 50,
-              precio_venta: 75
-            },
-            cantidad: 10,
-            precio_unitario: 50,
-            sub_total: 500
-          },
-          {
-            id_detcompra: 2,
-            producto: {
-              id_producto: 11,
-              nombre: 'Bujía NGK',
-              codigo: 'BJ-005',
-              precio_compra: 25,
-              precio_venta: 40
-            },
-            cantidad: 8,
-            precio_unitario: 25,
-            sub_total: 200
-          }
-        ]
-      },
-      {
-        id_compra: 2,
-        nro_compra: 'C-0002',
-        monto_total: 800,
-        estado: 1,
-        fecha_registro: '2025-10-12',
-        proveedor: {
-          id_proveedor: 4,
-          nombre: 'Repuestos La Torre',
-          ciudad: 'Tarija',
-          direccion: 'C. Cochabamba 456',
-          celular: 76123456,
-          email: 'contacto@latorre.com'
-        },
-        usuario: {
-          id_usuario: 2,
-          nombre: 'María López'
-        },
-        detalles: [
-          {
-            id_detcompra: 3,
-            producto: {
-              id_producto: 15,
-              nombre: 'Pastillas de freno Bosch',
-              codigo: 'PF-007',
-              precio_compra: 100,
-              precio_venta: 140
-            },
-            cantidad: 4,
-            precio_unitario: 100,
-            sub_total: 400
-          },
-          {
-            id_detcompra: 4,
-            producto: {
-              id_producto: 16,
-              nombre: 'Aceite Castrol 20W50',
-              codigo: 'AC-010',
-              precio_compra: 100,
-              precio_venta: 130
-            },
-            cantidad: 4,
-            precio_unitario: 100,
-            sub_total: 400
-          }
-        ]
-      }
-    ];
+    this.datosTendencia();
   }
   reporteDatosNegocio(){
     this.RepSer.getResultados().subscribe((pdfBlob) => {
@@ -1248,5 +1170,170 @@ this.ComSer.getPDF({},resumido).subscribe((pdfBlob) => {
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     });
+}
+
+// ========================
+// TENDENCIA DE PRODUCTOS
+// ========================
+
+construirBodyTendencia(): any {
+  const body: any = {};
+  if (this.filtroTendencia.nombre_codigo) body['nombre_codigo'] = this.filtroTendencia.nombre_codigo;
+  if (this.filtroTendencia.categoria) body['id_categoria'] = this.filtroTendencia.categoria;
+  if (this.filtroTendencia.marca) body['id_marca'] = this.filtroTendencia.marca;
+  if (this.filtroTendencia.desde) body['desde'] = this.filtroTendencia.desde;
+  if (this.filtroTendencia.hasta) body['hasta'] = this.filtroTendencia.hasta;
+  if (this.filtroTendencia.tipo_venta) body['tipo_venta'] = this.filtroTendencia.tipo_venta;
+  return body;
+}
+
+onPeriodoTendenciaChange(): void {
+  const hoy = new Date();
+  this.mostrarRangoPersonalizadoTendencia = false;
+  this.filtroTendencia.desde = '';
+  this.filtroTendencia.hasta = '';
+
+  switch (this.periodoTendencia) {
+    case 'hoy': {
+      const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+      this.filtroTendencia.desde = d.toISOString().split('T')[0];
+      this.filtroTendencia.hasta = d.toISOString().split('T')[0];
+      break;
+    }
+    case 'ayer': {
+      const ayer = new Date(hoy);
+      ayer.setDate(hoy.getDate() - 1);
+      this.filtroTendencia.desde = ayer.toISOString().split('T')[0];
+      this.filtroTendencia.hasta = ayer.toISOString().split('T')[0];
+      break;
+    }
+    case 'esta_semana': {
+      const inicio = new Date(hoy);
+      inicio.setDate(hoy.getDate() - hoy.getDay());
+      this.filtroTendencia.desde = inicio.toISOString().split('T')[0];
+      this.filtroTendencia.hasta = hoy.toISOString().split('T')[0];
+      break;
+    }
+    case 'semana_pasada': {
+      const inicioSP = new Date(hoy);
+      inicioSP.setDate(hoy.getDate() - hoy.getDay() - 7);
+      const finSP = new Date(inicioSP);
+      finSP.setDate(inicioSP.getDate() + 6);
+      this.filtroTendencia.desde = inicioSP.toISOString().split('T')[0];
+      this.filtroTendencia.hasta = finSP.toISOString().split('T')[0];
+      break;
+    }
+    case 'este_mes': {
+      const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+      this.filtroTendencia.desde = inicioMes.toISOString().split('T')[0];
+      this.filtroTendencia.hasta = hoy.toISOString().split('T')[0];
+      break;
+    }
+    case 'mes_anterior': {
+      const inicioMA = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+      const finMA = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+      this.filtroTendencia.desde = inicioMA.toISOString().split('T')[0];
+      this.filtroTendencia.hasta = finMA.toISOString().split('T')[0];
+      break;
+    }
+    case 'personalizado': {
+      this.mostrarRangoPersonalizadoTendencia = true;
+      return;
+    }
+    default: {
+      break;
+    }
+  }
+  this.datosTendencia();
+}
+
+datosTendencia(): void {
+  const body = this.construirBodyTendencia();
+  this.RepSer.tendenciaVentas(body).subscribe((data: any[]) => {
+    this.datosTendenciaReporte = data || [];
+    this.actualizarCategoriasYMarcasTendencia();
+    this.actualizarChartTendencia();
+  });
+}
+
+actualizarCategoriasYMarcasTendencia(): void {
+  const catMap = new Map();
+  const marcaMap = new Map();
+  this.datosTendenciaReporte.forEach((item: any) => {
+    const prod = item.producto;
+    if (prod?.categorium && !catMap.has(prod.categorium.id_categoria)) {
+      catMap.set(prod.categorium.id_categoria, prod.categorium);
+    }
+    if (prod?.marca && !marcaMap.has(prod.marca.id_marca)) {
+      marcaMap.set(prod.marca.id_marca, prod.marca);
+    }
+  });
+  this.categoriasParaTendencia = Array.from(catMap.values());
+  this.marcasParaTendencia = Array.from(marcaMap.values());
+}
+
+actualizarChartTendencia(): void {
+  const top5 = [...this.datosTendenciaReporte]
+    .sort((a, b) => +b.total_vendido - +a.total_vendido)
+    .slice(0, 5);
+
+  if (top5.length === 0) {
+    this.chartOptionTendencia = {} as EChartsOption;
+    return;
+  }
+
+  const nombres = top5.map(item => item.producto?.nombre ?? 'Producto');
+  const valores = top5.map(item => +item.total_vendido);
+  const ingresos = top5.map(item => +(item.total_ingresos ?? 0));
+
+  this.chartOptionTendencia = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: (params: any) => {
+        const p0 = params[0];
+        const p1 = params[1];
+        return `<b>${p0.name}</b><br/>
+          ${p0.marker} Unidades vendidas: <b>${p0.value}</b><br/>
+          ${p1.marker} Ingresos: <b>Bs. ${p1.value.toFixed(2)}</b>`;
+      }
+    },
+    legend: { data: ['Unidades vendidas', 'Ingresos (Bs.)'] },
+    grid: { left: '3%', right: '5%', bottom: '3%', containLabel: true },
+    xAxis: { type: 'value' },
+    yAxis: {
+      type: 'category',
+      data: nombres,
+      axisLabel: {
+        width: 120,
+        overflow: 'truncate'
+      }
+    },
+    series: [
+      {
+        name: 'Unidades vendidas',
+        type: 'bar',
+        data: valores,
+        itemStyle: { color: '#667eea' },
+        label: { show: true, position: 'right' }
+      },
+      {
+        name: 'Ingresos (Bs.)',
+        type: 'bar',
+        data: ingresos,
+        itemStyle: { color: '#43e97b' },
+        label: { show: true, position: 'right', formatter: (p: any) => `Bs. ${(+p.value).toFixed(0)}` }
+      }
+    ]
+  } as EChartsOption;
+}
+
+reporteTendenciaPDF(): void {
+  const body = this.construirBodyTendencia();
+  this.RepSer.tendenciaPDF(body).subscribe((pdfBlob: Blob) => {
+    const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  });
 }
 }

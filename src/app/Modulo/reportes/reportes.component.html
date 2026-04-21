@@ -67,6 +67,15 @@
             <i class="bi bi-arrow-right-circle fs-2"></i>
           </button>
         </div>
+        <div class="col-md-6 col-lg-4">
+          <button class="btn btn-custom btn-ventas w-100 shadow" (click)="datosTendencia()" data-bs-toggle="modal" data-bs-target="#tendencia">
+            <span>
+              <i class="bi bi-bar-chart-fill d-block mb-2" style="font-size: 2rem;"></i>
+              <strong>Tendencia de Productos</strong>
+            </span>
+            <i class="bi bi-arrow-right-circle fs-2"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -1101,6 +1110,15 @@
         <div class="container">
           <div class="container mt-4">
 
+            <!-- 🧩 Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2 class="fw-bold"><i class="bi bi-cart-check me-2"></i>Reporte de Compras</h2>
+              <div>
+                <button class="btn btn-danger me-2" (click)="generarReporteCompras(true)"><i class="bi bi-filetype-pdf"></i> Reporte PDF Resumido</button>
+                <button class="btn btn-danger" (click)="generarReporteCompras(false)"><i class="bi bi-filetype-pdf"></i> Reporte PDF Detallado</button>
+              </div>
+            </div>
+
             <!-- Filtros -->
             <div class="card shadow-sm mb-4">
               <div class="card-body">
@@ -1271,8 +1289,8 @@
                         <td class="text-center">
                           <span class="badge"
                             [ngClass]="{
-                              'bg-success': compra.estado === 'Activa',
-                              'bg-danger': compra.estado === 'Cancelada',
+                              'bg-success': compra.estado == 'Activa',
+                              'bg-danger': compra.estado == 'Cancelada',
                               'bg-secondary': compra.estado === 'Finalizada'
                             }">
                             {{compra.estado}}
@@ -1598,6 +1616,160 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-success" data-bs-dismiss="modal">Aceptar</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TENDENCIA DE PRODUCTOS -->
+<div class="modal fade" id="tendencia" tabindex="-1" aria-labelledby="tendenciaModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="tendenciaModalLabel">
+          <i class="bi bi-bar-chart-fill me-2"></i>Tendencia de Productos
+        </h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid py-3">
+
+          <!-- Filtros -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold"><i class="bi bi-funnel me-2"></i>Filtros</div>
+            <div class="card-body">
+              <div class="row g-3">
+
+                <!-- Período -->
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">Período</label>
+                  <select class="form-select" [(ngModel)]="periodoTendencia" (change)="onPeriodoTendenciaChange()">
+                    <option value="">Todos los períodos</option>
+                    <option value="hoy">Hoy</option>
+                    <option value="ayer">Ayer</option>
+                    <option value="esta_semana">Esta semana</option>
+                    <option value="semana_pasada">Semana pasada</option>
+                    <option value="este_mes">Este mes</option>
+                    <option value="mes_anterior">Mes anterior</option>
+                    <option value="personalizado">Rango personalizado</option>
+                  </select>
+                </div>
+
+                <!-- Desde / Hasta (solo para rango personalizado) -->
+                <ng-container *ngIf="mostrarRangoPersonalizadoTendencia">
+                  <div class="col-md-2">
+                    <label class="form-label fw-semibold">Desde</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroTendencia.desde"
+                      (change)="datosTendencia()" />
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label fw-semibold">Hasta</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroTendencia.hasta"
+                      (change)="datosTendencia()" />
+                  </div>
+                </ng-container>
+
+                <!-- Búsqueda nombre/código -->
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold">Nombre / Código</label>
+                  <input type="text" class="form-control" placeholder="Buscar producto..."
+                    [(ngModel)]="filtroTendencia.nombre_codigo" (input)="datosTendencia()" />
+                </div>
+
+                <!-- Categoría -->
+                <div class="col-md-2">
+                  <label class="form-label fw-semibold">Categoría</label>
+                  <select class="form-select" [(ngModel)]="filtroTendencia.categoria" (change)="datosTendencia()">
+                    <option value="">Todas</option>
+                    <option *ngFor="let cat of categoriasParaTendencia" [value]="cat.id_categoria">
+                      {{ cat.nombre }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Marca -->
+                <div class="col-md-2">
+                  <label class="form-label fw-semibold">Marca</label>
+                  <select class="form-select" [(ngModel)]="filtroTendencia.marca" (change)="datosTendencia()">
+                    <option value="">Todas</option>
+                    <option *ngFor="let m of marcasParaTendencia" [value]="m.id_marca">
+                      {{ m.nombre }}
+                    </option>
+                  </select>
+                </div>
+
+                <!-- Impuesto -->
+                <div class="col-md-2">
+                  <label class="form-label fw-semibold">Impuesto</label>
+                  <select class="form-select" [(ngModel)]="filtroTendencia.tipo_venta" (change)="datosTendencia()">
+                    <option value="">Todos</option>
+                    <option value="1">Ninguno</option>
+                    <option value="2">Con IVA</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Gráfica de barras -->
+          <div class="card shadow-sm mb-4">
+            <div class="card-header fw-bold"><i class="bi bi-bar-chart-line me-2"></i>Top 5 productos más vendidos</div>
+            <div class="card-body">
+              <div *ngIf="datosTendenciaReporte.length > 0 && chartOptionTendencia"
+                   echarts
+                   [options]="chartOptionTendencia"
+                   style="height: 350px; width: 100%;">
+              </div>
+              <div *ngIf="datosTendenciaReporte.length === 0" class="text-center py-5 text-muted">
+                <i class="bi bi-bar-chart fs-1 d-block mb-2"></i>
+                No hay datos para mostrar con los filtros seleccionados.
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabla detalle top 5 -->
+          <div class="card shadow-sm" *ngIf="datosTendenciaReporte.length > 0">
+            <div class="card-header fw-bold"><i class="bi bi-table me-2"></i>Detalle</div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                  <thead class="table-dark">
+                    <tr>
+                      <th>#</th>
+                      <th>Código</th>
+                      <th>Producto</th>
+                      <th>Categoría</th>
+                      <th>Marca</th>
+                      <th class="text-center">Unid. vendidas</th>
+                      <th class="text-end">Total ingresos</th>
+                      <th class="text-end">Ganancia neta</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of datosTendenciaReporte | slice:0:5; let i = index">
+                      <td>{{ i + 1 }}</td>
+                      <td><span class="badge bg-secondary">{{ item.producto?.codigo }}</span></td>
+                      <td>{{ item.producto?.nombre }}</td>
+                      <td>{{ item.producto?.categorium?.nombre }}</td>
+                      <td>{{ item.producto?.marca?.nombre }}</td>
+                      <td class="text-center fw-bold text-primary">{{ item.total_vendido }}</td>
+                      <td class="text-end">Bs. {{ (+item.total_ingresos).toFixed(2) }}</td>
+                      <td class="text-end text-success">Bs. {{ (+item.ganancia_neta).toFixed(2) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" (click)="reporteTendenciaPDF()">
+          <i class="bi bi-filetype-pdf me-1"></i>Generar reporte
+        </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>

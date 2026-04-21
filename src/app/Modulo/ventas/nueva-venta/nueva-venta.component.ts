@@ -41,7 +41,13 @@ export class NuevaVentaComponent implements OnInit {
   clienteSeleccionado: any = null;
   busquedaCliente: string = '';
   mostrarDropdownCliente: boolean = false;
+  mostrarBuscadorCliente: boolean = false;
   clientesFiltradosList: any[] = [];
+
+  // Buscador rápido de productos (barra superior)
+  busquedaProductoRapida: string = '';
+  mostrarDropdownProductoRapido: boolean = false;
+  productosRapidosList: any[] = [];
 
   // Paginación de productos
   paginaActual: number = 1;
@@ -134,11 +140,14 @@ export class NuevaVentaComponent implements OnInit {
   // ===== MÉTODOS DE PERSISTENCIA EN SESSIONSTORAGE =====
 
   /**
-   * Guarda los IDs de los productos en el carrito en sessionStorage
+   * Guarda los productos del carrito (ID + cantidad) en sessionStorage
    */
   private guardarCarritoEnStorage(): void {
-    const idsProductos = this.productosVender.map(p => p.id_producto);
-    sessionStorage.setItem(this.CARRITO_STORAGE_KEY, JSON.stringify(idsProductos));
+    const carrito = this.productosVender.map((p, i) => ({
+      id: p.id_producto,
+      qty: this.productosVentaCantidades[i] || 1
+    }));
+    sessionStorage.setItem(this.CARRITO_STORAGE_KEY, JSON.stringify(carrito));
   }
 
   /**
@@ -153,20 +162,23 @@ export class NuevaVentaComponent implements OnInit {
     }
 
     try {
-      const idsProductos: number[] = JSON.parse(idsGuardados);
+      const datosCarrito: any[] = JSON.parse(idsGuardados);
       const productosSinStock: string[] = [];
 
-      idsProductos.forEach(idProducto => {
+      datosCarrito.forEach(item => {
+        // Compatibilidad: formato antiguo (número) o nuevo ({id, qty})
+        const idProducto: number = typeof item === 'number' ? item : item.id;
+        const qty: number = typeof item === 'number' ? 1 : (item.qty || 1);
+
         const producto = this.apiProductos.find(p => p.id_producto === idProducto);
 
         if (producto) {
           if (producto.stock > 0) {
-            // Agregar producto al carrito sin validación de stock (ya validado)
             if (!this.productosVender.includes(producto)) {
               this.productosVender.push(producto);
-              this.agregarCantidad(1);
+              this.productosVentaCantidades.push(qty);
               this.productosVentaPrecios.push(producto.precio_venta);
-              this.productosVentaSubtotales.push(producto.precio_venta * 1);
+              this.productosVentaSubtotales.push(producto.precio_venta * qty);
             }
           } else {
             productosSinStock.push(producto.nombre);
@@ -412,6 +424,7 @@ export class NuevaVentaComponent implements OnInit {
     this.tipo = 1;
     this.paginaActual = 1;
     this.mostrarDropdownCliente = false;
+    this.mostrarBuscadorCliente = false;
     this.clientesFiltradosList = [];
     this.apiSubcategorias = [];
 
@@ -449,6 +462,28 @@ export class NuevaVentaComponent implements OnInit {
   agregarCantidad(cantidad: number) {
     this.productosVentaCantidades.push(cantidad);
     this.calcularTotal();
+  }
+
+  incrementarCantidad(i: number) {
+    this.productosVentaCantidades[i] += 1;
+    const precioOriginal = this.productosVender[i].precio_venta;
+    this.productosVentaSubtotales[i] = precioOriginal * this.productosVentaCantidades[i];
+    this.calcularTotal();
+    this.guardarCarritoEnStorage();
+  }
+
+  decrementarCantidad(i: number) {
+    if (this.productosVentaCantidades[i] <= 1) return;
+    this.productosVentaCantidades[i] -= 1;
+    const precioOriginal = this.productosVender[i].precio_venta;
+    this.productosVentaSubtotales[i] = precioOriginal * this.productosVentaCantidades[i];
+    this.calcularTotal();
+    this.guardarCarritoEnStorage();
+  }
+
+  getCantidadEnCarrito(pro: any): number {
+    const idx = this.productosVender.indexOf(pro);
+    return idx >= 0 ? this.productosVentaCantidades[idx] : 0;
   }
 
   nuevaCantidad(i: number, event: any) {
@@ -609,14 +644,15 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   get clientesFiltrados() {
-    if (!this.busquedaCliente) return this.apiClientes;
+    const activos = this.apiClientes.filter((c: any) => c.estado == 1);
+    if (!this.busquedaCliente) return activos.slice(0, 4);
     const termino = this.busquedaCliente.toLowerCase();
-    return this.apiClientes.filter(c =>
+    return activos.filter(c =>
       c.nombre?.toLowerCase().includes(termino) ||
       c.ap_paterno?.toLowerCase().includes(termino) ||
       c.ap_materno?.toLowerCase().includes(termino) ||
       c.ci_nit?.toString().includes(termino)
-    );
+    ).slice(0, 4);
   }
 
   filtrarClientes() {
@@ -624,16 +660,64 @@ export class NuevaVentaComponent implements OnInit {
     this.clientesFiltradosList = this.clientesFiltrados;
   }
 
+  abrirBuscadorCliente() {
+    this.busquedaCliente = '';
+    this.mostrarBuscadorCliente = true;
+    this.clientesFiltradosList = this.apiClientes.filter((c: any) => c.estado == 1).slice(0, 4);
+    this.mostrarDropdownCliente = true;
+    setTimeout(() => {
+      const el = document.getElementById('inputBuscadorCliente');
+      if (el) (el as HTMLInputElement).focus();
+    }, 100);
+  }
+
+  // ===== BUSCADOR RÁPIDO DE PRODUCTOS =====
+
+  filtrarProductosRapido() {
+    const termino = this.busquedaProductoRapida.toLowerCase().trim();
+    if (!termino) {
+      this.productosRapidosList = this.apiProductos.slice(0, 7);
+    } else {
+      this.productosRapidosList = this.apiProductos.filter(p =>
+        p.nombre?.toLowerCase().includes(termino) ||
+        p.codigo?.toLowerCase().includes(termino) ||
+        p.marca?.nombre?.toLowerCase().includes(termino)
+      ).slice(0, 7);
+    }
+    this.mostrarDropdownProductoRapido = true;
+  }
+
+  seleccionarProductoRapido(pro: any) {
+    if (pro.stock <= 0) return;
+    this.agregarProducto(pro);
+    this.busquedaProductoRapida = '';
+    this.mostrarDropdownProductoRapido = false;
+    this.productosRapidosList = [];
+  }
+
+  ocultarDropdownProductoRapido() {
+    setTimeout(() => {
+      this.mostrarDropdownProductoRapido = false;
+    }, 200);
+  }
+
+  cerrarBuscadorCliente() {
+    this.mostrarBuscadorCliente = false;
+    this.busquedaCliente = '';
+    this.mostrarDropdownCliente = false;
+  }
+
   seleccionarCliente(cliente: any) {
     this.clienteSeleccionado = cliente;
-    this.busquedaCliente = `${cliente.nombre || ''} ${cliente.ap_paterno || ''} ${cliente.ap_materno || ''}`.trim();
+    this.busquedaCliente = '';
+    this.mostrarBuscadorCliente = false;
+    this.mostrarDropdownCliente = false;
     this.ventaForm.patchValue({
       id_cliente: cliente.id_cliente,
       ci_nit: cliente.ci_nit,
       nombre_cliente: `${cliente.nombre || ''} ${cliente.ap_paterno || ''}`.trim(),
       documento: cliente.tipo_documento
     });
-    this.mostrarDropdownCliente = false;
   }
 
   ocultarDropdownCliente() {
@@ -643,14 +727,22 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   limpiarCliente() {
-    this.clienteSeleccionado = null;
-    this.busquedaCliente = '';
-    this.ventaForm.patchValue({
-      id_cliente: '',
-      ci_nit: '',
-      nombre_cliente: '',
-      documento: ''
-    });
+    // Restaurar cliente por defecto (general, id_cliente=8) en lugar de dejar en null
+    const clienteDefault = this.apiClientes.find((c: any) => c.id_cliente === 8);
+    if (clienteDefault) {
+      this.seleccionarCliente(clienteDefault);
+    } else {
+      this.clienteSeleccionado = null;
+      this.busquedaCliente = '';
+      this.mostrarBuscadorCliente = false;
+      this.mostrarDropdownCliente = false;
+      this.ventaForm.patchValue({
+        id_cliente: '',
+        ci_nit: '',
+        nombre_cliente: '',
+        documento: ''
+      });
+    }
   }
 
   formatearCliente(cliente: any): string {

@@ -33,4 +33,13 @@ export class ReportesVentaService {
     responseType: 'blob' // 👈 clave para manejar PDF
   });
    }
+   tendenciaVentas(body={}): Observable<any> {
+    return this.xhttp.post<any>(`${environment.apiUrl}/api/reporte-tendencia/datos-tendencia`,body, {
+    });
+  }
+   tendenciaPDF(body={}): Observable<Blob> {
+    return this.xhttp.post(`${environment.apiUrl}/api/reporte-tendencia/tendenciaPDF`,body, {
+      responseType: 'blob' // 👈 clave para manejar PDF
+    });
+  }
 }

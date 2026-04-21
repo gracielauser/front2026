@@ -23,171 +23,183 @@
   <!-- Body Ultra Moderno -->
   <div class="modal-body-ultra modal-body-scrollable">
     <form [formGroup]="ventaForm">
-      <div class="ultra-grid-layout">
-        <!-- Panel Izquierdo: Productos -->
-        <div class="productos-panel-ultra">
-          <div class="panel-body-ultra">
-            <!-- Búsqueda y Filtros -->
-            <div class="search-ultra-section">
-              <div class="search-ultra-grid grid-3">
-                <div class="search-ultra-field">
-                  <label class="ultra-label">
-                    <i class="bi bi-search"></i>
-                    <span>Buscar Producto</span>
-                  </label>
-                  <div class="ultra-input-wrapper">
-                    <input
-                      type="text"
-                      class="ultra-input"
-                      [(ngModel)]="busqueda"
-                      [ngModelOptions]="{standalone: true}"
-                      (input)="paginaActual = 1"
-                      placeholder="Buscar por nombre, código o marca..."
-                    />
-                    <i class="bi bi-arrow-clockwise ultra-input-icon" (click)="refrescarProductos()" style="cursor: pointer;"></i>
-                  </div>
-                </div>
 
-                <div class="search-ultra-field">
-                  <label class="ultra-label">
-                    <i class="bi bi-tag-fill"></i>
-                    <span>Categoría</span>
-                  </label>
-                  <select class="ultra-select" [(ngModel)]="categoriaSeleccionada" [ngModelOptions]="{standalone: true}" (change)="onCategoriaChange($event)">
-                    <option value="">Todas las categorías</option>
-                    <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">{{ cat.nombre }}</option>
-                  </select>
-                </div>
+      <!-- Barra superior: botón elegir productos + buscador rápido -->
+      <div class="elegir-productos-bar">
+        <button
+          type="button"
+          class="btn-elegir-productos"
+          data-bs-toggle="modal"
+          data-bs-target="#modalElegirProductos"
+        >
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+          <span>Elegir Productos</span>
+          <span class="badge-carrito-btn" *ngIf="productosVender.length > 0">{{ productosVender.length }}</span>
+        </button>
 
-                <div class="search-ultra-field">
-                  <label class="ultra-label">
-                    <i class="bi bi-tags-fill"></i>
-                    <span>Subcategoría</span>
-                  </label>
-                  <select class="ultra-select" [(ngModel)]="subcategoriaSeleccionada" [ngModelOptions]="{standalone: true}" (change)="paginaActual = 1" [disabled]="!categoriaSeleccionada || apiSubcategorias.length === 0">
-                    <option value="">Todas las subcategorías</option>
-                    <option *ngFor="let subcat of apiSubcategorias" [value]="subcat.id_categoria">{{ subcat.nombre }}</option>
-                  </select>
-                </div>
+        <!-- Buscador rápido de productos -->
+        <div class="buscador-rapido-wrapper">
+          <div class="buscador-rapido-input-wrap">
+            <i class="bi bi-search buscador-rapido-icon"></i>
+            <input
+              type="text"
+              class="buscador-rapido-input"
+              [(ngModel)]="busquedaProductoRapida"
+              [ngModelOptions]="{standalone: true}"
+              (input)="filtrarProductosRapido()"
+              (focus)="filtrarProductosRapido()"
+              (blur)="ocultarDropdownProductoRapido()"
+              placeholder="Buscar producto por nombre o código..."
+              autocomplete="off"
+            />
+            <button
+              *ngIf="busquedaProductoRapida"
+              type="button"
+              class="buscador-rapido-clear"
+              (click)="busquedaProductoRapida=''; mostrarDropdownProductoRapido=false"
+            >
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+
+          <!-- Dropdown de resultados rápidos -->
+          <div class="buscador-rapido-dropdown" *ngIf="mostrarDropdownProductoRapido && productosRapidosList.length > 0">
+            <div
+              *ngFor="let pro of productosRapidosList"
+              class="buscador-rapido-item"
+              [class.sin-stock]="pro.stock <= 0"
+              (mousedown)="seleccionarProductoRapido(pro)"
+            >
+              <div class="brp-codigo">
+                <code>{{ pro.codigo }}</code>
               </div>
+              <div class="brp-nombre">
+                <span>{{ pro.nombre }}</span>
+                <small class="brp-marca">{{ pro.marca?.nombre }}</small>
+              </div>
+              <div class="brp-stock" [class.stock-cero]="pro.stock <= 0">
+                <i class="bi bi-boxes"></i>
+                <span>{{ pro.stock }}</span>
+              </div>
+              <div class="brp-precio">
+                <span class="brp-moneda">Bs</span>
+                <span>{{ pro.precio_venta | number:'1.2-2' }}</span>
+              </div>
+              <div class="brp-sin-stock-badge" *ngIf="pro.stock <= 0">Sin stock</div>
             </div>
+          </div>
 
-            <!-- Tabla de Productos Ultra Moderna -->
-            <div class="productos-ultra-table-container">
-              <table class="productos-ultra-table">
+          <div class="buscador-rapido-dropdown empty-buscador" *ngIf="mostrarDropdownProductoRapido && productosRapidosList.length === 0 && busquedaProductoRapida">
+            <div class="brp-empty">
+              <i class="bi bi-search"></i>
+              <span>Sin resultados</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layout principal: col-8 carrito | col-4 configuración -->
+      <div class="row g-0 venta-main-row">
+
+        <!-- ===== IZQUIERDO col-8: Carrito de productos ===== -->
+        <div class="col-7 carrito-col pe-2">
+          <div class="carrito-section-ultra">
+            <div class="carrito-ultra-container">
+              <table class="carrito-ultra-table">
                 <thead>
                   <tr>
-                    <th>
-                      <div class="th-ultra">
-                        <i class="bi bi-upc"></i>
-                        <span>Código</span>
-                      </div>
-                    </th>
-                    <th>
-                      <div class="th-ultra">
-                        <i class="bi bi-box-fill"></i>
-                        <span>Producto</span>
-                      </div>
-                    </th>
-                    <th>
-                      <div class="th-ultra">
-                        <i class="bi bi-cash-stack"></i>
-                        <span>Precio</span>
-                      </div>
-                    </th>
-                    <th>
-                      <div class="th-ultra">
-                        <i class="bi bi-boxes"></i>
-                        <span>Stock</span>
-                      </div>
-                    </th>
+                    <th>Cód.</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th class="th-center-ultra">Cantidad</th>
+                    <th class="th-right-ultra">Subtotal</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let pro of productosPaginados"
-                      class="producto-ultra-row clickable-row"
-                      (click)="agregarProducto(pro)"
-                      [class.disabled-row]="pro.stock <= 0">
+                  <tr *ngFor="let pro of productosVender; let i = index" class="carrito-ultra-row">
                     <td>
                       <code class="codigo-ultra">{{ pro.codigo }}</code>
                     </td>
                     <td>
-                      <div class="producto-name-ultra">
-                        <div class="producto-icon-mini">
-                          <i class="bi bi-box-fill"></i>
-                        </div>
-                        <span>{{ pro.nombre }} <small class="marca-text">- {{ pro.marca?.nombre }}</small></span>
+                      <div class="carrito-producto-name">
+                        <i class="bi bi-box-fill"></i>
+                        <span>{{ pro.nombre }}</span>
                       </div>
                     </td>
                     <td>
-                      <div class="precio-ultra">
-                        <span class="moneda">Bs</span>
-                        <span class="valor">{{ pro.precio_venta | number:'1.2-2' }}</span>
+                      <div class="carrito-precio">
+                        {{ pro.precio_venta | currency:'Bs ':'symbol':'1.2-2' }}
                       </div>
                     </td>
-                    <td>
-                      <div class="stock-ultra-badge"
-                           [class.stock-alto]="pro.stock > 10"
-                           [class.stock-medio]="pro.stock <= 10 && pro.stock > 0"
-                           [class.stock-agotado]="pro.stock <= 0">
-                        <i class="bi"
-                           [class.bi-check-circle-fill]="pro.stock > 10"
-                           [class.bi-exclamation-triangle-fill]="pro.stock <= 10 && pro.stock > 0"
-                           [class.bi-x-circle-fill]="pro.stock <= 0"></i>
-                        <span>{{ pro.stock }} {{ pro.unidad_medida?.abreviatura }}</span>
+                    <td class="th-center-ultra">
+                      <div class="cantidad-ctrl">
+                        <button type="button" class="btn-qty btn-qty-minus" (click)="decrementarCantidad(i)" [disabled]="productosVentaCantidades[i] <= 1">
+                          <i class="bi bi-dash"></i>
+                        </button>
+                        <input
+                          type="number"
+                          class="cantidad-ultra-input"
+                          [value]="productosVentaCantidades[i]"
+                          (input)="nuevaCantidad(i, $event)"
+                          (keydown)="bloquearTeclasInvalidas($event)"
+                          min="1"
+                        />
+                        <button type="button" class="btn-qty btn-qty-plus" (click)="incrementarCantidad(i)">
+                          <i class="bi bi-plus"></i>
+                        </button>
                       </div>
+                    </td>
+                    <td class="th-right-ultra">
+                      <input
+                        type="number"
+                        class="subtotal-ultra-input"
+                        [value]="productosVentaSubtotales[i]"
+                        readonly
+                        (click)="seleccionarTextoInput($event)"
+                        (focus)="seleccionarTextoInput($event)"
+                        min="0.01"
+                        step="0.01"
+                      />
+                    </td>
+                    <td class="th-center-ultra">
+                      <button
+                        type="button"
+                        class="btn-quitar-ultra"
+                        (click)="quitarProducto(i)"
+                      >
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
                     </td>
                   </tr>
-                  <tr *ngIf="productosPaginados.length === 0">
-                    <td colspan="4">
-                      <div class="empty-productos-ultra">
-                        <i class="bi bi-search"></i>
-                        <p>No se encontraron productos</p>
+                  <tr *ngIf="productosVender.length === 0">
+                    <td colspan="6">
+                      <div class="carrito-empty-ultra">
+                        <i class="bi bi-cart-x"></i>
+                        <p>No hay productos en el carrito</p>
+                        <small>Presiona "Elegir Productos" para agregar</small>
                       </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
-
-            <!-- Paginador -->
-            <div class="paginador-productos" *ngIf="totalPaginas > 1">
-                <button
-                  type="button"
-                  class="btn-paginador"
-                  (click)="cambiarPagina(paginaActual - 1)"
-                  [disabled]="paginaActual === 1"
-                >
-                  <i class="bi bi-chevron-left"></i>
-                </button>
-                <span class="pagina-info">{{ paginaActual }} / {{ totalPaginas }}</span>
-                <button
-                  type="button"
-                  class="btn-paginador"
-                  (click)="cambiarPagina(paginaActual + 1)"
-                  [disabled]="paginaActual === totalPaginas"
-                >
-                  <i class="bi bi-chevron-right"></i>
-                </button>
-            </div>
           </div>
         </div>
 
-        <!-- Panel Derecho: Detalle de Venta -->
-        <div class="detalle-panel-ultra">
+        <!-- ===== DERECHO col-5: Configuración + Totales ===== -->
+        <div class="col-5 config-col ps-2">
           <div class="panel-body-ultra panel-body-detalle">
-            <!-- Opciones de Venta -->
+
+            <!-- Configuración de la Venta -->
             <div class="opciones-venta-section-ultra">
               <div class="section-title-ultra">
                 <i class="bi bi-sliders"></i>
                 <span>Configuración de la Venta</span>
               </div>
               <div class="opciones-venta-grid">
+                <!-- Tipo de venta -->
                 <div class="opcion-ultra-field facturacion-radio-group">
-                  <!-- <label class="opcion-ultra-label">
-                    <i class="bi bi-file-earmark-text"></i>
-                    <span>Facturación</span>
-                  </label> -->
                   <div class="radio-group-ultra">
                     <div class="radio-option-ultra">
                       <input
@@ -221,35 +233,96 @@
                   </div>
                 </div>
 
+                <!-- Buscar cliente -->
                 <div class="opcion-ultra-field cliente-field-full">
                   <label class="opcion-ultra-label">
                     <i class="bi bi-person-fill"></i>
-                    <span>Buscar Cliente</span>
+                    <span>Cliente</span>
                   </label>
                   <div class="cliente-search-custom">
-                    <div class="search-input-wrapper">
-                      <input
-                        type="text"
-                        class="ultra-input cliente-input"
-                        [(ngModel)]="busquedaCliente"
-                        [ngModelOptions]="{standalone: true}"
-                        (input)="filtrarClientes()"
-                        (focus)="filtrarClientes(); seleccionarTextoInput($event)"
-                        (blur)="ocultarDropdownCliente()"
-                        placeholder="🔍 Buscar cliente por nombre o CI/NIT..."
-                        autocomplete="off"
-                        [class.input-valid]="clienteSeleccionado"
-                      />
-                      <button
-                        type="button"
-                        class="btn-clear-cliente"
-                        *ngIf="clienteSeleccionado"
-                        (click)="limpiarCliente()"
-                      >
-                        <i class="bi bi-x-circle-fill"></i>
-                      </button>
+
+                    <!-- Área principal: display + buscador apilados -->
+                    <div class="cliente-main-area">
+
+                    <!-- DISPLAY no editable del cliente seleccionado -->
+                    <div class="cliente-display-card" (click)="!mostrarBuscadorCliente && abrirBuscadorCliente()">
+                      <ng-container *ngIf="clienteSeleccionado; else sinCliente">
+                        <div class="cliente-display-info">
+                          <div class="cliente-display-nombre">
+                            <i class="bi bi-person-circle"></i>
+                            <strong>{{ clienteSeleccionado.nombre }} {{ clienteSeleccionado.ap_paterno }} {{ clienteSeleccionado.ap_materno }}</strong>
+                          </div>
+                          <div class="cliente-display-doc">
+                            <i class="bi bi-card-text"></i>
+                            <span>{{ clienteSeleccionado.tipo_documento == 1 ? 'CI' : 'NIT' }}: {{ clienteSeleccionado.ci_nit }}</span>
+                          </div>
+                        </div>
+                        <button type="button" class="btn-clear-cliente" (click)="$event.stopPropagation(); limpiarCliente()" title="Cambiar a cliente general">
+                          <i class="bi bi-x-circle-fill"></i>
+                        </button>
+                      </ng-container>
+                      <ng-template #sinCliente>
+                        <div class="cliente-display-empty">
+                          <i class="bi bi-person-dash"></i>
+                          <span>Sin cliente · Clic para buscar</span>
+                        </div>
+                      </ng-template>
                     </div>
+
+                    <!-- INPUT BUSCADOR (aparece al clicar el display o el botón buscar) -->
+                    <div class="cliente-buscador-expand" *ngIf="mostrarBuscadorCliente">
+                      <div class="search-input-wrapper">
+                        <input
+                          id="inputBuscadorCliente"
+                          type="text"
+                          class="ultra-input cliente-input"
+                          [(ngModel)]="busquedaCliente"
+                          [ngModelOptions]="{standalone: true}"
+                          (input)="filtrarClientes()"
+                          (focus)="filtrarClientes()"
+                          (blur)="ocultarDropdownCliente()"
+                          placeholder="🔍 Escribe nombre o CI/NIT..."
+                          autocomplete="off"
+                        />
+                        <button type="button" class="btn-clear-cliente" (click)="cerrarBuscadorCliente()" title="Cancelar búsqueda">
+                          <i class="bi bi-x-lg"></i>
+                        </button>
+                      </div>
+                      <!-- Dropdown de resultados -->
+                      <div class="cliente-dropdown" *ngIf="mostrarDropdownCliente && clientesFiltradosList.length > 0">
+                        <div
+                          class="cliente-dropdown-item"
+                          *ngFor="let cli of clientesFiltradosList"
+                          (mousedown)="seleccionarCliente(cli)"
+                        >
+                          <div class="cliente-item-icon">
+                            <i class="bi bi-person-circle"></i>
+                          </div>
+                          <div class="cliente-item-info">
+                            <span class="cliente-item-nombre">
+                              {{ cli?.nombre }} {{ cli?.ap_paterno }} {{ cli?.ap_materno }}
+                            </span>
+                            <span class="cliente-item-doc">
+                              {{ cli?.tipo_documento == 1 ? 'CI: ' : 'NIT: ' }}{{ cli?.ci_nit }}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="cliente-dropdown empty" *ngIf="mostrarDropdownCliente && clientesFiltradosList.length === 0 && busquedaCliente">
+                        <div class="empty-result">
+                          <i class="bi bi-search"></i>
+                          <p>No se encontraron clientes</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    </div><!-- /.cliente-main-area -->
+
+                    <!-- BOTONES de acción -->
                     <div class="cliente-actions">
+                      <button type="button" class="btn-action-cliente btn-buscar" title="Buscar otro cliente" (click)="abrirBuscadorCliente()">
+                        <i class="bi bi-search"></i>
+                      </button>
                       <button type="button" class="btn-action-cliente btn-add" title="Agregar nuevo cliente" (click)="abrirModalNuevoCliente()">
                         <i class="bi bi-plus-lg"></i>
                       </button>
@@ -258,117 +331,15 @@
                       </button>
                     </div>
 
-                    <!-- Dropdown de resultados -->
-                    <div class="cliente-dropdown" *ngIf="mostrarDropdownCliente && clientesFiltradosList.length > 0">
-                      <div
-                        class="cliente-dropdown-item"
-                        *ngFor="let cli of clientesFiltradosList"
-                        (mousedown)="seleccionarCliente(cli)"
-                      >
-                        <div class="cliente-item-icon">
-                          <i class="bi bi-person-circle"></i>
-                        </div>
-                        <div class="cliente-item-info">
-                          <span class="cliente-item-nombre">
-                            {{ cli?.nombre }} {{ cli?.ap_paterno }} {{ cli?.ap_materno }}
-                          </span>
-                          <span class="cliente-item-doc">
-                            {{ cli?.tipo_documento == 1 ? 'CI: ' : 'NIT: ' }}{{ cli?.ci_nit }}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="cliente-dropdown empty" *ngIf="mostrarDropdownCliente && clientesFiltradosList.length === 0 && busquedaCliente">
-                      <div class="empty-result">
-                        <i class="bi bi-search"></i>
-                        <p>No se encontraron clientes</p>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Carrito de Productos -->
-            <div class="carrito-section-ultra">
-              <!-- <div class="section-title-ultra">
-                <i class="bi bi-cart-fill"></i>
-                <span>Carrito de Compras ({{ productosVender.length }} producto(s))</span>
-              </div> -->
-              <div class="carrito-ultra-container">
-                <table class="carrito-ultra-table">
-                  <thead>
-                    <tr>
-                      <th>Producto</th>
-                      <th>Precio</th>
-                      <th class="th-center-ultra">Cant.</th>
-                      <th class="th-right-ultra">Subtotal</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let pro of productosVender; let i = index" class="carrito-ultra-row">
-                      <td>
-                        <div class="carrito-producto-name">
-                          <i class="bi bi-box-fill"></i>
-                          <span>{{ pro.nombre }}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <div class="carrito-precio">
-                          {{ pro.precio_venta | currency:'Bs ':'symbol':'1.2-2' }}
-                        </div>
-                      </td>
-                      <td class="th-center-ultra">
-                        <input
-                          type="number"
-                          class="cantidad-ultra-input"
-                          [value]="productosVentaCantidades[i]"
-                          (input)="nuevaCantidad(i, $event)"
-                          (keydown)="bloquearTeclasInvalidas($event)"
-                          min="1"
-                        />
-                      </td>
-                      <td class="th-right-ultra">
-                        <input
-                          type="number"
-                          class="subtotal-ultra-input"
-                          [value]="productosVentaSubtotales[i]"
-                          readonly
-                          (click)="seleccionarTextoInput($event)"
-                          (focus)="seleccionarTextoInput($event)"
-                          min="0.01"
-                          step="0.01"
-                        />
-                      </td>
-                      <td class="th-center-ultra">
-                        <button
-                          type="button"
-                          class="btn-quitar-ultra"
-                          (click)="quitarProducto(i)"
-                        >
-                          <i class="bi bi-trash-fill"></i>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr *ngIf="productosVender.length === 0">
-                      <td colspan="5">
-                        <div class="carrito-empty-ultra">
-                          <i class="bi bi-cart-x"></i>
-                          <p>No hay productos en el carrito</p>
-                          <small>Selecciona productos del catálogo</small>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <!-- Totales Ultra Modernos -->
+            <!-- Totales: Descripción + Descuento + Total -->
             <div class="totales-ultra-section">
-              <div class="descuento-ultra-row">
+              <div class="descuento-ultra-col">
+
                 <div class="descuento-ultra-field">
                   <label class="descuento-ultra-label">
                     <i class="bi bi-chat-left-text"></i>
@@ -415,10 +386,13 @@
                     <span>{{ productosVender.length }} producto(s)</span>
                   </div>
                 </div>
+
               </div>
             </div>
+
           </div>
         </div>
+
       </div>
     </form>
   </div>
@@ -455,6 +429,192 @@
       <div class="btn-ultra-glow"></div>
     </button>
   </div>
+  </div>
+</div>
+
+<!-- ===== MODAL ELEGIR PRODUCTOS ===== -->
+<div class="modal fade" id="modalElegirProductos" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content modal-productos-selector">
+      <!-- Header -->
+      <div class="modal-header-productos-selector">
+        <div class="modal-header-left">
+          <div class="modal-icon-animated">
+            <div class="icon-bg-pulse"></div>
+            <i class="bi bi-grid-3x3-gap-fill"></i>
+          </div>
+          <div class="modal-title-ultra">
+            <h5 class="mb-0">Catálogo de Productos</h5>
+            <small>Haz clic en un producto para agregarlo al carrito</small>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge-productos-modal" *ngIf="productosVender.length > 0">
+            <i class="bi bi-cart-check-fill"></i>
+            {{ productosVender.length }} en carrito
+          </span>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+      </div>
+      <!-- Body -->
+      <div class="modal-body p-3">
+        <!-- Búsqueda y Filtros -->
+        <div class="search-ultra-section mb-3">
+          <div class="search-ultra-grid grid-3">
+            <div class="search-ultra-field">
+              <label class="ultra-label">
+                <i class="bi bi-search"></i>
+                <span>Buscar Producto</span>
+              </label>
+              <div class="ultra-input-wrapper">
+                <input
+                  type="text"
+                  class="ultra-input"
+                  [(ngModel)]="busqueda"
+                  [ngModelOptions]="{standalone: true}"
+                  (input)="paginaActual = 1"
+                  placeholder="Buscar por nombre, código o marca..."
+                />
+                <i class="bi bi-arrow-clockwise ultra-input-icon" (click)="refrescarProductos()" style="cursor: pointer;"></i>
+              </div>
+            </div>
+
+            <div class="search-ultra-field">
+              <label class="ultra-label">
+                <i class="bi bi-tag-fill"></i>
+                <span>Categoría</span>
+              </label>
+              <select class="ultra-select" [(ngModel)]="categoriaSeleccionada" [ngModelOptions]="{standalone: true}" (change)="onCategoriaChange($event)">
+                <option value="">Todas las categorías</option>
+                <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">{{ cat.nombre }}</option>
+              </select>
+            </div>
+
+            <div class="search-ultra-field">
+              <label class="ultra-label">
+                <i class="bi bi-tags-fill"></i>
+                <span>Subcategoría</span>
+              </label>
+              <select class="ultra-select" [(ngModel)]="subcategoriaSeleccionada" [ngModelOptions]="{standalone: true}" (change)="paginaActual = 1" [disabled]="!categoriaSeleccionada || apiSubcategorias.length === 0">
+                <option value="">Todas las subcategorías</option>
+                <option *ngFor="let subcat of apiSubcategorias" [value]="subcat.id_categoria">{{ subcat.nombre }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Productos -->
+        <div class="productos-ultra-table-container">
+          <table class="productos-ultra-table">
+            <thead>
+              <tr>
+                <th>
+                  <div class="th-ultra">
+                    <i class="bi bi-upc"></i>
+                    <span>Código</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-ultra">
+                    <i class="bi bi-box-fill"></i>
+                    <span>Producto</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-ultra">
+                    <i class="bi bi-cash-stack"></i>
+                    <span>Precio</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-ultra">
+                    <i class="bi bi-boxes"></i>
+                    <span>Stock</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pro of productosPaginados"
+                  class="producto-ultra-row clickable-row"
+                  (click)="agregarProducto(pro)"
+                  [class.disabled-row]="pro.stock <= 0">
+                <td>
+                  <div class="codigo-con-badge">
+                    <code class="codigo-ultra">{{ pro.codigo }}</code>
+                    <span class="badge-en-carrito" *ngIf="getCantidadEnCarrito(pro) > 0">
+                      {{ getCantidadEnCarrito(pro) }}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div class="producto-name-ultra">
+                    <div class="producto-icon-mini">
+                      <i class="bi bi-box-fill"></i>
+                    </div>
+                    <span>{{ pro.nombre }} <small class="marca-text">- {{ pro.marca?.nombre }}</small></span>
+                  </div>
+                </td>
+                <td>
+                  <div class="precio-ultra">
+                    <span class="moneda">Bs</span>
+                    <span class="valor">{{ pro.precio_venta | number:'1.2-2' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="stock-ultra-badge"
+                       [class.stock-alto]="pro.stock > 10"
+                       [class.stock-medio]="pro.stock <= 10 && pro.stock > 0"
+                       [class.stock-agotado]="pro.stock <= 0">
+                    <i class="bi"
+                       [class.bi-check-circle-fill]="pro.stock > 10"
+                       [class.bi-exclamation-triangle-fill]="pro.stock <= 10 && pro.stock > 0"
+                       [class.bi-x-circle-fill]="pro.stock <= 0"></i>
+                    <span>{{ pro.stock }} {{ pro.unidad_medida?.abreviatura }}</span>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="productosPaginados.length === 0">
+                <td colspan="4">
+                  <div class="empty-productos-ultra">
+                    <i class="bi bi-search"></i>
+                    <p>No se encontraron productos</p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginador -->
+        <div class="paginador-productos mt-2" *ngIf="totalPaginas > 1">
+          <button
+            type="button"
+            class="btn-paginador"
+            (click)="cambiarPagina(paginaActual - 1)"
+            [disabled]="paginaActual === 1"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="pagina-info">{{ paginaActual }} / {{ totalPaginas }}</span>
+          <button
+            type="button"
+            class="btn-paginador"
+            (click)="cambiarPagina(paginaActual + 1)"
+            [disabled]="paginaActual === totalPaginas"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+      <!-- Footer del modal productos -->
+      <div class="modal-footer modal-footer-productos-selector">
+        <button type="button" class="btn-ultra btn-ultra-primary" data-bs-dismiss="modal">
+          <i class="bi bi-check2-circle"></i>
+          <span>Listo ({{ productosVender.length }} producto(s))</span>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 

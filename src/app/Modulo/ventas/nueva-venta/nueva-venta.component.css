@@ -1267,9 +1267,18 @@
 
 .cliente-search-custom {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: flex-start;
   position: relative;
+}
+
+/* Área principal que ocupa todo el espacio disponible */
+.cliente-main-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 .search-input-wrapper {
@@ -1632,7 +1641,7 @@
 /* Totales Ultra */
 .totales-ultra-section {
   background: var(--ventas-white);
-  padding: 0 1.5rem 0 1.5rem ;
+  padding: 0;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }
@@ -2899,4 +2908,546 @@
   background: rgba(4, 104, 160, 0.05);
   border-radius: 8px;
   border: 1px solid rgba(4, 104, 160, 0.1);
+}
+
+/* ========================================
+   NUEVO LAYOUT: ELEGIR PRODUCTOS + COL-8/COL-4
+   ======================================== */
+
+/* Barra del botón elegir productos */
+.elegir-productos-bar {
+  padding: 0.75rem 1.5rem 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Botón "Elegir Productos" */
+.btn-elegir-productos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.6rem;
+  background: linear-gradient(135deg, #0468A0 0%, #049093 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 4px 15px rgba(4, 104, 160, 0.35);
+  transition: all 0.28s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-elegir-productos i {
+  font-size: 1.2rem;
+}
+
+.btn-elegir-productos:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(4, 104, 160, 0.45);
+  background: linear-gradient(135deg, #0583C7 0%, #06B8BC 100%);
+}
+
+.btn-elegir-productos:active {
+  transform: translateY(0);
+}
+
+/* Badge contador de productos en el botón */
+.badge-carrito-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: #fff;
+  color: var(--ventas-primary);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+/* Fila principal del layout */
+.venta-main-row {
+  padding: 0 1rem 1rem;
+}
+
+/* Columna del carrito */
+.carrito-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Columna de configuración */
+.config-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.config-col .panel-body-ultra.panel-body-detalle {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Totales en columna (descripción sobre descuento) */
+.descuento-ultra-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+/* ========================================
+   MODAL ELEGIR PRODUCTOS
+   ======================================== */
+
+.modal-productos-selector {
+  border: none;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+}
+
+.modal-header-productos-selector {
+  background: linear-gradient(135deg, #0468A0, #049093);
+  color: white;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+.modal-header-productos-selector .modal-title-ultra h5 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-header-productos-selector .modal-title-ultra small {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.modal-header-productos-selector .btn-close-white {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+/* Badge "X en carrito" dentro del modal */
+.badge-productos-modal {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: var(--radius-full);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  backdrop-filter: blur(4px);
+}
+
+/* Footer del modal de productos */
+.modal-footer-productos-selector {
+  background: #f9fafb;
+  border-top: 1px solid var(--ventas-gray-200);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ========================================
+   BOTONES +/- CANTIDAD EN CARRITO
+   ======================================== */
+
+.cantidad-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  justify-content: center;
+}
+
+.btn-qty {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-qty-minus {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+}
+
+.btn-qty-minus:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: scale(1.1);
+}
+
+.btn-qty-plus {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.btn-qty-plus:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: scale(1.1);
+}
+
+.btn-qty:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========================================
+   BADGE EN MODAL DE PRODUCTOS (cantidad en carrito)
+   ======================================== */
+
+.codigo-con-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.badge-en-carrito {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgba(16,185,129,0.4);
+  animation: popIn 0.2s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ========================================
+   CLIENTE DISPLAY + BUSCADOR REDISEÑO
+   ======================================== */
+
+/* Área de display (no editable) */
+.cliente-display-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.875rem;
+  background: #f0f9ff;
+  border: 2px solid var(--ventas-gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s;
+  min-height: 52px;
+  position: relative;
+}
+
+/* Botón X dentro de la tarjeta: flujo normal (no absolute) */
+.cliente-display-card .btn-clear-cliente {
+  position: static;
+  transform: none;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  top: unset;
+  right: unset;
+}
+
+.cliente-display-card:hover {
+  border-color: var(--ventas-primary);
+  background: #e0f2fe;
+}
+
+.cliente-display-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.cliente-display-nombre {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--ventas-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cliente-display-nombre i {
+  color: var(--ventas-primary);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.cliente-display-doc {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--ventas-gray-600);
+}
+
+.cliente-display-doc i {
+  color: var(--ventas-gray-600);
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.cliente-display-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--ventas-gray-600);
+  font-style: italic;
+  width: 100%;
+}
+
+.cliente-display-empty i {
+  font-size: 1.1rem;
+  color: var(--ventas-gray-400);
+}
+
+/* Buscador expandible */
+.cliente-buscador-expand {
+  position: relative;
+  margin-top: 0.4rem;
+}
+
+.cliente-buscador-expand .search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cliente-buscador-expand .search-input-wrapper .ultra-input {
+  flex: 1;
+}
+
+/* Botón buscar en cliente-actions */
+.btn-action-cliente.btn-buscar {
+  background: linear-gradient(135deg, #0468A0, #0583C7);
+  color: white;
+  border-color: #0468A0;
+}
+
+.btn-action-cliente.btn-buscar:hover {
+  background: linear-gradient(135deg, #0583C7, #06B8BC) !important;
+  color: white !important;
+  border-color: #0583C7 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(4, 104, 160, 0.35);
+}
+
+/* ===== BUSCADOR RÁPIDO DE PRODUCTOS (barra superior) ===== */
+.buscador-rapido-wrapper {
+  flex: 1;
+  position: relative;
+  max-width: 480px;
+}
+
+.buscador-rapido-input-wrap {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 2px solid var(--ventas-gray-200);
+  border-radius: var(--radius-lg);
+  padding: 0 0.75rem;
+  gap: 0.5rem;
+  transition: border-color 0.2s;
+}
+
+.buscador-rapido-input-wrap:focus-within {
+  border-color: var(--ventas-primary);
+  box-shadow: 0 0 0 3px rgba(4, 104, 160, 0.12);
+}
+
+.buscador-rapido-icon {
+  color: var(--ventas-gray-400);
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.buscador-rapido-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0.6rem 0;
+  font-size: 0.9rem;
+  color: var(--ventas-gray-900);
+  background: transparent;
+}
+
+.buscador-rapido-input::placeholder {
+  color: var(--ventas-gray-400);
+}
+
+.buscador-rapido-clear {
+  background: none;
+  border: none;
+  color: var(--ventas-gray-400);
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
+  transition: color 0.15s;
+}
+
+.buscador-rapido-clear:hover {
+  color: #ef4444;
+}
+
+/* Dropdown resultados */
+.buscador-rapido-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1.5px solid var(--ventas-gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 2000;
+  overflow: hidden;
+}
+
+.buscador-rapido-item {
+  display: grid;
+  grid-template-columns: 80px 1fr 60px 80px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.875rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid var(--ventas-gray-100);
+  position: relative;
+}
+
+.buscador-rapido-item:last-child {
+  border-bottom: none;
+}
+
+.buscador-rapido-item:hover:not(.sin-stock) {
+  background: #e0f2fe;
+}
+
+.buscador-rapido-item.sin-stock {
+  cursor: not-allowed;
+  opacity: 0.6;
+  background: #f8fafc;
+}
+
+.brp-codigo code {
+  font-size: 0.78rem;
+  color: var(--ventas-primary);
+  background: rgba(4, 104, 160, 0.08);
+  border-radius: 4px;
+  padding: 0.15rem 0.35rem;
+}
+
+.brp-nombre {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.brp-nombre span {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ventas-gray-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brp-marca {
+  font-size: 0.75rem;
+  color: var(--ventas-gray-500);
+}
+
+.brp-stock {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.brp-stock.stock-cero {
+  color: #ef4444;
+}
+
+.brp-precio {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ventas-gray-900);
+  justify-content: flex-end;
+}
+
+.brp-moneda {
+  font-size: 0.72rem;
+  color: var(--ventas-gray-500);
+  font-weight: 400;
+}
+
+.brp-sin-stock-badge {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.68rem;
+  background: #fee2e2;
+  color: #dc2626;
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.empty-buscador {
+  padding: 0.75rem 1rem;
+}
+
+.brp-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--ventas-gray-500);
+  font-size: 0.875rem;
+  font-style: italic;
 }
