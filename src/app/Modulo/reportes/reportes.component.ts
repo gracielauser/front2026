@@ -66,9 +66,16 @@ export class ReportesComponent implements OnInit {
     hasta: '',
     id_proveedor: '',
     busqueda: '',
-    estado: ''
+    estado: '',
+    tipo_compra: '',
+    id_usuario: ''
   }
   mostrarListaProveedores: boolean = false
+  filtroFechaCompras: string = ''
+  mostrarRangoPersonalizadoCompras: boolean = false
+  mostrarListaUsuariosCompras: boolean = false
+  usuarioSeleccionadoCompras: any = null
+  busquedaUsuarioCompras: string = ''
 
   // Datos de ventas
   datosVentasReporte: any = null
@@ -79,7 +86,8 @@ export class ReportesComponent implements OnInit {
     estado: '',
     tipo_pago: '',
     busqueda: '',
-    id_cliente: ''
+    id_cliente: '',
+    id_usuario: ''
   }
   filtroFechaVentas: string = '';
   fechaDesdeVentasR: string = '';
@@ -87,6 +95,9 @@ export class ReportesComponent implements OnInit {
   enFiltroPersonalizadoVentasR: boolean = false;
   mostrarListaClientesVentas: boolean = false;
   clienteSeleccionadoVentas: any = null;
+  mostrarListaUsuariosVentas: boolean = false
+  usuarioSeleccionadoVentas: any = null
+  busquedaUsuarioVentas: string = ''
 
   // Datos de gastos
   datosGastosReporte: any = null
@@ -142,6 +153,9 @@ export class ReportesComponent implements OnInit {
 
   ngOnInit(): void {
     this.datosTendencia();
+    this.UsuSer.getListaUsuario().subscribe((data: any[]) => {
+      this.apiUsuarios = data;
+    });
   }
   reporteDatosNegocio(){
     this.RepSer.getResultados().subscribe((pdfBlob) => {
@@ -503,9 +517,16 @@ get comprasFiltradas(): any[] {
     const coincideProveedor = !this.filtroCompras.id_proveedor ||
       c.proveedor.id_proveedor.toString() === this.filtroCompras.id_proveedor;
 
-    const coincideEstado = this.filtroCompras.estado === '' || c.estado === this.filtroCompras.estado;
+    const coincideEstado = this.filtroCompras.estado === '' ||
+      (c.estado_valor !== undefined && c.estado_valor !== null && c.estado_valor.toString() === this.filtroCompras.estado);
 
-    return coincideBusqueda && coincideFecha && coincideProveedor && coincideEstado;
+    const coincideTipoCompra = this.filtroCompras.tipo_compra === '' ||
+      (c.tipo_compra !== undefined && c.tipo_compra !== null && c.tipo_compra.toString() === this.filtroCompras.tipo_compra);
+
+    const coincideUsuario = !this.filtroCompras.id_usuario ||
+      (c.usuario?.id_usuario && c.usuario.id_usuario.toString() === this.filtroCompras.id_usuario);
+
+    return coincideBusqueda && coincideFecha && coincideProveedor && coincideEstado && coincideTipoCompra && coincideUsuario;
   });
 }
 
@@ -523,7 +544,7 @@ get totalesFiltradosCompras(): any {
 
   const monto_total = compras.reduce((sum: number, c: any) => sum + (c.monto_total || 0), 0);
   const total_productos = compras.reduce((sum: number, c: any) => sum + (c.total_cantidad || 0), 0);
-  const compras_activas = compras.filter((c: any) => c.estado === 'Activa').length;
+  const compras_activas = compras.filter((c: any) => c.estado_valor === 1).length;
 
   return {
     total_compras: compras.length,
@@ -550,14 +571,105 @@ seleccionarProveedorFiltro(proveedor: any, input: HTMLInputElement) {
   input.blur();
 }
 
+get usuariosFiltradosCompras(): any[] {
+  const activos = this.apiUsuarios.filter((u: any) => u.estado === 1);
+  if (!this.busquedaUsuarioCompras) return activos;
+  const q = this.busquedaUsuarioCompras.toLowerCase();
+  return activos.filter((u: any) => {
+    const nombre = (u.empleado?.nombre || '').toLowerCase();
+    const ap = (u.empleado?.ap_paterno || '').toLowerCase();
+    const apM = (u.empleado?.ap_materno || '').toLowerCase();
+    return nombre.includes(q) || ap.includes(q) || apM.includes(q) || (nombre + ' ' + ap).includes(q);
+  });
+}
+
+seleccionarUsuarioCompras(u: any) {
+  this.usuarioSeleccionadoCompras = u;
+  this.filtroCompras.id_usuario = u.id_usuario.toString();
+  this.busquedaUsuarioCompras = [u.empleado?.nombre, u.empleado?.ap_paterno, u.empleado?.ap_materno].filter(Boolean).join(' ');
+  this.mostrarListaUsuariosCompras = false;
+}
+
+limpiarUsuarioCompras() {
+  this.usuarioSeleccionadoCompras = null;
+  this.filtroCompras.id_usuario = '';
+  this.busquedaUsuarioCompras = '';
+}
+
+mostrarDropdownUsuariosCompras() {
+  this.mostrarListaUsuariosCompras = true;
+}
+
+ocultarDropdownUsuariosCompras() {
+  setTimeout(() => { this.mostrarListaUsuariosCompras = false; }, 200);
+}
+
 limpiarFiltrosCompras() {
   this.filtroCompras = {
     desde: '',
     hasta: '',
     id_proveedor: '',
     busqueda: '',
-    estado: ''
+    estado: '',
+    tipo_compra: '',
+    id_usuario: ''
   };
+  this.filtroFechaCompras = '';
+  this.mostrarRangoPersonalizadoCompras = false;
+  this.usuarioSeleccionadoCompras = null;
+  this.busquedaUsuarioCompras = '';
+  this.mostrarListaUsuariosCompras = false;
+}
+
+onFiltroFechaComprasChange(): void {
+  const hoy = new Date();
+  this.mostrarRangoPersonalizadoCompras = false;
+  this.filtroCompras.desde = '';
+  this.filtroCompras.hasta = '';
+  switch (this.filtroFechaCompras) {
+    case 'hoy': {
+      const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+      this.filtroCompras.desde = d.toISOString().split('T')[0];
+      this.filtroCompras.hasta = d.toISOString().split('T')[0];
+      break;
+    }
+    case 'ayer': {
+      const ayer = new Date(hoy);
+      ayer.setDate(hoy.getDate() - 1);
+      this.filtroCompras.desde = ayer.toISOString().split('T')[0];
+      this.filtroCompras.hasta = ayer.toISOString().split('T')[0];
+      break;
+    }
+    case 'esta semana': {
+      const inicio = new Date(hoy);
+      inicio.setDate(hoy.getDate() - hoy.getDay());
+      this.filtroCompras.desde = inicio.toISOString().split('T')[0];
+      this.filtroCompras.hasta = hoy.toISOString().split('T')[0];
+      break;
+    }
+    case 'este mes': {
+      const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+      this.filtroCompras.desde = inicioMes.toISOString().split('T')[0];
+      this.filtroCompras.hasta = hoy.toISOString().split('T')[0];
+      break;
+    }
+    case 'mes anterior': {
+      const inicioMA = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+      const finMA = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+      this.filtroCompras.desde = inicioMA.toISOString().split('T')[0];
+      this.filtroCompras.hasta = finMA.toISOString().split('T')[0];
+      break;
+    }
+    case 'rango personalizado': {
+      this.mostrarRangoPersonalizadoCompras = true;
+      return;
+    }
+    default: break;
+  }
+}
+
+comprasExcel(): void {
+  console.log('Exportar Excel de compras - pendiente de implementación en servicio');
 }
 
 onFiltroFechaVentasChange(event: any): void {
@@ -682,7 +794,10 @@ get ventasFiltradas(): any[] {
     const coincideCliente = !this.filtroVentas.id_cliente ||
       (v.cliente?.id_cliente && v.cliente.id_cliente.toString() === this.filtroVentas.id_cliente);
 
-    return coincideBusqueda && coincideFecha && coincideTipoVenta && coincideEstado && coincideTipoPago && coincideCliente;
+    const coincideUsuario = !this.filtroVentas.id_usuario ||
+      (v.usuario?.id_usuario && v.usuario.id_usuario.toString() === this.filtroVentas.id_usuario);
+
+    return coincideBusqueda && coincideFecha && coincideTipoVenta && coincideEstado && coincideTipoPago && coincideCliente && coincideUsuario;
   });
 }
 
@@ -730,7 +845,8 @@ limpiarFiltrosVentas() {
     estado: '',
     tipo_pago: '',
     busqueda: '',
-    id_cliente: ''
+    id_cliente: '',
+    id_usuario: ''
   };
   this.filtroFechaVentas = '';
   this.fechaDesdeVentasR = '';
@@ -738,6 +854,9 @@ limpiarFiltrosVentas() {
   this.enFiltroPersonalizadoVentasR = false;
   this.clienteSeleccionadoVentas = null;
   this.mostrarListaClientesVentas = false;
+  this.usuarioSeleccionadoVentas = null;
+  this.busquedaUsuarioVentas = '';
+  this.mostrarListaUsuariosVentas = false;
 }
 
 seleccionarClienteVentas(cliente: any) {
@@ -762,6 +881,39 @@ limpiarClienteVentas() {
   this.filtroVentas.id_cliente = '';
   this.filtroVentas.busqueda = '';
   this.mostrarListaClientesVentas = false;
+}
+
+get usuariosFiltradosVentas(): any[] {
+  const activos = this.apiUsuarios.filter((u: any) => u.estado === 1);
+  if (!this.busquedaUsuarioVentas) return activos;
+  const q = this.busquedaUsuarioVentas.toLowerCase();
+  return activos.filter((u: any) => {
+    const nombre = (u.empleado?.nombre || '').toLowerCase();
+    const ap = (u.empleado?.ap_paterno || '').toLowerCase();
+    const apM = (u.empleado?.ap_materno || '').toLowerCase();
+    return nombre.includes(q) || ap.includes(q) || apM.includes(q) || (nombre + ' ' + ap).includes(q);
+  });
+}
+
+seleccionarUsuarioVentas(u: any) {
+  this.usuarioSeleccionadoVentas = u;
+  this.filtroVentas.id_usuario = u.id_usuario.toString();
+  this.busquedaUsuarioVentas = [u.empleado?.nombre, u.empleado?.ap_paterno, u.empleado?.ap_materno].filter(Boolean).join(' ');
+  this.mostrarListaUsuariosVentas = false;
+}
+
+limpiarUsuarioVentas() {
+  this.usuarioSeleccionadoVentas = null;
+  this.filtroVentas.id_usuario = '';
+  this.busquedaUsuarioVentas = '';
+}
+
+mostrarDropdownUsuariosVentas() {
+  this.mostrarListaUsuariosVentas = true;
+}
+
+ocultarDropdownUsuariosVentas() {
+  setTimeout(() => { this.mostrarListaUsuariosVentas = false; }, 200);
 }
 
 // Métodos para gastos
@@ -1115,6 +1267,7 @@ reporteClientesExcel(){
       estado: this.filtroVentas.estado || null,
       tipo_pago: this.filtroVentas.tipo_pago || null,
       id_cliente: this.filtroVentas.id_cliente || null,
+      id_usuario: this.filtroVentas.id_usuario ? +this.filtroVentas.id_usuario : null,
       busqueda: this.filtroVentas.busqueda || null
     },
     lista: this.ventasFiltradas
@@ -1136,6 +1289,7 @@ ventasExcel() {
       estado: this.filtroVentas.estado || null,
       tipo_pago: this.filtroVentas.tipo_pago || null,
       id_cliente: this.filtroVentas.id_cliente || null,
+      id_usuario: this.filtroVentas.id_usuario ? +this.filtroVentas.id_usuario : null,
       busqueda: this.filtroVentas.busqueda || null
     },
     lista: this.ventasFiltradas
@@ -1163,13 +1317,19 @@ inventarioPDF(){
     });
 }
 generarReporteCompras(resumido: boolean){
-this.ComSer.getPDF({},resumido).subscribe((pdfBlob) => {
-      const blob = new Blob([pdfBlob], { type: 'application/pdf' });
-
-      // Abre en una nueva pestaña
-      const url = URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    });
+  const body: any = {};
+  if (this.filtroCompras.desde)       body['desde']       = this.filtroCompras.desde;
+  if (this.filtroCompras.hasta)       body['hasta']       = this.filtroCompras.hasta;
+  if (this.filtroCompras.id_proveedor) body['id_proveedor'] = this.filtroCompras.id_proveedor;
+  if (this.filtroCompras.busqueda)    body['busqueda']    = this.filtroCompras.busqueda;
+  if (this.filtroCompras.estado)      body['estado']      = +this.filtroCompras.estado;
+  if (this.filtroCompras.tipo_compra) body['tipo_compra'] = +this.filtroCompras.tipo_compra;
+  if (this.filtroCompras.id_usuario)  body['id_usuario']  = +this.filtroCompras.id_usuario;
+  this.ComSer.getPDF(body, resumido).subscribe((pdfBlob) => {
+    const blob = new Blob([pdfBlob], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  });
 }
 
 // ========================

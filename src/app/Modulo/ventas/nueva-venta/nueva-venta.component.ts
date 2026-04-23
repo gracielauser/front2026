@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, ReactiveFormsModule, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, UntypedFormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -61,13 +61,47 @@ export class NuevaVentaComponent implements OnInit {
   mensajeExito: string = '';
   exito: boolean = false;
   ciudades: string[] = ['Tarija', 'La Paz', 'Pando', 'Cochabamba', 'Chuquisaca', 'Santa Cruz', 'Potosi', 'Beni', 'Oruro'];
+  ciNitFocused: boolean = false;
+
+  // Validador de formato CI/NIT
+  formatoCiNit(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) return null;
+      const patron = /^\d{5,}(-\d+[AB])?$/;
+      return patron.test(control.value.toString().trim()) ? null : { formatoCiNit: true };
+    };
+  }
+
+  // Validador de duplicado CI/NIT
+  validarDuplicadoCiNit(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value || control.value.length === 0) return null;
+      if (!this.apiClientes || this.apiClientes.length === 0) return null;
+      const value = control.value.toString().trim();
+      if (this.isEditModeCliente) {
+        const existe = this.apiClientes.some(cli =>
+          cli.ci_nit?.toString().trim() === value && cli.id_cliente !== this.idClienteEditar
+        );
+        return existe ? { duplicadoCiNit: true } : null;
+      }
+      const existe = this.apiClientes.some(cli => cli.ci_nit?.toString().trim() === value);
+      return existe ? { duplicadoCiNit: true } : null;
+    };
+  }
+
+  onCiNitFocus() { this.ciNitFocused = true; }
+  onCiNitBlur() { this.ciNitFocused = false; }
+  onCiNitInput() {
+    const c = this.clienteForm.get('ci_nit');
+    if (c) { c.updateValueAndValidity({ emitEvent: true }); c.markAsTouched(); c.markAsDirty(); }
+  }
 
   clienteForm = new UntypedFormGroup({
     nombre: new FormControl('', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]),
     ap_paterno: new FormControl('', [ Validators.minLength(3), Validators.maxLength(40)]),
     ap_materno: new FormControl('', [Validators.minLength(3), Validators.maxLength(40)]),
     direccion: new FormControl('', [Validators.minLength(5), Validators.maxLength(40)]),
-    ci_nit: new FormControl('', [Validators.minLength(5), Validators.maxLength(15)]),
+    ci_nit: new FormControl('', [this.formatoCiNit(), this.validarDuplicadoCiNit(), Validators.minLength(5), Validators.maxLength(15)]),
     estado: new FormControl('1'),
     celular: new FormControl('', [Validators.minLength(8), Validators.maxLength(15)]),
     email: new FormControl('', [Validators.email, Validators.minLength(5), Validators.maxLength(40)]),

@@ -179,7 +179,7 @@ cambioEstado(event: any){
 
       this.isEditMode = false;
       this.esSubcategoria = true;
-      this.modalTitle = `Nueva Subcategoría de "${categoriaPadre.nombre}"`;
+      this.modalTitle = `Nueva Subcategoría`;
       this.categoriaPadreId = categoriaPadre.id_categoria!;
       this.categoriaPadreNombre = categoriaPadre.nombre;
       this.cateForm.reset();
@@ -204,7 +204,7 @@ cambioEstado(event: any){
       this.isEditMode = true;
       this.esSubcategoria = true;
       this.idCategoria = categoria.id_categoria!;
-      this.modalTitle = `Modificar Subcategoría "${categoria.nombre}"`;
+      this.modalTitle = `Modificar Subcategoría`;
       this.cateForm.patchValue({
         nombre: categoria.nombre,
         descripcion: categoria.descripcion
@@ -215,7 +215,7 @@ cambioEstado(event: any){
       this.esSubcategoria = false;
       this.idCategoria = categoria.id_categoria!;
       this.categoriaEnEdicion = categoria;
-      this.modalTitle = `Modificar Categoría "${categoria.nombre}"`;
+      this.modalTitle = `Modificar Categoría`;
       this.cateForm.patchValue({
         nombre: categoria.nombre,
         descripcion: categoria.descripcion

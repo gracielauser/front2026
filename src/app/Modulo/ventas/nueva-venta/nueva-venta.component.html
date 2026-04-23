@@ -685,12 +685,27 @@
             <label class="form-label">CI/NIT</label>
             <input type="text" formControlName="ci_nit" class="form-control" placeholder="Ingrese CI o NIT"
               maxlength="15"
+              (focus)="onCiNitFocus()"
+              (blur)="onCiNitBlur()"
+              (input)="onCiNitInput()"
               [ngClass]="{
                 'is-valid': controlCliente['ci_nit'].valid && (controlCliente['ci_nit'].dirty||controlCliente['ci_nit'].touched),
                 'is-invalid': controlCliente['ci_nit'].invalid && (controlCliente['ci_nit'].dirty||controlCliente['ci_nit'].touched)
               }">
             <div class="valid-feedback">Correcto.</div>
-            <div class="invalid-feedback">Mínimo 5 caracteres, máximo 15.</div>
+            <div class="invalid-feedback" *ngIf="controlCliente['ci_nit'].errors?.['formatoCiNit'] && (controlCliente['ci_nit'].dirty||controlCliente['ci_nit'].touched)">
+              Formato inválido. Use números o XXXXXX-1A/XXXXXX-1B (mínimo 5 dígitos).
+            </div>
+            <div class="invalid-feedback" *ngIf="controlCliente['ci_nit'].errors?.['duplicadoCiNit'] && (controlCliente['ci_nit'].dirty||controlCliente['ci_nit'].touched)">
+              Este CI/NIT ya está registrado con otro cliente.
+            </div>
+            <div class="invalid-feedback" *ngIf="controlCliente['ci_nit'].errors?.['minlength'] && (controlCliente['ci_nit'].dirty||controlCliente['ci_nit'].touched)">
+              Mínimo 5 caracteres.
+            </div>
+            <div class="alert alert-info p-2 my-2 d-flex align-items-center" role="alert" *ngIf="ciNitFocused">
+              <i class="bi bi-info-circle-fill me-3 fs-5"></i>
+              <small>Formatos válidos: <strong>XXXXXX</strong> (solo números) o <strong>XXXXXX-1A</strong> / <strong>XXXXXX-1B</strong></small>
+            </div>
           </div>
           <!-- NOMBRE -->
           <div class="col-md-4">

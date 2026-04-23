@@ -105,12 +105,12 @@ export class ClientesComponent implements OnInit {
       // Si estamos en modo edición, excluir el cliente actual
       if (this.isEditMode && this.clienteModel) {
         const existe = this.apiClientes.some(cli =>
-          cli.ci_nit.toString().trim() === value && cli.id_cliente !== this.clienteModel.id_cliente
+          cli.ci_nit?.toString().trim() === value && cli.id_cliente !== this.clienteModel.id_cliente
         );
         return existe ? { duplicadoCiNit: true } : null;
       } else {
         // Si es nuevo, validar contra todos
-        const existe = this.apiClientes.some(cli => cli.ci_nit.toString().trim() === value);
+        const existe = this.apiClientes.some(cli => cli.ci_nit?.toString().trim() === value);
         return existe ? { duplicadoCiNit: true } : null;
       }
     };
@@ -177,16 +177,6 @@ export class ClientesComponent implements OnInit {
       this.clienteForm.markAllAsTouched();
       this.mostrarAlerta(false, '❌ Por favor complete todos los campos obligatorios');
       return;
-    }
-
-    // Verificación adicional de duplicados
-    const ciNitValue = this.clienteForm.get('ci_nit')?.value;
-    if (ciNitValue) {
-      const existeDuplicado = this.apiClientes.some(cli => cli.ci_nit === ciNitValue);
-      if (existeDuplicado) {
-        this.mostrarAlerta(false, '❌ El CI/NIT ya está registrado con otro cliente');
-        return;
-      }
     }
 
     if (this.isEditMode) {

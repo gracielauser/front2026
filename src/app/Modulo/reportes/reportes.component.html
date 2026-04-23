@@ -362,14 +362,14 @@
                       </ul>
                     </div>
                   </div>
-                  <div class="col-md-3">
+                  <!-- <div class="col-md-3">
                     <label class="form-label">Tipo de Impuesto</label>
                     <select class="form-select" [(ngModel)]="filtroVentas.tipo_venta" style="position: relative; z-index: 1;">
                       <option value="">Todos</option>
                       <option value="Sin Factura">Ninguno</option>
                       <option value="Facturado">Facturado</option>
                     </select>
-                  </div>
+                  </div> -->
                   <div class="col-md-3">
                     <label class="form-label">Estado</label>
                     <select class="form-select" [(ngModel)]="filtroVentas.estado" style="position: relative; z-index: 1;">
@@ -406,6 +406,40 @@
                     <label class="form-label">Hasta</label>
                     <input type="date" class="form-control" (change)="ponerFechaVentasR($event, 2)" />
                   </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Usuario</label>
+                    <div class="position-relative">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="busquedaUsuarioVentas"
+                        (focus)="mostrarDropdownUsuariosVentas()"
+                        (blur)="ocultarDropdownUsuariosVentas()"
+                        placeholder="Buscar usuario..."
+                        style="position: relative; z-index: 1;">
+                      <button
+                        *ngIf="usuarioSeleccionadoVentas"
+                        type="button"
+                        class="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y text-danger"
+                        (click)="limpiarUsuarioVentas()"
+                        style="z-index: 2;">
+                        <i class="bi bi-x-circle-fill"></i>
+                      </button>
+                      <ul
+                        *ngIf="mostrarListaUsuariosVentas && usuariosFiltradosVentas.length > 0"
+                        class="list-group position-absolute w-100 shadow-lg"
+                        style="max-height: 200px; overflow-y: auto; z-index: 9999; top: 100%; left: 0;">
+                        <li
+                          *ngFor="let u of usuariosFiltradosVentas"
+                          class="list-group-item list-group-item-action"
+                          (mousedown)="seleccionarUsuarioVentas(u)"
+                          style="cursor: pointer;">
+                          <strong>{{ u.empleado?.nombre }} {{ u.empleado?.ap_paterno }}</strong><br>
+                          <small class="text-muted">ID: {{ u.id_usuario }}</small>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                   <div class="col-md-3 d-flex align-items-end">
                     <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosVentas()">
                       <i class="bi bi-x-circle"></i> Limpiar
@@ -414,8 +448,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- 📊 Resumen general -->
             <div class="row text-center mb-4" *ngIf="datosVentasReporte">
               <div class="col-md-3">
                 <div class="card border-primary shadow-sm">
@@ -1114,6 +1146,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
               <h2 class="fw-bold"><i class="bi bi-cart-check me-2"></i>Reporte de Compras</h2>
               <div>
+                <button class="btn btn-success me-2" (click)="comprasExcel()"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
                 <button class="btn btn-danger me-2" (click)="generarReporteCompras(true)"><i class="bi bi-filetype-pdf"></i> Reporte PDF Resumido</button>
                 <button class="btn btn-danger" (click)="generarReporteCompras(false)"><i class="bi bi-filetype-pdf"></i> Reporte PDF Detallado</button>
               </div>
@@ -1160,43 +1193,81 @@
                     <label class="form-label">Estado</label>
                     <select class="form-select" [(ngModel)]="filtroCompras.estado">
                       <option value="">Todos</option>
-                      <option value="Activa">Activa</option>
-                      <option value="Cancelada">Cancelada</option>
-                      <option value="Finalizada">Finalizada</option>
+                      <option value="1">Activa</option>
+                      <option value="2">Anulada</option>
                     </select>
                   </div>
 
                   <div class="col-md-3">
-                    <label class="form-label">Desde</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroCompras.desde">
+                    <label class="form-label">Tipo de impuesto</label>
+                    <select class="form-select" [(ngModel)]="filtroCompras.tipo_compra">
+                      <option value="">Todos</option>
+                      <option value="1">Ninguno</option>
+                      <option value="2">Facturada</option>
+                    </select>
                   </div>
 
                   <div class="col-md-3">
+                    <label class="form-label">Usuario</label>
+                    <div class="position-relative">
+                      <input
+                        type="text"
+                        class="form-control"
+                        [(ngModel)]="busquedaUsuarioCompras"
+                        (focus)="mostrarDropdownUsuariosCompras()"
+                        (blur)="ocultarDropdownUsuariosCompras()"
+                        placeholder="Buscar usuario..."
+                        style="position: relative; z-index: 1;">
+                      <button
+                        *ngIf="usuarioSeleccionadoCompras"
+                        type="button"
+                        class="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y text-danger"
+                        (click)="limpiarUsuarioCompras()"
+                        style="z-index: 2;">
+                        <i class="bi bi-x-circle-fill"></i>
+                      </button>
+                      <ul
+                        *ngIf="mostrarListaUsuariosCompras && usuariosFiltradosCompras.length > 0"
+                        class="list-group position-absolute w-100 shadow-lg"
+                        style="max-height: 200px; overflow-y: auto; z-index: 9999; top: 100%; left: 0;">
+                        <li
+                          *ngFor="let u of usuariosFiltradosCompras"
+                          class="list-group-item list-group-item-action"
+                          (mousedown)="seleccionarUsuarioCompras(u)"
+                          style="cursor: pointer;">
+                          <strong>{{ u.empleado?.nombre }} {{ u.empleado?.ap_paterno }}</strong><br>
+                          <small class="text-muted">ID: {{ u.id_usuario }}</small>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div class="col-md-3">
+                    <label class="form-label">Fecha</label>
+                    <select class="form-select" [(ngModel)]="filtroFechaCompras" (change)="onFiltroFechaComprasChange()">
+                      <option value="">Todas las fechas</option>
+                      <option value="hoy">Hoy</option>
+                      <option value="ayer">Ayer</option>
+                      <option value="esta semana">Esta semana</option>
+                      <option value="este mes">Este mes</option>
+                      <option value="mes anterior">Mes anterior</option>
+                      <option value="rango personalizado">Rango personalizado</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-3" *ngIf="mostrarRangoPersonalizadoCompras">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control" [(ngModel)]="filtroCompras.desde" />
+                  </div>
+
+                  <div class="col-md-3" *ngIf="mostrarRangoPersonalizadoCompras">
                     <label class="form-label">Hasta</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroCompras.hasta">
+                    <input type="date" class="form-control" [(ngModel)]="filtroCompras.hasta" />
                   </div>
 
                   <div class="col-md-3 d-flex align-items-end">
                     <button type="button" class="btn btn-secondary w-100" (click)="limpiarFiltrosCompras()">
                       <i class="bi bi-x-circle"></i> Limpiar
-                    </button>
-                  </div>
-
-                  <div class="col-md-3 d-flex align-items-end">
-                    <button (click)="generarReporteCompras(true)" type="button" class="btn btn-primary w-100">
-                      <i class="bi bi-file-earmark-text"></i> Reporte resumido
-                    </button>
-                  </div>
-
-                  <div class="col-md-3 d-flex align-items-end">
-                    <button (click)="generarReporteCompras(false)" type="button" class="btn btn-info w-100">
-                      <i class="bi bi-file-earmark-bar-graph"></i> Reporte detallado
-                    </button>
-                  </div>
-
-                  <div class="col-md-3 d-flex align-items-end">
-                    <button type="button" class="btn btn-success w-100">
-                      <i class="bi bi-file-earmark-excel"></i> Exportar Excel
                     </button>
                   </div>
                 </div>
