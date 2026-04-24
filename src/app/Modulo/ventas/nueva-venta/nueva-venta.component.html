@@ -144,8 +144,9 @@
                           (input)="nuevaCantidad(i, $event)"
                           (keydown)="bloquearTeclasInvalidas($event)"
                           min="1"
+                          [max]="pro.stock"
                         />
-                        <button type="button" class="btn-qty btn-qty-plus" (click)="incrementarCantidad(i)">
+                        <button type="button" class="btn-qty btn-qty-plus" (click)="incrementarCantidad(i)" [disabled]="productosVentaCantidades[i] >= pro.stock">
                           <i class="bi bi-plus"></i>
                         </button>
                       </div>

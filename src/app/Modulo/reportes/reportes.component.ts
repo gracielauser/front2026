@@ -1305,28 +1305,32 @@ reporteClientesPDF(){
 
 reporteClientesExcel(){
   const body = this.construirBodyClientes();
-  const datosReporte = {
-    filtros: {
-      desde: body.desde || null,
-      hasta: body.hasta || null,
-      id_cliente: body.id_cliente || null,
-      busqueda: this.filtroClientes.busqueda || null
+  this.CliSer.getExcel(body).subscribe({
+    next: (response) => {
+      const contentType =
+        response.headers.get('content-type') ||
+        response.headers.get('Content-Type') ||
+        '';
+      let ext = 'xlsx';
+      let mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      if (contentType.includes('csv') || contentType.includes('text/plain')) {
+        ext = 'csv';
+        mime = 'text/csv;charset=utf-8';
+      }
+      const blob = new Blob([response.body!], { type: mime });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `reporte-clientes-${new Date().toISOString().slice(0, 10)}.${ext}`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     },
-    resumenes: this.totalesFiltradosClientes,
-    lista: this.clientesFiltrados
-  };
-
-  console.log('Datos enviados al Excel:', datosReporte);
-
-  // Aquí deberías llamar al servicio para generar Excel
-  // this.CliSer.getExcel(datosReporte).subscribe((excelBlob) => {
-  //   const blob = new Blob([excelBlob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  //   const url = URL.createObjectURL(blob);
-  //   const a = document.createElement('a');
-  //   a.href = url;
-  //   a.download = 'reporte-clientes.xlsx';
-  //   a.click();
-  // });
+    error: (err) => {
+      console.error('Error al generar Excel de clientes:', err);
+    }
+  });
 }
 
  ventasPDF(resumido:boolean){

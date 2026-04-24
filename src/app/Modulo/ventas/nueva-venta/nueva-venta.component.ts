@@ -499,6 +499,8 @@ export class NuevaVentaComponent implements OnInit {
   }
 
   incrementarCantidad(i: number) {
+    const stock = this.productosVender[i].stock;
+    if (this.productosVentaCantidades[i] >= stock) return;
     this.productosVentaCantidades[i] += 1;
     const precioOriginal = this.productosVender[i].precio_venta;
     this.productosVentaSubtotales[i] = precioOriginal * this.productosVentaCantidades[i];
@@ -522,9 +524,13 @@ export class NuevaVentaComponent implements OnInit {
 
   nuevaCantidad(i: number, event: any) {
     const valor = Number(event.target.value);
+    const stock = this.productosVender[i].stock;
     if (valor < 1) {
       event.target.value = 1;
       this.productosVentaCantidades[i] = 1;
+    } else if (valor > stock) {
+      event.target.value = stock;
+      this.productosVentaCantidades[i] = stock;
     } else {
       this.productosVentaCantidades[i] = valor;
     }

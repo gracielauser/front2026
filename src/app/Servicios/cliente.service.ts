@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Cliente } from '../Modelos/cliente';
@@ -34,5 +34,11 @@ export class ClienteService {
      datosClientes(body: any = {}): Observable<any> {
       console.log("en servicio datos clientes");
       return this.xhttp.post<any>(`${environment.apiUrl}/api/reporte/clientes/datos`, body);
+     }
+     getExcel(body: any = {}): Observable<HttpResponse<Blob>> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte-cliente/xlsx`, body, {
+         responseType: 'blob',
+         observe: 'response'
+       });
      }
 }
