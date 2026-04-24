@@ -239,6 +239,72 @@
 
         <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()">
           <div class="row g-3">
+
+            <!-- Categoría y Subcategoría -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Categoría <span class="required-mark">*</span>
+              </label>
+              <div class="row g-2">
+                <!-- Categoría Principal -->
+                <div class="col-md-6">
+                  <select
+                    formControlName="id_categoria"
+                    class="form-select form-control-modern"
+                    (change)="onCategoriaChange($event)"
+                    [ngClass]="{
+                      'is-valid': control['id_categoria'].valid && control['id_categoria'].touched,
+                      'is-invalid': control['id_categoria'].invalid && control['id_categoria'].touched
+                    }">
+                    <option value="" disabled>Categoría</option>
+                    <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">
+                      {{cat.nombre}}
+                    </option>
+                  </select>
+                </div>
+                <!-- Subcategoría -->
+                <div class="col-md-6">
+                  <select
+                    formControlName="sub_categoria"
+                    class="form-select form-control-modern"
+                    (change)="onSubcategoriaChange($event)"
+                    [disabled]="subCategorias.length === 0">
+                    <option value="">Subcategoría (opcional)</option>
+                    <option *ngFor="let subcat of subCategorias" [value]="subcat.id_categoria">
+                      {{subcat.nombre}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="invalid-feedback">Seleccione una categoría</div>
+            </div>
+
+            <!-- Marca -->
+            <div class="col-md-6">
+              <label class="form-label-custom">
+                Marca <span class="required-mark">*</span>
+              </label>
+              <div class="input-group">
+                <select
+                  formControlName="id_marca"
+                  class="form-select form-control-modern"
+                  [ngClass]="{
+                    'is-valid': control['id_marca'].valid && control['id_marca'].touched,
+                    'is-invalid': control['id_marca'].invalid && control['id_marca'].touched
+                  }">
+                  <option value="" disabled selected>Seleccione una marca</option>
+                  <option *ngFor="let mar of apiMarcas" [ngValue]="mar.id_marca">
+                    {{mar.nombre}}
+                  </option>
+                </select>
+                <button class="btn btn-success" type="button" (click)="abrirModalMarca()"
+                        title="Agregar nueva marca">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+              </div>
+              <div class="invalid-feedback">Seleccione una marca</div>
+            </div>
+
             <!-- Nombre -->
             <div class="col-md-6">
               <label class="form-label-custom">
@@ -361,71 +427,6 @@
               <div class="invalid-feedback d-block" *ngIf="control['precio_venta'].invalid && control['precio_venta'].touched">
                 Precio requerido (mayor a 0)
               </div>
-            </div>
-
-            <!-- Categoría y Subcategoría -->
-            <div class="col-md-6">
-              <label class="form-label-custom">
-                Categoría <span class="required-mark">*</span>
-              </label>
-              <div class="row g-2">
-                <!-- Categoría Principal -->
-                <div class="col-md-6">
-                  <select
-                    formControlName="id_categoria"
-                    class="form-select form-control-modern"
-                    (change)="onCategoriaChange($event)"
-                    [ngClass]="{
-                      'is-valid': control['id_categoria'].valid && control['id_categoria'].touched,
-                      'is-invalid': control['id_categoria'].invalid && control['id_categoria'].touched
-                    }">
-                    <option value="" disabled>Categoría</option>
-                    <option *ngFor="let cat of apiCategorias" [value]="cat.id_categoria">
-                      {{cat.nombre}}
-                    </option>
-                  </select>
-                </div>
-                <!-- Subcategoría -->
-                <div class="col-md-6">
-                  <select
-                    formControlName="sub_categoria"
-                    class="form-select form-control-modern"
-                    (change)="onSubcategoriaChange($event)"
-                    [disabled]="subCategorias.length === 0">
-                    <option value="">Subcategoría (opcional)</option>
-                    <option *ngFor="let subcat of subCategorias" [value]="subcat.id_categoria">
-                      {{subcat.nombre}}
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div class="invalid-feedback">Seleccione una categoría</div>
-            </div>
-
-            <!-- Marca -->
-            <div class="col-md-6">
-              <label class="form-label-custom">
-                Marca <span class="required-mark">*</span>
-              </label>
-              <div class="input-group">
-                <select
-                  formControlName="id_marca"
-                  class="form-select form-control-modern"
-                  [ngClass]="{
-                    'is-valid': control['id_marca'].valid && control['id_marca'].touched,
-                    'is-invalid': control['id_marca'].invalid && control['id_marca'].touched
-                  }">
-                  <option value="" disabled selected>Seleccione una marca</option>
-                  <option *ngFor="let mar of apiMarcas" [ngValue]="mar.id_marca">
-                    {{mar.nombre}}
-                  </option>
-                </select>
-                <button class="btn btn-success" type="button" (click)="abrirModalMarca()"
-                        title="Agregar nueva marca">
-                  <i class="bi bi-plus-lg"></i>
-                </button>
-              </div>
-              <div class="invalid-feedback">Seleccione una marca</div>
             </div>
 
             <!-- Unidad de Medida -->

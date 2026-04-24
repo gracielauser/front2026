@@ -109,15 +109,31 @@
             <div class="card-body">
               <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
               <div class="row g-3">
+                <!-- Selector de período -->
                 <div class="col-md-3">
-                  <label class="form-label">Fecha de registro (desde)</label>
-                  <input type="date" class="form-control" [(ngModel)]="filtroClientes.desde">
+                  <label class="form-label">Período</label>
+                  <select class="form-select" [(ngModel)]="filtroFechaClientes" (change)="onFiltroFechaClientesChange()">
+                    <option value="hoy">Hoy</option>
+                    <option value="ayer">Ayer</option>
+                    <option value="esta semana">Esta semana</option>
+                    <option value="este mes">Este mes</option>
+                    <option value="mes anterior">Mes anterior</option>
+                    <option value="este año">Este año</option>
+                    <option value="rango personalizado">Rango personalizado</option>
+                  </select>
                 </div>
-                <div class="col-md-3">
-                  <label class="form-label">Fecha de registro (hasta)</label>
-                  <input type="date" class="form-control" [(ngModel)]="filtroClientes.hasta">
-                </div>
-                <div class="col-md-4">
+                <!-- Rango personalizado -->
+                <ng-container *ngIf="mostrarRangoPersonalizadoClientes">
+                  <div class="col-md-2">
+                    <label class="form-label">Desde</label>
+                    <input type="date" class="form-control" [value]="fechaDesdeClientesR" (change)="ponerFechaClientesR($event, 1)">
+                  </div>
+                  <div class="col-md-2">
+                    <label class="form-label">Hasta</label>
+                    <input type="date" class="form-control" [value]="fechaHastaClientesR" (change)="ponerFechaClientesR($event, 2)">
+                  </div>
+                </ng-container>
+                <div [class]="mostrarRangoPersonalizadoClientes ? 'col-md-3' : 'col-md-7'">
                   <label class="form-label">Buscar Cliente</label>
                   <div class="position-relative">
                     <input type="text" class="form-control" placeholder="Nombre, CI o Celular..."

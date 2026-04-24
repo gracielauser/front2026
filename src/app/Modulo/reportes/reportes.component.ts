@@ -58,6 +58,10 @@ export class ReportesComponent implements OnInit {
     busqueda: ''
   }
   mostrarListaClientes: boolean = false
+  filtroFechaClientes: string = 'este año'
+  fechaDesdeClientesR: string = ''
+  fechaHastaClientesR: string = ''
+  mostrarRangoPersonalizadoClientes: boolean = false
 
   // Datos de compras
   datosComprasReporte: any = null
@@ -192,10 +196,82 @@ datosGastos(){
 }
 
 datosClientes(){
-  this.CliSer.datosClientes().subscribe((data)=>{
+  const body = this.construirBodyClientes();
+  this.CliSer.datosClientes(body).subscribe((data)=>{
     console.log('datos clientes: ', data);
     this.datosClientesReporte = data;
   })
+}
+
+construirBodyClientes(): { desde: string, hasta: string, id_cliente: string } {
+  const hoy = new Date();
+  const fmt = (d: Date) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  let desde = '';
+  let hasta = '';
+  switch (this.filtroFechaClientes) {
+    case 'hoy':
+      desde = fmt(hoy);
+      hasta = fmt(hoy);
+      break;
+    case 'ayer':
+      const ayer = new Date(hoy);
+      ayer.setDate(hoy.getDate() - 1);
+      desde = fmt(ayer);
+      hasta = fmt(ayer);
+      break;
+    case 'esta semana':
+      const inicioSemana = new Date(hoy);
+      inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+      desde = fmt(inicioSemana);
+      hasta = fmt(hoy);
+      break;
+    case 'este mes':
+      desde = fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 1));
+      hasta = fmt(hoy);
+      break;
+    case 'mes anterior':
+      desde = fmt(new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1));
+      hasta = fmt(new Date(hoy.getFullYear(), hoy.getMonth(), 0));
+      break;
+    case 'este año':
+      desde = fmt(new Date(hoy.getFullYear(), 0, 1));
+      hasta = fmt(hoy);
+      break;
+    case 'rango personalizado':
+      desde = this.fechaDesdeClientesR;
+      hasta = this.fechaHastaClientesR;
+      break;
+    default:
+      desde = '';
+      hasta = '';
+  }
+  return { desde, hasta, id_cliente: this.filtroClientes.id_cliente };
+}
+
+onFiltroFechaClientesChange(): void {
+  if (this.filtroFechaClientes === 'rango personalizado') {
+    this.mostrarRangoPersonalizadoClientes = true;
+    this.fechaDesdeClientesR = '';
+    this.fechaHastaClientesR = '';
+  } else {
+    this.mostrarRangoPersonalizadoClientes = false;
+    this.fechaDesdeClientesR = '';
+    this.fechaHastaClientesR = '';
+    this.datosClientes();
+  }
+}
+
+ponerFechaClientesR(e: any, tipo: number): void {
+  const fechaStr = e.target.value;
+  if (!fechaStr) return;
+  if (tipo === 1) {
+    this.fechaDesdeClientesR = fechaStr;
+  } else if (tipo === 2) {
+    this.fechaHastaClientesR = fechaStr;
+  }
+  if (this.fechaDesdeClientesR && this.fechaHastaClientesR) {
+    this.datosClientes();
+  }
 }
 
 datosCompras(){
@@ -396,26 +472,13 @@ get clientesFiltrados(): any[] {
   return this.datosClientesReporte.clientes.filter((c: any) => {
     const coincideBusqueda = !this.filtroClientes.busqueda ||
       c.nombre_completo.toLowerCase().includes(this.filtroClientes.busqueda.toLowerCase()) ||
-      c.ci_nit.toString().includes(this.filtroClientes.busqueda) ||
+      c.ci_nit?.toString().includes(this.filtroClientes.busqueda) ||
       (c.celular && c.celular.includes(this.filtroClientes.busqueda));
-
-    // Filtro por rango de fechas
-    let coincideFecha = true;
-    if (this.filtroClientes.desde && c.fecha_registro) {
-      const fechaCliente = new Date(c.fecha_registro);
-      const fechaDesde = new Date(this.filtroClientes.desde);
-      coincideFecha = fechaCliente >= fechaDesde;
-    }
-    if (this.filtroClientes.hasta && c.fecha_registro && coincideFecha) {
-      const fechaCliente = new Date(c.fecha_registro);
-      const fechaHasta = new Date(this.filtroClientes.hasta);
-      coincideFecha = fechaCliente <= fechaHasta;
-    }
 
     const coincideCliente = !this.filtroClientes.id_cliente ||
       c.id_cliente.toString() === this.filtroClientes.id_cliente;
 
-    return coincideBusqueda && coincideFecha && coincideCliente;
+    return coincideBusqueda && coincideCliente;
   });
 }
 
@@ -464,6 +527,7 @@ seleccionarClienteFiltro(cliente: any, input: HTMLInputElement) {
   this.filtroClientes.busqueda = cliente.nombre_completo;
   this.mostrarListaClientes = false;
   input.blur();
+  this.datosClientes();
 }
 
 limpiarFiltrosClientes() {
@@ -473,6 +537,11 @@ limpiarFiltrosClientes() {
     id_cliente: '',
     busqueda: ''
   };
+  this.filtroFechaClientes = 'este año';
+  this.fechaDesdeClientesR = '';
+  this.fechaHastaClientesR = '';
+  this.mostrarRangoPersonalizadoClientes = false;
+  this.datosClientes();
 }
 
 // Métodos para compras
@@ -1213,11 +1282,12 @@ this.GasSer.getPDF({}).subscribe((pdfBlob) => {
     });
 }
 reporteClientesPDF(){
+  const body = this.construirBodyClientes();
   const datosReporte = {
     filtros: {
-      desde: this.filtroClientes.desde || null,
-      hasta: this.filtroClientes.hasta || null,
-      id_cliente: this.filtroClientes.id_cliente || null,
+      desde: body.desde || null,
+      hasta: body.hasta || null,
+      id_cliente: body.id_cliente || null,
       busqueda: this.filtroClientes.busqueda || null
     },
     resumenes: this.totalesFiltradosClientes,
@@ -1234,11 +1304,12 @@ reporteClientesPDF(){
 }
 
 reporteClientesExcel(){
+  const body = this.construirBodyClientes();
   const datosReporte = {
     filtros: {
-      desde: this.filtroClientes.desde || null,
-      hasta: this.filtroClientes.hasta || null,
-      id_cliente: this.filtroClientes.id_cliente || null,
+      desde: body.desde || null,
+      hasta: body.hasta || null,
+      id_cliente: body.id_cliente || null,
       busqueda: this.filtroClientes.busqueda || null
     },
     resumenes: this.totalesFiltradosClientes,
