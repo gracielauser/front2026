@@ -54,8 +54,8 @@ export class VentaService {
     });
 }
 getExcel(body={}): Observable<Blob> {
-  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/reporteVentas-excel`, body, {
-    responseType: 'blob' // 👈 clave para manejar Excel
+  return this.xhttp.post(`${environment.apiUrl}/api/reporte-venta/reporteVentas-resumido/xlsx`, body, {
+    responseType: 'blob'
   });
 }
 datosVentas(): Observable<any> {

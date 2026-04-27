@@ -58,6 +58,10 @@ export class ReportesComponent implements OnInit {
     busqueda: ''
   }
   mostrarListaClientes: boolean = false
+  clienteSeleccionadoR: any = null
+  busquedaClienteR: string = ''
+  mostrarBuscadorClienteR: boolean = false
+  mostrarDropdownClienteR: boolean = false
   filtroFechaClientes: string = 'este año'
   fechaDesdeClientesR: string = ''
   fechaHastaClientesR: string = ''
@@ -530,6 +534,52 @@ seleccionarClienteFiltro(cliente: any, input: HTMLInputElement) {
   this.datosClientes();
 }
 
+get clientesParaBuscadorR(): any[] {
+  if (!this.busquedaClienteR) return this.todosClientesParaDropdown;
+  const q = this.busquedaClienteR.toLowerCase();
+  return this.todosClientesParaDropdown.filter((c: any) =>
+    c.nombre_completo?.toLowerCase().includes(q) ||
+    c.ci_nit?.toString().includes(q) ||
+    (c.celular && c.celular.includes(q))
+  );
+}
+
+abrirBuscadorClienteR() {
+  this.mostrarBuscadorClienteR = true;
+  this.busquedaClienteR = '';
+  setTimeout(() => {
+    const el = document.querySelector<HTMLInputElement>('.cliente-buscador-expand-r input');
+    if (el) el.focus();
+  }, 0);
+}
+
+cerrarBuscadorClienteR() {
+  this.mostrarBuscadorClienteR = false;
+  this.mostrarDropdownClienteR = false;
+  this.busquedaClienteR = '';
+}
+
+filtrarClientesR() {
+  this.mostrarDropdownClienteR = true;
+}
+
+ocultarDropdownClienteR() {
+  setTimeout(() => { this.mostrarDropdownClienteR = false; }, 200);
+}
+
+seleccionarClienteR(cliente: any) {
+  this.clienteSeleccionadoR = cliente;
+  this.filtroClientes.id_cliente = cliente.id_cliente.toString();
+  this.cerrarBuscadorClienteR();
+  this.datosClientes();
+}
+
+limpiarClienteR() {
+  this.clienteSeleccionadoR = null;
+  this.filtroClientes.id_cliente = '';
+  this.datosClientes();
+}
+
 limpiarFiltrosClientes() {
   this.filtroClientes = {
     desde: '',
@@ -541,6 +591,9 @@ limpiarFiltrosClientes() {
   this.fechaDesdeClientesR = '';
   this.fechaHastaClientesR = '';
   this.mostrarRangoPersonalizadoClientes = false;
+  this.clienteSeleccionadoR = null;
+  this.busquedaClienteR = '';
+  this.mostrarBuscadorClienteR = false;
   this.datosClientes();
 }
 
@@ -607,19 +660,26 @@ get totalesFiltradosCompras(): any {
       total_compras: 0,
       monto_total: 0,
       total_productos: 0,
-      compras_activas: 0
+      compras_activas: 0,
+      compras_anuladas: 0,
+      monto_anuladas: 0
     };
   }
 
-  const monto_total = compras.reduce((sum: number, c: any) => sum + (c.monto_total || 0), 0);
+  const monto_total = compras.reduce((sum: number, c: any) => sum + (c.estado=='Activa'?c.monto_total:0 || 0), 0);
   const total_productos = compras.reduce((sum: number, c: any) => sum + (c.total_cantidad || 0), 0);
   const compras_activas = compras.filter((c: any) => c.estado_valor === 1).length;
+  const compras_anuladas = compras.filter((c: any) => c.estado_valor === 2).length;
+  const monto_anuladas = compras.filter((c: any) => c.estado_valor === 2)
+    .reduce((sum: number, c: any) => sum + (c.monto_total || 0), 0);
 
   return {
     total_compras: compras.length,
     monto_total: monto_total,
     total_productos: total_productos,
-    compras_activas: compras_activas
+    compras_activas: compras_activas,
+    compras_anuladas: compras_anuladas,
+    monto_anuladas: monto_anuladas
   };
 }
 
@@ -738,7 +798,30 @@ onFiltroFechaComprasChange(): void {
 }
 
 comprasExcel(): void {
-  console.log('Exportar Excel de compras - pendiente de implementación en servicio');
+  const body: any = {};
+  if (this.filtroCompras.desde)        body['desde']        = this.filtroCompras.desde;
+  if (this.filtroCompras.hasta)        body['hasta']        = this.filtroCompras.hasta;
+  if (this.filtroCompras.id_proveedor) body['id_proveedor'] = this.filtroCompras.id_proveedor;
+  if (this.filtroCompras.busqueda)     body['busqueda']     = this.filtroCompras.busqueda;
+  if (this.filtroCompras.estado)       body['estado']       = +this.filtroCompras.estado;
+  if (this.filtroCompras.tipo_compra)  body['tipo_compra']  = +this.filtroCompras.tipo_compra;
+  if (this.filtroCompras.id_usuario)   body['id_usuario']   = +this.filtroCompras.id_usuario;
+  this.ComSer.getExcel(body).subscribe((excelBlob) => {
+    const blob = new Blob([excelBlob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reporte-compras-${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.click();
+    URL.revokeObjectURL(url);
+  });
+}
+
+private formatearFechaTexto(date: Date): string {
+  const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const dia = date.getDate().toString().padStart(2, '0');
+  const mes = meses[date.getMonth()];
+  return `${dia} ${mes} ${date.getFullYear()}`;
 }
 
 onFiltroFechaVentasChange(event: any): void {
@@ -747,10 +830,44 @@ onFiltroFechaVentasChange(event: any): void {
     this.enFiltroPersonalizadoVentasR = true;
     this.fechaDesdeVentasR = '';
     this.fechaHastaVentasR = '';
+    this.filtroVentas.desde = '';
+    this.filtroVentas.hasta = '';
   } else {
     this.enFiltroPersonalizadoVentasR = false;
     this.fechaDesdeVentasR = '';
     this.fechaHastaVentasR = '';
+    const hoy = new Date();
+    let desde: Date | null = null;
+    let hasta: Date | null = null;
+    switch (valor) {
+      case 'hoy':
+        desde = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 0, 0, 0);
+        hasta = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate(), 23, 59, 59);
+        break;
+      case 'ayer':
+        const ayer = new Date(hoy);
+        ayer.setDate(hoy.getDate() - 1);
+        desde = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 0, 0, 0);
+        hasta = new Date(ayer.getFullYear(), ayer.getMonth(), ayer.getDate(), 23, 59, 59);
+        break;
+      case 'esta semana':
+        const inicioSemana = new Date(hoy);
+        inicioSemana.setDate(hoy.getDate() - hoy.getDay());
+        inicioSemana.setHours(0, 0, 0, 0);
+        desde = inicioSemana;
+        hasta = new Date(hoy);
+        break;
+      case 'este mes':
+        desde = new Date(hoy.getFullYear(), hoy.getMonth(), 1, 0, 0, 0);
+        hasta = new Date(hoy);
+        break;
+      case 'mes anterior':
+        desde = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1, 0, 0, 0);
+        hasta = new Date(hoy.getFullYear(), hoy.getMonth(), 0, 23, 59, 59);
+        break;
+    }
+    this.filtroVentas.desde = desde ? this.formatearFechaTexto(desde) : '';
+    this.filtroVentas.hasta = hasta ? this.formatearFechaTexto(hasta) : '';
   }
 }
 
@@ -759,8 +876,10 @@ ponerFechaVentasR(e: any, tipo: number): void {
   if (!fechaStr) return;
   if (tipo === 1) {
     this.fechaDesdeVentasR = fechaStr;
+    this.filtroVentas.desde = this.formatearFechaTexto(new Date(fechaStr + 'T00:00:00'));
   } else if (tipo === 2) {
     this.fechaHastaVentasR = fechaStr;
+    this.filtroVentas.hasta = this.formatearFechaTexto(new Date(fechaStr + 'T23:59:59'));
   }
 }
 
@@ -852,7 +971,7 @@ get ventasFiltradas(): any[] {
     }
 
     const coincideTipoVenta = this.filtroVentas.tipo_venta === '' ||
-      v.tipo_venta === this.filtroVentas.tipo_venta;
+      v.tipo_venta?.toLowerCase() === this.filtroVentas.tipo_venta.toLowerCase();
 
     const coincideEstado = this.filtroVentas.estado === '' ||
       v.estado === this.filtroVentas.estado;
@@ -887,7 +1006,8 @@ get totalesFiltradosVentas(): any {
   }
 
   const ventas_validas = ventas.filter((v: any) => v.estado_valor === 1).length;
-  const ventas_anuladas = ventas.filter((v: any) => v.estado_valor === 0).length;
+  const ventas_anuladas = ventas.filter((v: any) => v.estado_valor === 2).length;
+  const monto_anuladas = ventas.filter((v: any) => v.estado_valor === 2).reduce((sum: number, v: any) => sum + (v.total || 0), 0);
   const monto_total_general = ventas.filter((v: any) => v.incluida_en_totales).reduce((sum: number, v: any) => sum + (v.total || 0), 0);
   const total_efectivo = ventas.filter((v: any) => v.tipo_pago === 'Efectivo' && v.incluida_en_totales).reduce((sum: number, v: any) => sum + (v.total || 0), 0);
   const total_qr = ventas.filter((v: any) => v.tipo_pago === 'QR' && v.incluida_en_totales).reduce((sum: number, v: any) => sum + (v.total || 0), 0);
@@ -898,6 +1018,7 @@ get totalesFiltradosVentas(): any {
     total_ventas: ventas.length,
     ventas_validas,
     ventas_anuladas,
+    monto_anuladas,
     monto_total_general,
     total_efectivo,
     total_qr,

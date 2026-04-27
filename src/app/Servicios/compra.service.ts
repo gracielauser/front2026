@@ -49,6 +49,11 @@ return this.xhttp.post(`${environment.apiUrl}/api/reporte-compra/compras-detalla
         }
 
      }
+     getExcel(body = {}): Observable<Blob> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte-compra/compras-resumido/xlsx`, body, {
+         responseType: 'blob'
+       });
+     }
      datosReporte(): Observable<any> {
       return this.xhttp.get<any>(`${environment.apiUrl}/api/reporte-compra/compras-resumido/datos`);
      }

@@ -133,27 +133,79 @@
                     <input type="date" class="form-control" [value]="fechaHastaClientesR" (change)="ponerFechaClientesR($event, 2)">
                   </div>
                 </ng-container>
-                <div [class]="mostrarRangoPersonalizadoClientes ? 'col-md-3' : 'col-md-7'">
-                  <label class="form-label">Buscar Cliente</label>
-                  <div class="position-relative">
-                    <input type="text" class="form-control" placeholder="Nombre, CI o Celular..."
-                      [(ngModel)]="filtroClientes.busqueda" (input)="filtrarClienteModal($event)"
-                      (focus)="filtrarClienteModal($event)" (blur)="ocultarListaClientesConRetraso()"
-                      #buscarClienteInput>
+                <div [class]="mostrarRangoPersonalizadoClientes ? 'col-md-5' : 'col-md-7'">
+                  <label class="form-label">Cliente</label>
+                  <div class="cliente-search-custom">
+                    <div class="cliente-main-area">
 
-                    <div class="productos-lista" *ngIf="mostrarListaClientes && datosClientesReporte">
-                      <div *ngFor="let cliente of todosClientesParaDropdown | slice:0:6" class="producto-item"
-                        (mousedown)="seleccionarClienteFiltro(cliente, buscarClienteInput)">
-                        <i class="bi bi-person-fill text-primary"></i>
-                        <div class="producto-info">
-                          <strong>{{cliente.nombre_completo}}</strong>
-                          <small>CI: {{cliente.ci_nit}} | Tel: {{cliente.celular || 'N/A'}}</small>
+                      <!-- Display del cliente seleccionado -->
+                      <div class="cliente-display-card" (click)="!mostrarBuscadorClienteR && abrirBuscadorClienteR()">
+                        <ng-container *ngIf="clienteSeleccionadoR; else sinClienteR">
+                          <div class="cliente-display-info">
+                            <div class="cliente-display-nombre">
+                              <i class="bi bi-person-circle"></i>
+                              <strong>{{ clienteSeleccionadoR.nombre_completo }}</strong>
+                            </div>
+                            <div class="cliente-display-doc">
+                              <i class="bi bi-card-text"></i>
+                              <span>CI/NIT: {{ clienteSeleccionadoR.ci_nit }}</span>
+                            </div>
+                          </div>
+                          <button type="button" class="btn-clear-cliente" (click)="$event.stopPropagation(); limpiarClienteR()" title="Quitar cliente">
+                            <i class="bi bi-x-circle-fill"></i>
+                          </button>
+                        </ng-container>
+                        <ng-template #sinClienteR>
+                          <div class="cliente-display-empty">
+                            <i class="bi bi-person-dash"></i>
+                            <span>Todos los clientes · Clic para filtrar</span>
+                          </div>
+                        </ng-template>
+                      </div>
+
+                      <!-- Buscador expandible -->
+                      <div class="cliente-buscador-expand cliente-buscador-expand-r" *ngIf="mostrarBuscadorClienteR">
+                        <div class="search-input-wrapper">
+                          <input
+                            type="text"
+                            class="ultra-input cliente-input"
+                            [(ngModel)]="busquedaClienteR"
+                            [ngModelOptions]="{standalone: true}"
+                            (input)="filtrarClientesR()"
+                            (focus)="filtrarClientesR()"
+                            (blur)="ocultarDropdownClienteR()"
+                            placeholder="🔍 Escribe nombre o CI/NIT..."
+                            autocomplete="off"
+                          />
+                          <button type="button" class="btn-clear-cliente" (click)="cerrarBuscadorClienteR()" title="Cancelar">
+                            <i class="bi bi-x-lg"></i>
+                          </button>
+                        </div>
+                        <!-- Dropdown resultados -->
+                        <div class="cliente-dropdown" *ngIf="mostrarDropdownClienteR && clientesParaBuscadorR.length > 0">
+                          <div class="cliente-dropdown-item" *ngFor="let cli of clientesParaBuscadorR | slice:0:6"
+                            (mousedown)="seleccionarClienteR(cli)">
+                            <div class="cliente-item-icon"><i class="bi bi-person-circle"></i></div>
+                            <div class="cliente-item-info">
+                              <span class="cliente-item-nombre">{{ cli.nombre_completo }}</span>
+                              <span class="cliente-item-doc">CI/NIT: {{ cli.ci_nit }}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="cliente-dropdown empty" *ngIf="mostrarDropdownClienteR && clientesParaBuscadorR.length === 0 && busquedaClienteR">
+                          <div class="empty-result">
+                            <i class="bi bi-search"></i>
+                            <p>No se encontraron clientes</p>
+                          </div>
                         </div>
                       </div>
-                      <div class="producto-item-empty" *ngIf="datosClientesReporte.clientes.length === 0">
-                        <i class="bi bi-inbox"></i>
-                        <span>No hay clientes</span>
-                      </div>
+
+                    </div>
+                    <!-- Botón buscar -->
+                    <div class="cliente-actions">
+                      <button type="button" class="btn-action-cliente btn-buscar" title="Buscar cliente" (click)="abrirBuscadorClienteR()">
+                        <i class="bi bi-search"></i>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -308,14 +360,14 @@
 </div>
 <!-- MODAL VENTAS -->
 <div class="modal fade" id="ventas" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" style="max-width: 1400px;">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Reporte de Ventas</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="container">
+        <div class="container-fluid">
           <!-- =====================================
      REPORTE DE VENTAS
      ===================================== -->
@@ -378,14 +430,14 @@
                       </ul>
                     </div>
                   </div>
-                  <!-- <div class="col-md-3">
-                    <label class="form-label">Tipo de Impuesto</label>
+                  <div class="col-md-3">
+                    <label class="form-label">Tipo de Venta</label>
                     <select class="form-select" [(ngModel)]="filtroVentas.tipo_venta" style="position: relative; z-index: 1;">
-                      <option value="">Todos</option>
-                      <option value="Sin Factura">Ninguno</option>
+                      <option value="">Todas</option>
+                      <option value="Normal">Normal</option>
                       <option value="Facturado">Facturado</option>
                     </select>
-                  </div> -->
+                  </div>
                   <div class="col-md-3">
                     <label class="form-label">Estado</label>
                     <select class="form-select" [(ngModel)]="filtroVentas.estado" style="position: relative; z-index: 1;">
@@ -464,36 +516,44 @@
                 </div>
               </div>
             </div>
-            <div class="row text-center mb-4" *ngIf="datosVentasReporte">
-              <div class="col-md-3">
-                <div class="card border-primary shadow-sm">
+            <div class="row text-center mb-4 g-3" *ngIf="datosVentasReporte">
+              <div class="col">
+                <div class="card border-primary shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-cash-stack"></i> Monto Total</h6>
                     <h3 class="text-primary">{{totalesFiltradosVentas.monto_total_general | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
-                <div class="card border-success shadow-sm">
+              <div class="col">
+                <div class="card border-success shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-check-circle"></i> Ventas Válidas</h6>
                     <h3 class="text-success">{{totalesFiltradosVentas.ventas_validas}}</h3>
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
-                <div class="card border-info shadow-sm">
+              <div class="col">
+                <div class="card border-info shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-wallet2"></i> Efectivo ({{totalesFiltradosVentas.cantidad_efectivo}})</h6>
                     <h3 class="text-info">{{totalesFiltradosVentas.total_efectivo | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
-                <div class="card border-warning shadow-sm">
+              <div class="col">
+                <div class="card border-warning shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-qr-code"></i> QR ({{totalesFiltradosVentas.cantidad_qr}})</h6>
                     <h3 class="text-warning">{{totalesFiltradosVentas.total_qr | number:'1.2-2'}} Bs.</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card border-danger shadow-sm h-100">
+                  <div class="card-body">
+                    <h6><i class="bi bi-x-circle"></i> Ventas Anuladas ({{totalesFiltradosVentas.ventas_anuladas}})</h6>
+                    <h3 class="text-danger">{{totalesFiltradosVentas.monto_anuladas | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
@@ -1148,15 +1208,15 @@
 </div>
 <!-- Compras -->
 <div class="modal fade" id="compras" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" style="max-width: 1400px;">
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="bi bi-cart-check"></i> Reporte de Compras</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="container">
-          <div class="container mt-4">
+        <div class="container-fluid">
+          <div class="container-fluid mt-4">
 
             <!-- 🧩 Encabezado -->
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -1214,14 +1274,14 @@
                     </select>
                   </div>
 
-                  <div class="col-md-3">
+                  <!-- <div class="col-md-3">
                     <label class="form-label">Tipo de impuesto</label>
                     <select class="form-select" [(ngModel)]="filtroCompras.tipo_compra">
                       <option value="">Todos</option>
                       <option value="1">Ninguno</option>
                       <option value="2">Facturada</option>
                     </select>
-                  </div>
+                  </div> -->
 
                   <div class="col-md-3">
                     <label class="form-label">Usuario</label>
@@ -1291,36 +1351,44 @@
             </div>
 
             <!-- Resumen -->
-            <div class="row mb-4" *ngIf="datosComprasReporte">
-              <div class="col-md-3">
-                <div class="card text-center border-primary shadow-sm">
+            <div class="row text-center mb-4 g-3" *ngIf="datosComprasReporte">
+              <div class="col">
+                <div class="card text-center border-primary shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-cart-check"></i> Total de compras</h6>
                     <h3 class="text-primary">{{totalesFiltradosCompras.total_compras}}</h3>
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
-                <div class="card text-center border-success shadow-sm">
+              <div class="col">
+                <div class="card text-center border-success shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-cash-coin"></i> Monto total</h6>
                     <h3 class="text-success">{{totalesFiltradosCompras.monto_total | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
-                <div class="card text-center border-info shadow-sm">
+              <div class="col">
+                <div class="card text-center border-info shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-box-seam"></i> Total productos</h6>
                     <h3 class="text-info">{{totalesFiltradosCompras.total_productos}}</h3>
                   </div>
                 </div>
               </div>
-              <div class="col-md-3">
-                <div class="card text-center border-warning shadow-sm">
+              <div class="col">
+                <div class="card text-center border-warning shadow-sm h-100">
                   <div class="card-body">
                     <h6><i class="bi bi-check-circle"></i> Compras activas</h6>
                     <h3 class="text-warning">{{totalesFiltradosCompras.compras_activas}}</h3>
+                  </div>
+                </div>
+              </div>
+              <div class="col">
+                <div class="card text-center border-danger shadow-sm h-100">
+                  <div class="card-body">
+                    <h6><i class="bi bi-x-circle"></i> Compras Anuladas ({{totalesFiltradosCompras.compras_anuladas}})</h6>
+                    <h3 class="text-danger">{{totalesFiltradosCompras.monto_anuladas | number:'1.2-2'}} Bs.</h3>
                   </div>
                 </div>
               </div>
@@ -1377,7 +1445,7 @@
                           <span class="badge"
                             [ngClass]="{
                               'bg-success': compra.estado == 'Activa',
-                              'bg-danger': compra.estado == 'Cancelada',
+                              'bg-danger': compra.estado == 'Anulada',
                               'bg-secondary': compra.estado === 'Finalizada'
                             }">
                             {{compra.estado}}
