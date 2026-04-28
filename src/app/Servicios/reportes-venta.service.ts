@@ -42,4 +42,9 @@ export class ReportesVentaService {
       responseType: 'blob' // 👈 clave para manejar PDF
     });
   }
+   tendenciaExcel(body: any = {}): Observable<Blob> {
+    return this.xhttp.post(`${environment.apiUrl}/api/reporte-tendencia/xlsx`, body, {
+      responseType: 'blob'
+    });
+  }
 }

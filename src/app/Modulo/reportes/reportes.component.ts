@@ -139,7 +139,8 @@ export class ReportesComponent implements OnInit {
     marca: '',
     desde: '',
     hasta: '',
-    tipo_venta: ''
+    tipo_venta: '',
+    orden: 'vendido'
   }
   periodoTendencia: string = ''
   mostrarRangoPersonalizadoTendencia: boolean = false
@@ -1576,6 +1577,7 @@ construirBodyTendencia(): any {
   if (this.filtroTendencia.desde) body['desde'] = this.filtroTendencia.desde;
   if (this.filtroTendencia.hasta) body['hasta'] = this.filtroTendencia.hasta;
   if (this.filtroTendencia.tipo_venta) body['tipo_venta'] = this.filtroTendencia.tipo_venta;
+  body['orden'] = this.filtroTendencia.orden || 'vendido';
   return body;
 }
 
@@ -1642,6 +1644,7 @@ onPeriodoTendenciaChange(): void {
 datosTendencia(): void {
   const body = this.construirBodyTendencia();
   this.RepSer.tendenciaVentas(body).subscribe((data: any[]) => {
+    console.log('Datos de tendencia recibidos:', data);
     this.datosTendenciaReporte = data || [];
     this.actualizarCategoriasYMarcasTendencia();
     this.actualizarChartTendencia();
@@ -1665,18 +1668,16 @@ actualizarCategoriasYMarcasTendencia(): void {
 }
 
 actualizarChartTendencia(): void {
-  const top5 = [...this.datosTendenciaReporte]
-    .sort((a, b) => +b.total_vendido - +a.total_vendido)
-    .slice(0, 5);
+  const top5 = this.datosTendenciaReporte.slice(0, 5);
 
   if (top5.length === 0) {
     this.chartOptionTendencia = {} as EChartsOption;
     return;
   }
 
-  const nombres = top5.map(item => item.producto?.nombre ?? 'Producto');
-  const valores = top5.map(item => +item.total_vendido);
-  const ingresos = top5.map(item => +(item.total_ingresos ?? 0));
+  const nombres = top5.map(item => item.producto?.nombre ?? 'Producto').reverse();
+  const valores = top5.map(item => +item.total_vendido).reverse();
+  const ingresos = top5.map(item => +(item.total_ingresos ?? 0)).reverse();
 
   this.chartOptionTendencia = {
     tooltip: {
@@ -1726,6 +1727,19 @@ reporteTendenciaPDF(): void {
     const blob = new Blob([pdfBlob], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
+  });
+}
+
+tendenciaExcel(): void {
+  const body = this.construirBodyTendencia();
+  this.RepSer.tendenciaExcel(body).subscribe((excelBlob: Blob) => {
+    const blob = new Blob([excelBlob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reporte-tendencia-${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(url);
   });
 }
 }

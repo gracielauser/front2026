@@ -1878,6 +1878,7 @@
                   </select>
                 </div>
 
+
               </div>
             </div>
           </div>
@@ -1900,12 +1901,24 @@
 
           <!-- Tabla detalle top 5 -->
           <div class="card shadow-sm" *ngIf="datosTendenciaReporte.length > 0">
-            <div class="card-header fw-bold"><i class="bi bi-table me-2"></i>Detalle</div>
+            <div class="card-header fw-bold d-flex align-items-center justify-content-between">
+              <span><i class="bi bi-table me-2"></i>Detalle</span>
+              <div class="d-flex align-items-center gap-2">
+                <label class="form-label fw-semibold mb-0">Orden</label>
+                <select class="form-select form-select-sm" style="width:auto" [(ngModel)]="filtroTendencia.orden" (change)="datosTendencia()">
+                  <option value="vendido">Más vendido</option>
+                  <option value="ingreso">Mayor ingreso</option>
+                  <option value="ganancia">Mayor ganancia</option>
+                </select>
+              </div>
+            </div>
+
+
             <div class="card-body p-0">
               <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                  <thead class="table-dark">
-                    <tr>
+                  <thead>
+                    <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                       <th>#</th>
                       <th>Código</th>
                       <th>Producto</th>
@@ -1936,7 +1949,10 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" (click)="reporteTendenciaPDF()">
+        <button type="button" class="btn btn-success me-2" (click)="tendenciaExcel()">
+          <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
+        </button>
+        <button type="button" class="btn btn-danger me-2" (click)="reporteTendenciaPDF()">
           <i class="bi bi-filetype-pdf me-1"></i>Generar reporte
         </button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
