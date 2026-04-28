@@ -20,6 +20,15 @@ page:number=1
 nombre:string=''
 estado='1'
 mensajeExito: string | null = null;
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    this.error = !exito;
+    this.mensajeExito = mensaje;
+    const toastEl = document.getElementById('toastExito');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  }
   constructor(
     private unidadSer: UnidadMedidaService
   ){}
@@ -52,19 +61,13 @@ AgregarUnidad(){
       console.log('devuelve: ', data.mensaje, data.nombre);
       this.listarUnidades()
       this.uniForm.reset()
-          this.mensajeExito = data.mensaje;
+      this.mostrarAlerta(true, 'Unidad registrada correctamente');
     }, error: (error) => {
       console.log(error);
+      this.mostrarAlerta(false, 'Error al agregar unidad');
     }
   }
-  )
-   //mensaje de exito
-      const toastEl = document.getElementById('toastExito');
-      if (toastEl) {
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-      }
-}
+  )}
 idUnidad:number=0;
 ModificarUnidad(uni:any){
   this.idUnidad=uni.id_unidad_medida;
@@ -86,17 +89,12 @@ guardarModificacion(){
       console.log('devuelve: ', data.mensaje, data.nombre);
       this.listarUnidades()
       this.uniForm.reset()
-              this.mensajeExito = data.mensaje;
+      this.mostrarAlerta(true, 'Unidad actualizada correctamente');
     }, error: (error) => {
       console.log(error);
+      this.mostrarAlerta(false, 'Error al actualizar unidad');
     }
   })
-   //mensaje de exito
-      const toastEl = document.getElementById('toastExito');
-      if (toastEl) {
-        const toast = new bootstrap.Toast(toastEl);
-        toast.show();
-      }
 }
 
  rolSeleccionado: any = null;
@@ -124,21 +122,14 @@ guardarCambio() {
         next: (data) => {
           console.log('Estado modificado:', data.mensaje);
           this.listarUnidades();
-          this.error = false;
-          this.mensajeExito = data.mensaje;
+          this.mostrarAlerta(true, this.estadoTemporal === 1 ? 'Unidad activada correctamente' : 'Unidad desactivada correctamente');
         },
         error: (error) => {
-          this.mensajeExito = error.data.mensaje || 'Error al modificar el estado';
-          this.error = true;
+          this.mostrarAlerta(false, this.estadoTemporal === 1 ? 'Error al activar unidad' : 'Error al desactivar unidad');
         }
       })
     }
     this.rolSeleccionado = null;
 //mensaje de exito
-  const toastEl = document.getElementById('toastExito');
-  if (toastEl) {
-    const toast = new bootstrap.Toast(toastEl);
-    toast.show();
-  }
 }
 }

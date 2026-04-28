@@ -301,10 +301,11 @@
 </div>
 <!-- Modal de éxito -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
-  <div id="toastExito" class="toast align-items-center  toast-custom border-0" role="alert">
+  <div id="toastExito" class="toast align-items-center border-0" [ngClass]="exito ? 'toast-custom-green' : 'toast-custom-red'" role="alert">
     <div class="d-flex">
       <div class="toast-body">
-        Los cambios fueron guardados exitosamente.
+        <i class="bi me-2" [ngClass]="exito ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+        {{mensajeExito}}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>

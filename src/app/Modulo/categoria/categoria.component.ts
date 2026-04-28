@@ -265,7 +265,7 @@ cambioEstado(event: any){
         console.log('Categoría creada:', data.mensaje);
         this.Listar();
         this.exito = true;
-        this.mensajeToast = data.mensaje || 'Categoría creada exitosamente';
+        this.mensajeToast = this.esSubcategoria ? 'Subcategoría registrada correctamente' : 'Categoría registrada correctamente';
         this.mostrarToast();
 
         if (this.esSubcategoria) {
@@ -278,7 +278,7 @@ cambioEstado(event: any){
       error: (error) => {
         console.log('Error al crear categoría:', error);
         this.exito = false;
-        this.mensajeToast = 'Error al crear la categoría';
+        this.mensajeToast = this.esSubcategoria ? 'Error al agregar subcategoría' : 'Error al agregar categoría';
         this.mostrarToast();
       }
     });
@@ -295,7 +295,7 @@ cambioEstado(event: any){
         console.log('Categoría modificada:', data.mensaje);
         this.Listar();
         this.exito = true;
-        this.mensajeToast = data.mensaje || 'Categoría actualizada exitosamente';
+        this.mensajeToast = this.esSubcategoria ? 'Subcategoría actualizada correctamente' : 'Categoría actualizada correctamente';
         this.mostrarToast();
 
         if (this.esSubcategoria) {
@@ -308,7 +308,7 @@ cambioEstado(event: any){
       error: (error) => {
         console.log('Error al modificar categoría:', error);
         this.exito = false;
-        this.mensajeToast = 'Error al actualizar la categoría';
+        this.mensajeToast = this.esSubcategoria ? 'Error al actualizar subcategoría' : 'Error al actualizar categoría';
         this.mostrarToast();
       }
     });
@@ -359,14 +359,18 @@ cambioEstado(event: any){
           console.log('Estado modificado:', data.mensaje);
           this.Listar();
           this.exito = true;
-          this.mensajeToast = data.mensaje || 'Estado actualizado exitosamente';
+          this.mensajeToast = this.estadoTemporal === 1 ?
+            (this.catSeleccionado?.padre_id ? 'Subcategoría activada correctamente' : 'Categoría activada correctamente') :
+            (this.catSeleccionado?.padre_id ? 'Subcategoría desactivada correctamente' : 'Categoría desactivada correctamente');
           this.mostrarToast();
           this.cerrarModalConfirmacion();
         },
         error: (error) => {
           console.log('Error al modificar el estado:', error);
           this.exito = false;
-          this.mensajeToast = 'Error al cambiar el estado';
+          this.mensajeToast = this.estadoTemporal === 1 ?
+            (this.catSeleccionado?.padre_id ? 'Error al activar subcategoría' : 'Error al activar categoría') :
+            (this.catSeleccionado?.padre_id ? 'Error al desactivar subcategoría' : 'Error al desactivar categoría');
           this.mostrarToast();
           this.cerrarModalConfirmacion();
         }

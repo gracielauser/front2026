@@ -3,3 +3,24 @@
 @import "flowbite/src/themes/default";*/
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* =============================================
+   TOAST GLOBALES (usados en todos los módulos)
+   ============================================= */
+.toast-custom-green {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+}
+.toast-custom-red {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.35);
+}
+.toast-custom-green .toast-body,
+.toast-custom-red .toast-body {
+  color: white;
+  font-weight: 500;
+}

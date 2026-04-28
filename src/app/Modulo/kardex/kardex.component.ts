@@ -434,14 +434,14 @@ guardarMovimiento() {
   this.InventarioSer.saveInventario(movimiento).subscribe({
     next: (data) => {
       console.log('✅ Movimiento registrado:', data);
-      this.mostrarAlerta(true, data.mensaje || '✅ Movimiento registrado exitosamente');
+      this.mostrarAlerta(true, 'Movimiento registrado correctamente');
       this.ListarProductos(); // Refrescar la tabla
       this.limpiarFormulario();
       this.cerrarModal();
     },
     error: (error) => {
       console.error('❌ Error al registrar movimiento:', error);
-      this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al registrar el movimiento');
+      this.mostrarAlerta(false, 'Error al agregar movimiento');
     }
   });
 }

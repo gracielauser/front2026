@@ -201,7 +201,7 @@ export class UsuariosComponent implements OnInit {
       this.ususer.saveUsuario(nuevoUsuario).subscribe({
         next: (data) => {
           console.log('✅ Usuario agregado con éxito:', data);
-          this.mostrarAlerta(true, data.mensaje || '✅ Usuario agregado exitosamente');
+          this.mostrarAlerta(true, 'Usuario registrado correctamente');
           var usu_roles = [];
           this.rolesSeleccionados.forEach((rolId)=>{
             const usuRol={
@@ -222,7 +222,7 @@ export class UsuariosComponent implements OnInit {
         },
         error: (error) => {
           console.error('❌ Error al agregar usuario:', error);
-          this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al agregar usuario');
+          this.mostrarAlerta(false, 'Error al agregar usuario');
         }
       });
     }
@@ -249,7 +249,7 @@ export class UsuariosComponent implements OnInit {
     this.ususer.modificarUsuario(usuarioModificado).subscribe({
       next: (data) => {
         console.log('✅ Usuario modificado con éxito:', data);
-        this.mostrarAlerta(true, data.mensaje || '✅ Usuario actualizado exitosamente');
+        this.mostrarAlerta(true, 'Usuario actualizado correctamente');
         // Actualizar roles
         var usu_roles = [];
         this.rolesSeleccionados.forEach((rolId)=>{
@@ -273,7 +273,7 @@ export class UsuariosComponent implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error al modificar usuario:', error);
-        this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al modificar usuario');
+        this.mostrarAlerta(false, 'Error al actualizar usuario');
       }
     });
   }
@@ -437,12 +437,12 @@ mensajeExito: string=''
       this.usuSeleccionado.estado = this.estadoTemporal;
       this.ususer.modificarUsuario(this.usuSeleccionado).subscribe({
         next: (data) => {
-            this.mostrarAlerta(true, 'Cambio de estado exitoso');
+            this.mostrarAlerta(true, this.estadoTemporal === 1 ? 'Usuario activado correctamente' : 'Usuario desactivado correctamente');
           console.log('✅ Estado modificado:', data);
           this.Listar();
         },
         error: (error) => {
-            this.mostrarAlerta(false, 'Error al modificar el estado');
+            this.mostrarAlerta(false, this.estadoTemporal === 1 ? 'Error al activar usuario' : 'Error al desactivar usuario');
           console.error('❌ Error al modificar el estado:', error);
         }
       });

@@ -163,16 +163,10 @@ ngAfterViewInit() {
         this.selectedFile = null;
         this.ciDuplicado = null;
         this.ciOriginal = '';
-        this.mensajeExito = data.mensaje;
-
-        // Mensaje de éxito
-        const toastEl = document.getElementById('toastExito');
-        if (toastEl) {
-          const toast = new bootstrap.Toast(toastEl);
-          toast.show();
-        }
+        this.mostrarAlerta(true, 'Empleado registrado correctamente');
       }, error: (error) => {
         console.log('❌ Error:', error);
+        this.mostrarAlerta(false, 'Error al agregar empleado');
       }
     })
   }
@@ -273,21 +267,15 @@ ngAfterViewInit() {
       formData.append('empleado', JSON.stringify(this.perSeleccionado));
       this.empleadoSer.modificarEmpleado(formData).subscribe({
         next: (data) => {
-          this.mostrarAlerta(true, data.mensaje);
+          this.mostrarAlerta(true, this.estadoTemporal === 1 ? 'Empleado activado correctamente' : 'Empleado desactivado correctamente');
           this.listar();
         },
         error: (error) => {
-          this.mostrarAlerta(false, 'Error al modificar el estado');
+          this.mostrarAlerta(false, this.estadoTemporal === 1 ? 'Error al activar empleado' : 'Error al desactivar empleado');
         }
       });
     }
     this.perSeleccionado = null;
-    //mensaje de exito
-        const toastEl = document.getElementById('toastExito');
-        if (toastEl) {
-          const toast = new bootstrap.Toast(toastEl);
-          toast.show();
-        }
   }
   idModificar: number = 0;//este id va ser temporal solo para modificar
   modificarDatos(emp:any){//este metodo solo pone loas datos que recibe en el formulario
@@ -336,11 +324,11 @@ ngAfterViewInit() {
         this.idModificar = 0;
         this.selectedFile = null;
         this.ciOriginal = ''; // Resetear CI original
-        this.mostrarAlerta(true,data.mensaje);
+        this.mostrarAlerta(true, 'Empleado actualizado correctamente');
         this.cerrarModal()
 
       }, error: (error) =>{
-        this.mostrarAlerta(false,error.error.mensaje);
+        this.mostrarAlerta(false, 'Error al actualizar empleado');
       }
     })
   }

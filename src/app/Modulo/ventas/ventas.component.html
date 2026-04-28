@@ -565,3 +565,16 @@
     </div>
   </div>
 </div>
+
+<!-- Toast de notificacion -->
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+  <div id="toastVentas" class="toast align-items-center border-0" [ngClass]="exito ? 'toast-custom-green' : 'toast-custom-red'" role="alert">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi me-2" [ngClass]="exito ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+        {{mensajeExito}}
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>

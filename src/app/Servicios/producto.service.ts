@@ -52,7 +52,12 @@ private baseUrl=environment.apiUrl+'/api/producto'
          responseType: 'blob' // 👈 clave para manejar PDF
        });
      }
-     datosReporte():Observable<any>{
-    return this.xhttp.get<any>(`${environment.apiUrl}/api/reporte-producto/inventario/datos`);
+     datosReporte(body={}):Observable<any>{
+    return this.xhttp.post<any>(`${environment.apiUrl}/api/reporte-producto/inventario/datos`, body);
   }
+     getExcel(body: any = {}): Observable<Blob> {
+       return this.xhttp.post(`${environment.apiUrl}/api/reporte-producto/inventario/xlsx`, body, {
+         responseType: 'blob'
+       });
+     }
 }

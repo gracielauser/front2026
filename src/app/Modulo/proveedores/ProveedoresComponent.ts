@@ -25,6 +25,16 @@ export class ProveedoresComponent implements OnInit {
   departamento:string=''
   page:number=1
   mensajeExito: string | null = null;
+  exito: boolean = false;
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    this.exito = exito;
+    this.mensajeExito = mensaje;
+    const toastEl = document.getElementById('toastExito');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  }
   constructor(
     private proser: ProveedorService
   ) { }
@@ -62,16 +72,12 @@ export class ProveedoresComponent implements OnInit {
       next: (data) => {
         this.Listar();
         this.proveForm.reset();
-        this.mensajeExito = data.mensaje;
+        this.mostrarAlerta(true, 'Proveedor registrado correctamente');
       }, error: (error) => {
         console.log(error);
+        this.mostrarAlerta(false, 'Error al agregar proveedor');
       }
     });
-    const toastEl = document.getElementById('toastExito');
-        if (toastEl) {
-          const toast = new bootstrap.Toast(toastEl);
-          toast.show();
-        }
   }
   idProveedor: number = 0;
   ModificarProveedor(proveedor: any) {
@@ -95,16 +101,12 @@ export class ProveedoresComponent implements OnInit {
       console.log('devuelve: ', data.mensaje, data.nombre);
       this.Listar()
       this.proveForm.reset()
-      this.mensajeExito = data.mensaje;
+      this.mostrarAlerta(true, 'Proveedor actualizado correctamente');
     }, error: (error) => {
       console.log(error);
+      this.mostrarAlerta(false, 'Error al actualizar proveedor');
     }
     })
-    const toastEl = document.getElementById('toastExito');
-        if (toastEl) {
-          const toast = new bootstrap.Toast(toastEl);
-          toast.show();
-        }
   }
   provSeleccionado: any = null;
   estadoTemporal: number = 0;
@@ -130,18 +132,13 @@ export class ProveedoresComponent implements OnInit {
          next: (data) => {
       console.log('devuelve: ', data.mensaje, data.nombre);
       this.Listar()
-       this.mensajeExito = data.mensaje;
+      this.mostrarAlerta(true, this.estadoTemporal === 1 ? 'Proveedor activado correctamente' : 'Proveedor desactivado correctamente');
     }, error: (error) => {
       console.log(error);
+      this.mostrarAlerta(false, this.estadoTemporal === 1 ? 'Error al activar proveedor' : 'Error al desactivar proveedor');
     }
       })
     }
     this.provSeleccionado = null;
-    // Mostrar mensaje de éxito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
   }
 }

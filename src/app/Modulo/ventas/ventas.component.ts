@@ -52,6 +52,17 @@ export class VentasComponent implements OnInit, AfterViewInit {
   tipoVenta: string = ''
   enFiltroPersonalizado: boolean = false
   page:number=1
+  exito: boolean = false;
+  mensajeExito: string = '';
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    this.exito = exito;
+    this.mensajeExito = mensaje;
+    const toastEl = document.getElementById('toastVentas');
+    if (toastEl) {
+      const toast = new (window as any).bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  }
   ponerCodigo(e: any) {
     this.codigo = e.target.value.toUpperCase()
   }
@@ -228,11 +239,18 @@ export class VentasComponent implements OnInit, AfterViewInit {
 
   confirmarAnular(){
     console.log('confirmando anulacion');
-    this.ventaSer.anular(this.ventaParaAnular.id_venta).subscribe((data)=>{
-      console.log('Respuesta despues de anular: ',data);
-      this.listarVentas();
-      this.cerrarModalAnular();
-    })
+    this.ventaSer.anular(this.ventaParaAnular.id_venta).subscribe({
+      next: (data) => {
+        console.log('Respuesta despues de anular: ', data);
+        this.listarVentas();
+        this.cerrarModalAnular();
+        this.mostrarAlerta(true, 'Venta anulada correctamente');
+      },
+      error: (error) => {
+        this.cerrarModalAnular();
+        this.mostrarAlerta(false, 'Error al anular venta');
+      }
+    });
   }
 
   // DETALLE-------------------------------------------

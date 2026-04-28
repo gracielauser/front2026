@@ -22,6 +22,16 @@ export class GastosComponent {
   estadoFiltro=''
   page:number=1
    mensajeExito: string | null = null;
+  exito: boolean = false;
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    this.exito = exito;
+    this.mensajeExito = mensaje;
+    const toastEl = document.getElementById('toastExito');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  }
   filtroFecha: string = '';
   fechaDesde: string = '';
   fechaHasta: string = '';
@@ -64,17 +74,12 @@ export class GastosComponent {
       descripcion:'',
       estado:'1'
 })
-this.mensajeExito = data.mensaje;
+        this.mostrarAlerta(true, 'Gasto registrado correctamente');
       }, error: (error) => {
         console.log(error);
+        this.mostrarAlerta(false, 'Error al agregar gasto');
       }
     })
-    //mensaje de exito
-        const toastEl = document.getElementById('toastExito');
-        if (toastEl) {
-          const toast = new bootstrap.Toast(toastEl);
-          toast.show();
-        }
   }
   anular(){
 
@@ -127,20 +132,15 @@ gastoSeleccionado: any = null;
         next: (data) => {
           console.log('Estado modificado:', data.mensaje);
           this.Listar();
-          this.mensajeExito = data.mensaje;
+          this.mostrarAlerta(true, 'Gasto anulado correctamente');
         },
         error: (error) => {
           console.log('Error al modificar el estado:', error);
+          this.mostrarAlerta(false, 'Error al anular gasto');
         }
       });
     }
     this.gastoSeleccionado = null;
-    //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
   }
 
   onFiltroFechaChange(event: any): void {

@@ -21,6 +21,16 @@ export class MarcasComponent {
   nombre:string=''
 estado='1'
 mensajeExito: string | null = null;
+  exito: boolean = false;
+  mostrarAlerta(exito: boolean, mensaje: string) {
+    this.exito = exito;
+    this.mensajeExito = mensaje;
+    const toastEl = document.getElementById('toastExito');
+    if (toastEl) {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+  }
   constructor(
     private marser: MarcaService
   ) { }
@@ -52,17 +62,12 @@ mensajeExito: string | null = null;
         console.log('devuelve: ', data.mensaje, data.nombre);
         this.Listar()
         this.marcaForm.reset()
-        this.mensajeExito = data.mensaje;
+        this.mostrarAlerta(true, 'Marca registrada correctamente');
       }, error: (error) => {
         console.log(error);
+        this.mostrarAlerta(false, 'Error al agregar marca');
       }
     })
-    //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
   }
   idMarca: number = 0
   ModificarMarca(marca: any) {
@@ -83,17 +88,12 @@ GuardarModificacion(){
       console.log('devuelve: ', data.mensaje, data.nombre);
       this.Listar()
       this.marcaForm.reset()
-      this.mensajeExito = data.mensaje;
+      this.mostrarAlerta(true, 'Marca actualizada correctamente');
     }, error: (error) => {
       console.log(error);
+      this.mostrarAlerta(false, 'Error al actualizar marca');
     }
   })
-  //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
 }
   marcaSeleccionado: any = null;
   estadoTemporal: number = 0;
@@ -119,25 +119,16 @@ GuardarModificacion(){
         next:(data)=> {
           console.log('Estado modificado:', data.mensaje);
           this.Listar();
-          this.mensajeExito = data.mensaje;
+          this.mostrarAlerta(true, this.estadoTemporal === 1 ? 'Marca activada correctamente' : 'Marca desactivada correctamente');
         },
         error: (error) => {
           console.log('Error al modificar el estado:', error);
+          this.mostrarAlerta(false, this.estadoTemporal === 1 ? 'Error al activar marca' : 'Error al desactivar marca');
         }
       })
     }
     this.marcaSeleccionado = null;
-    //mensaje de exito
-    const toastEl = document.getElementById('toastExito');
-    if (toastEl) {
-      const toast = new bootstrap.Toast(toastEl);
-      toast.show();
-    }
-  }
 
 
-}
-function data(value: any): void {
-  throw new Error('Function not implemented.');
-}
+}}
 

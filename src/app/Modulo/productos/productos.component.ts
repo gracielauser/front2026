@@ -277,14 +277,14 @@ catalogoPDF(){
         this.productoForm.reset()
         this.selectedFile = null
         this.exito = true
-        this.mensajeToast = 'Producto creado exitosamente'
+        this.mensajeToast = 'Producto registrado correctamente'
         this.mostrarToast()
         this.cerrarModal()
       },
       error: (error) => {
         console.error('Error al crear producto:', error);
         this.exito = false
-        this.mensajeToast = 'Error al crear el producto'
+        this.mensajeToast = 'Error al agregar producto'
         this.mostrarToast()
       }
     })
@@ -358,14 +358,14 @@ catalogoPDF(){
         this.productoForm.reset()
         this.selectedFile = null
         this.exito = true
-        this.mensajeToast = 'Producto actualizado exitosamente'
+        this.mensajeToast = 'Producto actualizado correctamente'
         this.mostrarToast()
         this.cerrarModal()
       },
       error: (error) => {
         console.error('Error al actualizar producto:', error);
         this.exito = false
-        this.mensajeToast = 'Error al actualizar el producto'
+        this.mensajeToast = 'Error al actualizar producto'
         this.mostrarToast()
       }
     })
@@ -434,18 +434,20 @@ catalogoPDF(){
   guardarCambio() {
     if (this.proSeleccionado) {
       this.proSeleccionado.estado = this.estadoTemporal;
-      this.ProSer.modificarProducto(this.proSeleccionado).subscribe({
+      const formData = new FormData();
+      formData.append('producto', JSON.stringify(this.proSeleccionado));
+      this.ProSer.modificarProducto(formData).subscribe({
         next: (data) => {
           console.log('Estado actualizado:', data);
           this.Listar()
           this.exito = true
-          this.mensajeToast = `Producto ${this.estadoTemporal == 1 ? 'activado' : 'desactivado'} exitosamente`
+          this.mensajeToast = this.estadoTemporal == 1 ? 'Producto activado correctamente' : 'Producto desactivado correctamente'
           this.mostrarToast()
         },
         error: (error) => {
           console.error('Error al cambiar estado:', error);
           this.exito = false
-          this.mensajeToast = 'Error al cambiar el estado'
+          this.mensajeToast = this.estadoTemporal == 1 ? 'Error al activar producto' : 'Error al desactivar producto'
           this.mostrarToast()
         }
       })

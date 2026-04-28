@@ -186,14 +186,14 @@ export class ClientesComponent implements OnInit {
       this.cliSer.saveCliente(cliente).subscribe({
         next: (data) => {
           console.log('✅ Cliente agregado:', data);
-          this.mostrarAlerta(true, data.mensaje || '✅ Cliente agregado exitosamente');
+          this.mostrarAlerta(true, 'Cliente registrado correctamente');
           this.Listar();
           this.cerrarModal();
           this.limpiar();
         },
         error: (error) => {
           console.error('❌ Error al agregar cliente:', error);
-          this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al agregar cliente');
+          this.mostrarAlerta(false, 'Error al agregar cliente');
         }
       });
     }
@@ -281,14 +281,14 @@ export class ClientesComponent implements OnInit {
     this.cliSer.modificarCliente(cliente).subscribe({
       next: (data) => {
         console.log('✅ Cliente modificado:', data);
-        this.mostrarAlerta(true, data.mensaje || '✅ Cliente modificado exitosamente');
+        this.mostrarAlerta(true, 'Cliente actualizado correctamente');
         this.Listar();
         this.cerrarModal();
         this.limpiar();
       },
       error: (error) => {
         console.error('❌ Error al modificar cliente:', error);
-        this.mostrarAlerta(false, error.error?.mensaje || '❌ Error al modificar cliente');
+        this.mostrarAlerta(false, 'Error al actualizar cliente');
       }
     });
   }
@@ -347,12 +347,12 @@ export class ClientesComponent implements OnInit {
       this.cliSeleccionado.estado = this.estadoTemporal;
       this.cliSer.modificarCliente(this.cliSeleccionado).subscribe({
         next: (data) => {
-          this.mostrarAlerta(true, data.mensaje || '✅ Estado modificado exitosamente');
+          this.mostrarAlerta(true, this.estadoTemporal === 1 ? 'Cliente activado correctamente' : 'Cliente desactivado correctamente');
           console.log('✅ Estado modificado:', data);
           this.Listar();
         },
         error: (error) => {
-          this.mostrarAlerta(false, '❌ Error al modificar el estado');
+          this.mostrarAlerta(false, this.estadoTemporal === 1 ? 'Error al activar cliente' : 'Error al desactivar cliente');
           console.error('❌ Error al modificar el estado:', error);
         }
       });

@@ -413,11 +413,11 @@ export class ComprasComponent implements OnInit, AfterViewInit {
         console.log('Respuesta despues de anular: ', data);
         this.listarCompra();
         this.cerrarModalAnular();
-        this.mostrarToast(true, 'Compra anulada exitosamente');
+        this.mostrarToast(true, 'Compra anulada correctamente');
       },
       error: (error) => {
         console.error('Error al anular compra:', error);
-        this.mostrarToast(false, 'Error al anular la compra');
+        this.mostrarToast(false, 'Error al anular compra');
       }
     });
   }
@@ -673,17 +673,29 @@ export class ComprasComponent implements OnInit, AfterViewInit {
     console.log("productos compra : ", this.detallesCompra);
 
     if (this.isEditMode) {
-      this.ComSer.modificarCompra(Compra).subscribe(data => {
-        this.compraForm.reset();
-        this.cerrarModalAgregar();
-        this.listarCompra();
-      })
+      this.ComSer.modificarCompra(Compra).subscribe({
+        next: (data) => {
+          this.compraForm.reset();
+          this.cerrarModalAgregar();
+          this.listarCompra();
+          this.mostrarToast(true, 'Compra actualizada correctamente');
+        },
+        error: (error) => {
+          this.mostrarToast(false, 'Error al actualizar compra');
+        }
+      });
     } else {
-      this.ComSer.saveCompra(Compra).subscribe(data => {
-        this.compraForm.reset();
-        this.cerrarModalAgregar();
-        this.listarCompra();
-      })
+      this.ComSer.saveCompra(Compra).subscribe({
+        next: (data) => {
+          this.compraForm.reset();
+          this.cerrarModalAgregar();
+          this.listarCompra();
+          this.mostrarToast(true, 'Compra registrada correctamente');
+        },
+        error: (error) => {
+          this.mostrarToast(false, 'Error al agregar compra');
+        }
+      });
     }
   }
   fechaD!:Date

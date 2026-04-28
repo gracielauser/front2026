@@ -1018,7 +1018,7 @@
    TOAST NOTIFICATIONS
    ======================================== */
 .toast-custom-green {
-  background: linear-gradient(135deg, var(--clientes-success) 0%, var(--clientes-success-hover) 100%);
+  background: linear-gradient(135deg, var(--clientes-success) 0%, #059669 100%);
   color: white;
   border-radius: 12px;
   box-shadow: 0 10px 15px rgba(16, 185, 129, 0.3);
@@ -1026,7 +1026,7 @@
 }
 
 .toast-custom-red {
-  background: linear-gradient(135deg, var(--clientes-danger) 0%, var(--clientes-danger-hover) 100%);
+  background: linear-gradient(135deg, var(--clientes-danger) 0%, #dc2626 100%);
   color: white;
   border-radius: 12px;
   box-shadow: 0 10px 15px rgba(239, 68, 68, 0.3);

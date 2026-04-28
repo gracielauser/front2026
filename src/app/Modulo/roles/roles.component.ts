@@ -88,14 +88,14 @@ export class RolesComponent {
       this.rolService.agregar(rol).subscribe({
         next: (data) => {
           console.log('✅ Rol agregado:', data);
-          this.mostrarAlerta(true, data.mensaje || '✅ Rol agregado exitosamente');
+          this.mostrarAlerta(true, 'Rol registrado correctamente');
           this.listar();
           this.cerrarModal();
           this.limpiar();
         },
         error: (err) => {
           console.error('❌ Error al agregar rol:', err);
-          this.mostrarAlerta(false, err.error?.mensaje || '❌ Error al agregar rol');
+          this.mostrarAlerta(false, 'Error al agregar rol');
         }
       });
     }
@@ -119,14 +119,14 @@ export class RolesComponent {
     this.rolService.modificarRol(rolModificado).subscribe({
       next: (data) => {
         console.log('✅ Rol modificado:', data);
-        this.mostrarAlerta(true, data.mensaje || '✅ Rol actualizado exitosamente');
+        this.mostrarAlerta(true, 'Rol actualizado correctamente');
         this.listar();
         this.cerrarModal();
         this.limpiar();
       },
       error: (err) => {
         console.error('❌ Error al modificar rol:', err);
-        this.mostrarAlerta(false, err.error?.mensaje || '❌ Error al modificar rol');
+        this.mostrarAlerta(false, 'Error al actualizar rol');
       }
     });
   }
@@ -228,12 +228,12 @@ export class RolesComponent {
       this.rolSeleccionado.estado = this.estadoTemporal;
       this.rolService.modificarRol(this.rolSeleccionado).subscribe({
         next: (data) => {
-          this.mostrarAlerta(true, data.mensaje || '✅ Estado modificado exitosamente');
+          this.mostrarAlerta(true, this.estadoTemporal === 1 ? 'Rol activado correctamente' : 'Rol desactivado correctamente');
           console.log('✅ Estado modificado:', data);
           this.listar();
         },
         error: (error) => {
-          this.mostrarAlerta(false, '❌ Error al modificar el estado');
+          this.mostrarAlerta(false, this.estadoTemporal === 1 ? 'Error al activar rol' : 'Error al desactivar rol');
           console.error('❌ Error al modificar el estado:', error);
         }
       });

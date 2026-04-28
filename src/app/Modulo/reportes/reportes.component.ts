@@ -43,11 +43,14 @@ export class ReportesComponent implements OnInit {
   datosInventarioReporte: any = null
   filtroInventario = {
     categoria: '',
+    subcategoria: '',
     marca: '',
     estado: '',
     busqueda: '',
-    unidad: ''
+    unidad: '',
+    stock_minimo: ''
   }
+  subcategoriasInventario: any[] = []
 
   // Datos de clientes
   datosClientesReporte: any = null
@@ -164,6 +167,9 @@ export class ReportesComponent implements OnInit {
     this.UsuSer.getListaUsuario().subscribe((data: any[]) => {
       this.apiUsuarios = data;
     });
+    this.CatSer.getListaCategoria().subscribe((data: any[]) => {
+      this.apiCategoria = data;
+    });
   }
   reporteDatosNegocio(){
     this.RepSer.getResultados().subscribe((pdfBlob) => {
@@ -186,8 +192,30 @@ datosNegocio(){
     this.datosNegocioReporte = data;
   })
 }
+construirBodyInventario(): any {
+  const body: any = {};
+  if (this.filtroInventario.subcategoria) body['id_categoria'] = this.filtroInventario.subcategoria;
+  else if (this.filtroInventario.categoria) body['id_categoria'] = this.filtroInventario.categoria;
+  if (this.filtroInventario.marca) body['id_marca'] = this.filtroInventario.marca;
+  if (this.filtroInventario.estado !== '') body['estado'] = this.filtroInventario.estado;
+  if (this.filtroInventario.busqueda) body['busqueda'] = this.filtroInventario.busqueda;
+  if (this.filtroInventario.unidad) body['id_unidad_medida'] = this.filtroInventario.unidad;
+  if (this.filtroInventario.stock_minimo) body['stock_minimo'] = +this.filtroInventario.stock_minimo;
+  return body;
+}
+onCategoriaInventarioChange(id: string): void {
+  this.filtroInventario.subcategoria = '';
+  if (!id) {
+    this.subcategoriasInventario = [];
+  } else {
+    const cat = this.apiCategoria.find((c: any) => c.id_categoria.toString() === id);
+    this.subcategoriasInventario = cat?.subCategoria || [];
+  }
+  this.datosInventario();
+}
 datosInventario(){
-  this.ProSer.datosReporte().subscribe((data)=>{
+  const body = this.construirBodyInventario();
+  this.ProSer.datosReporte(body).subscribe((data)=>{
     console.log('datos: ',data);
     this.datosInventarioReporte = data;
   })
@@ -351,8 +379,9 @@ get productosFiltradosInventario(): any[] {
   }
 
   return this.datosInventarioReporte.productos.filter((p: any) => {
-    const coincideCategoria = !this.filtroInventario.categoria ||
-      p.categoria.id_categoria.toString() === this.filtroInventario.categoria;
+    const idCatFiltro = this.filtroInventario.subcategoria || this.filtroInventario.categoria;
+    const coincideCategoria = !idCatFiltro ||
+      p.categoria.id_categoria.toString() === idCatFiltro;
 
     const coincideMarca = !this.filtroInventario.marca ||
       p.marca.id_marca.toString() === this.filtroInventario.marca;
@@ -372,16 +401,10 @@ get productosFiltradosInventario(): any[] {
 }
 
 get categorias(): any[] {
-  if (!this.datosInventarioReporte || !this.datosInventarioReporte.productos) {
+  if (!this.apiCategoria || !Array.isArray(this.apiCategoria)) {
     return [];
   }
-  const categoriasMap = new Map();
-  this.datosInventarioReporte.productos.forEach((p: any) => {
-    if (!categoriasMap.has(p.categoria.id_categoria)) {
-      categoriasMap.set(p.categoria.id_categoria, p.categoria);
-    }
-  });
-  return Array.from(categoriasMap.values());
+  return this.apiCategoria.filter((c: any) => !c.id_categoria_padre);
 }
 
 get marcas(): any[] {
@@ -413,11 +436,14 @@ get unidades(): any[] {
 limpiarFiltrosInventario() {
   this.filtroInventario = {
     categoria: '',
+    subcategoria: '',
     marca: '',
     estado: '',
     busqueda: '',
-    unidad: ''
+    unidad: '',
+    stock_minimo: ''
   };
+  this.subcategoriasInventario = [];
 }
 
 get totalesFiltrados(): any {
@@ -1503,14 +1529,24 @@ ventasExcel() {
 }
 inventarioPDF(){
   console.log('llamando pdf en ts');
-
- this.ProSer.getPDF().subscribe((pdfBlob) => {
+  const body = this.construirBodyInventario();
+  this.ProSer.getPDF(body).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });
-
-      // Abre en una nueva pestaña
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     });
+}
+inventarioExcel(): void {
+  const body = this.construirBodyInventario();
+  this.ProSer.getExcel(body).subscribe((excelBlob) => {
+    const blob = new Blob([excelBlob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reporte-inventario-${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  });
 }
 generarReporteCompras(resumido: boolean){
   const body: any = {};
