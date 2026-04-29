@@ -1043,6 +1043,7 @@ get totalesFiltradosVentas(): any {
   const total_qr = ventas.filter((v: any) => v.tipo_pago === 'QR' && v.incluida_en_totales).reduce((sum: number, v: any) => sum + (v.total || 0), 0);
   const cantidad_efectivo = ventas.filter((v: any) => v.tipo_pago === 'Efectivo' && v.incluida_en_totales).length;
   const cantidad_qr = ventas.filter((v: any) => v.tipo_pago === 'QR' && v.incluida_en_totales).length;
+  const ganancia_neta_total = ventas.filter((v: any) => v.incluida_en_totales).reduce((sum: number, v: any) => sum + (v.ganancia_neta || 0), 0);
 
   return {
     total_ventas: ventas.length,
@@ -1053,7 +1054,8 @@ get totalesFiltradosVentas(): any {
     total_efectivo,
     total_qr,
     cantidad_efectivo,
-    cantidad_qr
+    cantidad_qr,
+    ganancia_neta_total
   };
 }
 

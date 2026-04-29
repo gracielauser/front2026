@@ -166,6 +166,7 @@ catalogoPDF(){
       id_unidad_medida: 1,
       sub_categoria: ''
     })
+    this.productoForm.get('stock')?.enable()
     this.selectedFile = null
     this.codigoDuplicado = false
     // Resetear variables de categoría
@@ -233,10 +234,15 @@ catalogoPDF(){
       id_unidad_medida: producto.id_unidad_medida,
       id_marca: producto.id_marca
     })
+    this.productoForm.get('stock')?.disable()
     this.codigoDuplicado = false
   }
   guardarProducto() {
     if (this.productoForm.invalid) {
+      this.productoForm.markAllAsTouched()
+      return
+    }
+    if (this.nombreInvalidoMsg) {
       this.productoForm.markAllAsTouched()
       return
     }
@@ -290,6 +296,55 @@ catalogoPDF(){
     })
   }
   idProducto: number = 0
+
+  nombreInvalidoMsg: string = '';
+
+  validarNombre(event: any) {
+    const val = (event.target.value || '').toString().trim().toLowerCase();
+    const ctrl = this.productoForm.get('nombre');
+
+    // Limpiar errores previos de este validador
+    const limpiarError = (key: string) => {
+      if (ctrl?.errors?.[key]) {
+        const errs = { ...ctrl.errors };
+        delete errs[key];
+        ctrl.setErrors(Object.keys(errs).length > 0 ? errs : null);
+      }
+    };
+
+    if (!val) {
+      limpiarError('nombreConflicto');
+      this.nombreInvalidoMsg = '';
+      return;
+    }
+
+    // 1. Verificar coincidencia exacta con nombre de categoría o marca
+    const categoriaMatch = this.apiCategorias.some(c =>
+      (c.nombre || '').toLowerCase() === val ||
+      (c.subCategoria || []).some((sub: any) => (sub.nombre || '').toLowerCase() === val)
+    );
+    const marcaMatch = this.apiMarcas.some(m => (m.nombre || '').toLowerCase() === val);
+
+    // 2. Verificar nombre duplicado en productos
+    const productoMatch = this.apiProductos.some(p => {
+      if (this.idProducto && p.id_producto === this.idProducto) return false;
+      return (p.nombre || '').toString().toLowerCase() === val;
+    });
+
+    if (categoriaMatch) {
+      this.nombreInvalidoMsg = 'El nombre no puede ser igual al nombre de una categoría.';
+      ctrl?.setErrors({ ...(ctrl.errors || {}), nombreConflicto: true });
+    } else if (marcaMatch) {
+      this.nombreInvalidoMsg = 'El nombre no puede ser igual al nombre de una marca.';
+      ctrl?.setErrors({ ...(ctrl.errors || {}), nombreConflicto: true });
+    } else if (productoMatch) {
+      this.nombreInvalidoMsg = 'Ya existe un producto con ese nombre.';
+      ctrl?.setErrors({ ...(ctrl.errors || {}), nombreConflicto: true });
+    } else {
+      this.nombreInvalidoMsg = '';
+      limpiarError('nombreConflicto');
+    }
+  }
 
   /**
    * Valida en keyup que el código ingresado no esté duplicado en la lista de productos.

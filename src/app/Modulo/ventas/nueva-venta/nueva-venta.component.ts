@@ -11,6 +11,7 @@ import { ClienteService } from '../../../Servicios/cliente.service';
 import { ProductoService } from '../../../Servicios/producto.service';
 import { VentaService } from '../../../Servicios/venta.service';
 import { CategoriaService } from '../../../Servicios/categoria.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-nueva-venta',
@@ -23,6 +24,8 @@ export class NuevaVentaComponent implements OnInit {
 
   // Constante para sessionStorage
   private readonly CARRITO_STORAGE_KEY = 'carritoVentaProductos';
+
+  apiUrl = environment.apiUrl + '/uploads/';
 
   usu: Usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
   apiProductos: Producto[] = [];
@@ -415,6 +418,10 @@ export class NuevaVentaComponent implements OnInit {
 
     if (this.productosVender.includes(pro)) {
       const index = this.productosVender.indexOf(pro);
+      if (this.productosVentaCantidades[index] >= pro.stock) {
+        this.mostrarAlerta(false, `⚠️ Stock máximo alcanzado para "${pro.nombre}".`);
+        return;
+      }
       this.productosVentaCantidades[index] += 1;
       // Recalcular subtotal basado en precio original
       this.productosVentaSubtotales[index] = pro.precio_venta * this.productosVentaCantidades[index];

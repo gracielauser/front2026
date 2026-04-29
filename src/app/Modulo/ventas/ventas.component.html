@@ -149,6 +149,49 @@
               <div class="input-underline"></div>
             </div>
           </div>
+
+          <!-- Filtro 7: Usuario -->
+          <div class="filter-box">
+            <label class="filter-label-modern">
+              <i class="bi bi-person-badge"></i>
+              <span>Vendedor</span>
+            </label>
+            <div class="position-relative">
+              <div class="input-with-icon">
+                <i class="bi bi-search input-prefix-icon"></i>
+                <input
+                  type="text"
+                  class="modern-input"
+                  [(ngModel)]="busquedaUsuario"
+                  (focus)="mostrarDropdownUsuarios()"
+                  (blur)="ocultarDropdownUsuarios()"
+                  placeholder="Buscar vendedor..."
+                  style="padding-right: 2rem;">
+                <div class="input-underline"></div>
+              </div>
+              <button
+                *ngIf="usuarioSeleccionado"
+                type="button"
+                class="btn btn-sm btn-link position-absolute top-50 end-0 translate-middle-y text-danger"
+                (click)="limpiarUsuario()"
+                style="z-index: 2;">
+                <i class="bi bi-x-circle-fill"></i>
+              </button>
+              <ul
+                *ngIf="mostrarListaUsuarios && usuariosFiltrados.length > 0"
+                class="list-group position-absolute w-100 shadow-lg"
+                style="max-height: 200px; overflow-y: auto; z-index: 9999; top: 100%; left: 0;">
+                <li
+                  *ngFor="let u of usuariosFiltrados"
+                  class="list-group-item list-group-item-action"
+                  (mousedown)="seleccionarUsuario(u)"
+                  style="cursor: pointer;">
+                  <strong>{{ u.empleado?.nombre }} {{ u.empleado?.ap_paterno }}</strong><br>
+                  <small class="text-muted">{{ u.usuario }}</small>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -240,7 +283,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
+              <tr *ngFor="let ven of apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta | usuarioVenta:idUsuarioFiltro | paginate: { itemsPerPage: 6, currentPage: page }; let i = index"
                   class="data-row"
                   [class.row-anulada]="ven.estado == 2">
                 <td class="col-number">
@@ -325,7 +368,7 @@
                   </div>
                 </td>
               </tr>
-              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta).length === 0">
+              <tr *ngIf="(apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta | usuarioVenta:idUsuarioFiltro).length === 0">
                 <td colspan="8">
                   <div class="empty-state-modern">
                     <div class="empty-icon-circle">
@@ -349,7 +392,7 @@
       <div class="table-footer-section">
         <div class="footer-info">
           <i class="bi bi-info-circle-fill"></i>
-          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta).length }}</strong> venta(s)</span>
+          <span>Mostrando <strong>{{ (apiVentas | nroVenta:nroventa | estado:estado | clienteVenta:nombreCliente | fechas:filtroFecha:fechaDesde:fechaHasta | tipoVenta:tipoVenta | usuarioVenta:idUsuarioFiltro).length }}</strong> venta(s)</span>
         </div>
         <div class="pagination-modern">
           <pagination-controls (pageChange)="page = $event"></pagination-controls>

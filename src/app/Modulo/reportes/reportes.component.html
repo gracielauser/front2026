@@ -557,6 +557,14 @@
                   </div>
                 </div>
               </div>
+              <div class="col">
+                <div class="card border-success shadow-sm h-100" style="border-width: 2px !important;">
+                  <div class="card-body">
+                    <h6><i class="bi bi-graph-up-arrow"></i> Ganancia Total</h6>
+                    <h3 class="text-success fw-bold">{{totalesFiltradosVentas.ganancia_neta_total | number:'1.2-2'}} Bs.</h3>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <!-- 📋 Tabla de ventas -->
@@ -578,6 +586,7 @@
                         <th>Tipo Venta</th>
                         <th>Descuento</th>
                         <th>Total</th>
+                        <th>Ganancia Neta</th>
                         <th>Tipo Pago</th>
                         <th>Estado</th>
                         <th>Registrado por</th>
@@ -611,6 +620,9 @@
                         <td class="text-end">
                           <strong class="text-success">{{venta.total | number:'1.2-2'}} Bs.</strong>
                         </td>
+                        <td class="text-end">
+                          <strong class="text-success">{{venta.ganancia_neta | number:'1.2-2'}} Bs.</strong>
+                        </td>
                         <td class="text-center">
                           <span class="badge"
                             [ngClass]="{
@@ -635,7 +647,7 @@
                         </td>
                       </tr>
                       <tr *ngIf="ventasFiltradas.length === 0">
-                        <td colspan="11" class="text-center py-4">
+                        <td colspan="12" class="text-center py-4">
                           <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
                           <p class="text-muted mt-2">No se encontraron ventas</p>
                         </td>

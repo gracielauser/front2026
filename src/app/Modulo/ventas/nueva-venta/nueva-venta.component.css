@@ -998,6 +998,24 @@
   padding: 1rem;
 }
 
+.product-image-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ventas-gray-200);
+  background: var(--ventas-gray-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .codigo-ultra {
   font-family: 'Courier New', monospace;
   font-size: 0.875rem;

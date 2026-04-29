@@ -316,11 +316,15 @@
                 class="form-control form-control-modern"
                 placeholder="Ingrese el nombre del producto"
                 maxlength="40"
+                (input)="validarNombre($event)"
                 [ngClass]="{
                   'is-valid': control['nombre'].valid && control['nombre'].touched,
                   'is-invalid': control['nombre'].invalid && control['nombre'].touched
                 }">
-              <div class="invalid-feedback">Nombre requerido (3-40 caracteres)</div>
+              <div class="invalid-feedback">
+                <span *ngIf="nombreInvalidoMsg; else msgDefault">{{ nombreInvalidoMsg }}</span>
+                <ng-template #msgDefault>Nombre requerido (3-40 caracteres)</ng-template>
+              </div>
             </div>
 
             <!-- Código -->
@@ -346,7 +350,8 @@
             <!-- Stock -->
             <div class="col-md-6">
               <label class="form-label-custom">
-                Stock <span class="required-mark">*</span>
+                Stock <span class="required-mark" *ngIf="!isEditMode">*</span>
+                <span *ngIf="isEditMode" class="text-muted small">(no editable en modificación)</span>
               </label>
               <input
                 type="number"
@@ -356,8 +361,9 @@
                 min="1"
                 max="9999"
                 [ngClass]="{
-                  'is-valid': control['stock'].valid && control['stock'].touched,
-                  'is-invalid': control['stock'].invalid && control['stock'].touched
+                  'bg-light text-muted': isEditMode,
+                  'is-valid': control['stock'].valid && control['stock'].touched && !isEditMode,
+                  'is-invalid': control['stock'].invalid && control['stock'].touched && !isEditMode
                 }">
               <div class="invalid-feedback">Stock requerido (1-9999)</div>
             </div>

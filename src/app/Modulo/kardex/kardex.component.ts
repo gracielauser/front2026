@@ -474,7 +474,7 @@ cerrarModal() {
 
 // Kardex detallado
 verKardexDetallado(productoMovimiento: any) {
-  this.productoKardex = productoMovimiento.producto;
+  this.productoKardex = productoMovimiento;
   this.ProSer.verKardexDetallado(productoMovimiento.id_producto).subscribe({
     next: (data) => {
       console.log('kardex', data);

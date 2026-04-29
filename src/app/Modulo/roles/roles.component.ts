@@ -149,6 +149,11 @@ export class RolesComponent {
   }
 
   asignacion(e: Event, nroModulo: number) {
+    // Permiso 0 (Inicio) no es removible
+    if (nroModulo === 0) {
+      (e.target as HTMLInputElement).checked = true;
+      return;
+    }
     // No permitir modificar permisos del rol Administrador (id_rol = 1)
     if (this.rolModel && this.rolModel.id_rol === 1) {
       (e.target as HTMLInputElement).checked = true;
@@ -177,6 +182,10 @@ export class RolesComponent {
     } else {
       this.permisos = [];
     }
+    // Permiso 0 (Inicio) siempre presente
+    if (!this.permisos.includes(0)) {
+      this.permisos.unshift(0);
+    }
 
     this.rolForm.patchValue({
       nombre: rol.nombre,
@@ -197,7 +206,7 @@ export class RolesComponent {
     this.rolForm.patchValue({ estado: '1' });
     this.rolForm.markAsUntouched();
     this.rolForm.markAsPristine();
-    this.permisos = [];
+    this.permisos = [0];
     this.isEditMode = false;
     this.modalTitle = 'Nuevo Rol';
     this.rolModel = null;

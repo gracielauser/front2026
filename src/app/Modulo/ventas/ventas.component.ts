@@ -19,12 +19,13 @@ import { EstadoPipe } from '../../Filtros/estado.pipe';
 import { ClienteVentaPipe } from '../../Filtros/cliente-venta.pipe';
 import { FechasPipe } from '../../Filtros/fechas.pipe';
 import { TipoVentaPipe } from '../../Filtros/tipo-venta.pipe';
+import { UsuarioVentaPipe } from '../../Filtros/usuario-venta.pipe';
 
 @Component({
   selector: 'app-ventas',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgxPaginationModule,
-    FormsModule, NroVentaPipe, EstadoPipe, ClienteVentaPipe, FechasPipe, TipoVentaPipe],
+    FormsModule, NroVentaPipe, EstadoPipe, ClienteVentaPipe, FechasPipe, TipoVentaPipe, UsuarioVentaPipe],
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })
@@ -51,6 +52,12 @@ export class VentasComponent implements OnInit, AfterViewInit {
   filtroFecha: string = ''
   tipoVenta: string = ''
   enFiltroPersonalizado: boolean = false
+  // Filtro de usuario
+  apiUsuarios: any[] = []
+  idUsuarioFiltro: string = ''
+  busquedaUsuario: string = ''
+  mostrarListaUsuarios: boolean = false
+  usuarioSeleccionado: any = null
   page:number=1
   exito: boolean = false;
   mensajeExito: string = '';
@@ -134,6 +141,7 @@ export class VentasComponent implements OnInit, AfterViewInit {
     }
     )
     this.usuSer.getListaUsuario().subscribe(lista => {
+      this.apiUsuarios = Array.isArray(lista) ? lista : [];
       console.log(this.usu);
       this.ventaForm.patchValue({
        // vendedor: this.usu.persona?.nombre + " " + this.usu.persona?.ap_paterno + " " + this.usu.persona?.ap_materno
@@ -261,6 +269,40 @@ export class VentasComponent implements OnInit, AfterViewInit {
     this.DetVenta = venta;
     this.detallesVenta = venta.det_venta;
     this.abrirModalDetalle();
+  }
+
+  get usuariosFiltrados(): any[] {
+    const activos = this.apiUsuarios.filter((u: any) => u.estado === 1);
+    if (!this.busquedaUsuario) return activos;
+    const q = this.busquedaUsuario.toLowerCase();
+    return activos.filter((u: any) => {
+      const nombre = (u.empleado?.nombre || '').toLowerCase();
+      const ap = (u.empleado?.ap_paterno || '').toLowerCase();
+      const apM = (u.empleado?.ap_materno || '').toLowerCase();
+      return nombre.includes(q) || ap.includes(q) || apM.includes(q) || (nombre + ' ' + ap).includes(q);
+    });
+  }
+
+  seleccionarUsuario(u: any) {
+    this.usuarioSeleccionado = u;
+    this.idUsuarioFiltro = u.id_usuario.toString();
+    this.busquedaUsuario = [u.empleado?.nombre, u.empleado?.ap_paterno, u.empleado?.ap_materno].filter(Boolean).join(' ');
+    this.mostrarListaUsuarios = false;
+  }
+
+  limpiarUsuario() {
+    this.usuarioSeleccionado = null;
+    this.idUsuarioFiltro = '';
+    this.busquedaUsuario = '';
+    this.mostrarListaUsuarios = false;
+  }
+
+  mostrarDropdownUsuarios() {
+    this.mostrarListaUsuarios = true;
+  }
+
+  ocultarDropdownUsuarios() {
+    setTimeout(() => { this.mostrarListaUsuarios = false; }, 200);
   }
 
   onFiltroFechaChange(event: any): void {

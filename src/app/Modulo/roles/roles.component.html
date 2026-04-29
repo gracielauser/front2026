@@ -210,6 +210,16 @@
               </div>
 
               <div class="permisos-ultra-grid">
+                <!-- Permiso 0: Inicio (siempre activo, no removible) -->
+                <div class="permiso-ultra-card">
+                  <input class="form-check-input-ultra" type="checkbox" id="permiso0"
+                    [checked]="true"
+                    [disabled]="true">
+                  <label class="permiso-ultra-label" for="permiso0">
+                    <i class="bi bi-house-fill"></i>
+                    <span>Inicio</span>
+                  </label>
+                </div>
                 <!-- Permiso 1: Empleados -->
                 <div class="permiso-ultra-card">
                   <input class="form-check-input-ultra" type="checkbox" id="permiso1"

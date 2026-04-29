@@ -517,6 +517,12 @@
                 </th>
                 <th>
                   <div class="th-ultra">
+                    <i class="bi bi-image"></i>
+                    <span>Foto</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-ultra">
                     <i class="bi bi-box-fill"></i>
                     <span>Producto</span>
                   </div>
@@ -549,6 +555,14 @@
                   </div>
                 </td>
                 <td>
+                  <div class="product-image-wrapper">
+                    <img
+                      [src]="pro.foto ? apiUrl + pro.foto : '../../../assets/image-not-found.png'"
+                      alt="{{pro.nombre}}"
+                      class="product-image">
+                  </div>
+                </td>
+                <td>
                   <div class="producto-name-ultra">
                     <div class="producto-icon-mini">
                       <i class="bi bi-box-fill"></i>
@@ -576,7 +590,7 @@
                 </td>
               </tr>
               <tr *ngIf="productosPaginados.length === 0">
-                <td colspan="4">
+                <td colspan="5">
                   <div class="empty-productos-ultra">
                     <i class="bi bi-search"></i>
                     <p>No se encontraron productos</p>
