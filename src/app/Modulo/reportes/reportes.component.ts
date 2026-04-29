@@ -48,7 +48,8 @@ export class ReportesComponent implements OnInit {
     estado: '',
     busqueda: '',
     unidad: '',
-    stock_minimo: ''
+    stock_minimo: '',
+    sinVentas: false
   }
   subcategoriasInventario: any[] = []
 
@@ -202,6 +203,7 @@ construirBodyInventario(): any {
   if (this.filtroInventario.busqueda) body['busqueda'] = this.filtroInventario.busqueda;
   if (this.filtroInventario.unidad) body['id_unidad_medida'] = this.filtroInventario.unidad;
   if (this.filtroInventario.stock_minimo) body['stock_minimo'] = +this.filtroInventario.stock_minimo;
+  if (this.filtroInventario.sinVentas) body['sinVentas'] = true;
   return body;
 }
 onCategoriaInventarioChange(id: string): void {
@@ -442,7 +444,8 @@ limpiarFiltrosInventario() {
     estado: '',
     busqueda: '',
     unidad: '',
-    stock_minimo: ''
+    stock_minimo: '',
+    sinVentas: false
   };
   this.subcategoriasInventario = [];
 }
@@ -1421,13 +1424,36 @@ limpiarFiltrosNegocio() {
     // Generar y descargar el PDF
     //pdfMake.createPdf(documentDefinition).download('reporte-inventario.pdf');
   }
+private construirFiltrosGastos(): any {
+  const fechas = this.fechasFiltroGastos;
+  const formatDate = (d: Date | null) => d ? d.toISOString().split('T')[0] : null;
+  const estadoMap: { [key: string]: number } = { 'Válido': 1, 'Anulado': 2 };
+  return {
+    desde: formatDate(fechas.desde),
+    hasta: formatDate(fechas.hasta),
+    estado: this.filtroGastos.estado ? (estadoMap[this.filtroGastos.estado] ?? null) : null,
+    categoria: this.filtroGastos.categoria || null
+  };
+}
 reporteGastos(){
-this.GasSer.getPDF({}).subscribe((pdfBlob) => {
+  const filtros = this.construirFiltrosGastos();
+  this.GasSer.getPDF(filtros).subscribe((pdfBlob) => {
       const blob = new Blob([pdfBlob], { type: 'application/pdf' });
-      // Abre en una nueva pestaña
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     });
+}
+reporteGastosExcel(): void {
+  const filtros = this.construirFiltrosGastos();
+  this.GasSer.getExcel(filtros).subscribe((excelBlob: Blob) => {
+    const blob = new Blob([excelBlob], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reporte-gastos-${new Date().toISOString().split('T')[0]}.xlsx`;
+    link.click();
+    window.URL.revokeObjectURL(url);
+  });
 }
 reporteClientesPDF(){
   const body = this.construirBodyClientes();

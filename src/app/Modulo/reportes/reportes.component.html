@@ -790,10 +790,23 @@
                   </div>
 
                   <div class="col-md-3">
-                    <label for="stockMinimo" class="form-label">Stock Mínimo</label>
-                    <input type="number" id="stockMinimo" class="form-control" placeholder="Ej: 10" min="0"
-                      [(ngModel)]="filtroInventario.stock_minimo" (ngModelChange)="datosInventario()"
-                      (keypress)="$any($event).key === '-' || $any($event).key === 'e' ? $event.preventDefault() : null">
+                    <label class="form-label">Stock Mínimo</label>
+                    <div class="d-flex align-items-center gap-2">
+                      <input type="number" id="stockMinimo" class="form-control" placeholder="Ej: 10" min="0" style="max-width: 90px;"
+                        [(ngModel)]="filtroInventario.stock_minimo" (ngModelChange)="datosInventario()"
+                        (keypress)="$any($event).key === '-' || $any($event).key === 'e' ? $event.preventDefault() : null">
+                      <div class="d-flex flex-column align-items-center justify-content-center px-2 py-1 rounded-3 border"
+                           style="background: #f8f9ff; border-color: #667eea !important; min-width: 72px; cursor: pointer;"
+                           (click)="filtroInventario.sinVentas = !filtroInventario.sinVentas; datosInventario()">
+                        <div class="form-check form-switch mb-0">
+                          <input class="form-check-input" type="checkbox" role="switch"
+                            [(ngModel)]="filtroInventario.sinVentas" (ngModelChange)="datosInventario()"
+                            style="cursor: pointer; width: 2em; height: 1.1em;"
+                            (click)="$event.stopPropagation()">
+                        </div>
+                        <small class="fw-semibold mt-1" style="font-size: 0.68rem; color: #667eea; line-height: 1;">Sin ventas</small>
+                      </div>
+                    </div>
                   </div>
 
                   <div class="col-md-3 d-flex align-items-end">
@@ -1564,7 +1577,7 @@
     </div>
   </div>
 </div>
-<!-- Compras -->
+<!-- Gastos -->
 <div class="modal fade" id="gastos" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl modal-dialog-scrollable">
     <div class="modal-content">
@@ -1575,12 +1588,13 @@
       <div class="modal-body">
         <div class="container">
           <div class="container mt-4">
-            <!-- Título -->
-            <div class="text-center mb-4">
-              <h3 class="fw-bold text-danger">
-                <i class="bi bi-cash-stack me-2"></i>Reporte de Gastos
-              </h3>
-              <p class="text-muted">Visualiza y analiza los gastos registrados en el sistema</p>
+            <!-- Encabezado -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2 class="fw-bold"><i class="bi bi-cash-stack me-2"></i>Reporte de Gastos</h2>
+              <div>
+                <button class="btn btn-success me-2" (click)="reporteGastosExcel()"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+                <button class="btn btn-danger" (click)="reporteGastos()"><i class="bi bi-filetype-pdf"></i> Exportar PDF</button>
+              </div>
             </div>
 
             <!-- Filtros -->
@@ -1588,14 +1602,7 @@
               <div class="card-body">
                 <h5 class="card-title mb-3"><i class="bi bi-funnel"></i> Filtros</h5>
                 <div class="row g-3">
-                  <div class="col-md-3">
-                    <label class="form-label">Desde</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroGastos.desde">
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label">Hasta</label>
-                    <input type="date" class="form-control" [(ngModel)]="filtroGastos.hasta">
-                  </div>
+
                   <div class="col-md-2">
                     <label class="form-label">Categoría</label>
                     <select class="form-select" [(ngModel)]="filtroGastos.categoria">
@@ -1620,7 +1627,7 @@
                     </select>
                   </div>
                   <div class="col-md-2">
-                    <label class="form-label">Fecha</label>
+                    <label class="form-label">Periodo</label>
                     <select class="form-select" [(ngModel)]="filtroFechaGastos" (change)="onFiltroFechaGastosChange($event)">
                       <option value="">Todas las fechas</option>
                       <option value="hoy">Hoy</option>
@@ -1707,14 +1714,6 @@
                   <i class="bi bi-list-ul me-2"></i>Detalle de Gastos
                   <span class="badge bg-light text-dark ms-2">{{gastosFiltrados.length}} gastos</span>
                 </h5>
-                <div>
-                  <button class="btn btn-light btn-sm me-2">
-                    <i class="bi bi-file-earmark-excel-fill text-success"></i> Excel
-                  </button>
-                  <button class="btn btn-light btn-sm" (click)="reporteGastos()">
-                    <i class="bi bi-file-earmark-pdf-fill text-danger"></i> PDF
-                  </button>
-                </div>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
@@ -1803,6 +1802,15 @@
       </div>
       <div class="modal-body">
         <div class="container-fluid py-3">
+
+          <!-- Encabezado -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold"><i class="bi bi-bar-chart-fill me-2"></i>Tendencia de Productos</h2>
+            <div>
+              <button class="btn btn-success me-2" (click)="tendenciaExcel()"><i class="bi bi-file-earmark-excel"></i> Exportar Excel</button>
+              <button class="btn btn-danger" (click)="reporteTendenciaPDF()"><i class="bi bi-filetype-pdf"></i> Generar reporte</button>
+            </div>
+          </div>
 
           <!-- Filtros -->
           <div class="card shadow-sm mb-4">
@@ -1949,12 +1957,6 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-success me-2" (click)="tendenciaExcel()">
-          <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
-        </button>
-        <button type="button" class="btn btn-danger me-2" (click)="reporteTendenciaPDF()">
-          <i class="bi bi-filetype-pdf me-1"></i>Generar reporte
-        </button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>

@@ -24,12 +24,16 @@ export class GastoService {
       let url = this.baseUrl+"/anular";
       return this.xhttp.put(url,gasto)
      }
-     getPDF(body={}): Observable<Blob> {  
+     getPDF(body={}): Observable<Blob> {
       let url = environment.apiUrl+"/api/reporte/gastos";
       return this.xhttp.post(url, body, { responseType: 'blob' });
      }
-     datosGastos(body={}): Observable<any> {  
+     getExcel(body: any = {}): Observable<Blob> {
+      let url = environment.apiUrl+"/api/reporte/gastos/xlsx";
+      return this.xhttp.post(url, body, { responseType: 'blob' });
+     }
+     datosGastos(body: any = {}): Observable<any> {
       let url = environment.apiUrl+"/api/reporte/gastos/datos";
-      return this.xhttp.get(url);
+      return this.xhttp.post(url, body);
      }
 }
